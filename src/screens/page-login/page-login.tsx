@@ -37,18 +37,21 @@ const PageLogin = () => {
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
-      clientId: "215b09e4-54cb-49aa-837b-546f73fc29f6",
+      clientId: "50f18b4e-1a58-4004-b6b8-5a15e3a2e863",
       scopes: [
         "openid",
         "profile",
         "email",
         "offline_access",
-        "api://215b09e4-54cb-49aa-837b-546f73fc29f6/User.All",
+        "api://82b5a9e1-eaa2-4ee8-a3a0-7d3c41a4a1b5/User.All",
       ],
       redirectUri: makeRedirectUri({
-        // scheme: process.env.NODE_ENV === 'production' ?  'exp://145.93.177.134:19000' : ''
-        scheme: url,
+         scheme: process.env.NODE_ENV === 'production' ?  'https://auth.expo.io/@vitaapp/stuff' : '',
+         useProxy: true
+        //scheme: url,
+        
       }),
+
     },
     discovery
   );
@@ -67,7 +70,7 @@ const PageLogin = () => {
     const user = await getUser(token);
     await save("User", JSON.stringify(user)) // user= id, nam, ... , mood
     await save("token", token);
-    const expoToken = (await Notifications.getExpoPushTokenAsync()).data;
+    const expoToken = (await Notifications.getExpoPushTokenAsync({projectId:"5d6942ac-e779-47ab-885a-7d876e3ef01a"})).data;
     const cleanedToken = expoToken.replace("ExponentPushToken[", "").replace("]", "");
     await save("expoToken", expoToken);
     await SetExpo(token, cleanedToken);
@@ -104,7 +107,7 @@ const PageLogin = () => {
         <TouchableOpacity
           style={styles.loginbutton}
           onPress={() => {
-            promptAsync();
+            promptAsync({useProxy: true});
           }}
         >
           <Text style={styles.buttontext}>LOGIN</Text>
