@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "yannick0430",
+    "scheme": "gacprjscheme",
+    "slug": "stuff",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "notification": {
+      "icon": "./assets/logo.png"
+    },
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yannick0430.gacproject"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.yannick0430.gacproject"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5d6942ac-e779-47ab-885a-7d876e3ef01a"
+      }
+    },
+    "owner": "vitaapp"
+  }
+}
