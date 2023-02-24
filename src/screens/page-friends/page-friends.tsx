@@ -5,178 +5,186 @@ import {
   ScrollView,
   SafeAreaView,
   RefreshControl,
-  Image,
-} from "react-native";
+  Image
+} from "react-native"
 import {
   useFonts,
-  Poppins_600SemiBold,
-  Poppins_400Regular,
-} from "@expo-google-fonts/poppins";
-import React, {
-  useState,
-  useContext,
-} from "react";
+  Poppins_600SemiBold as Poppins600SemiBold,
+  Poppins_400Regular as Poppins400Regular
+} from "@expo-google-fonts/poppins"
+import React, { useState, useContext } from "react"
 import {
   addFriend,
   getFriends,
   getSendedRequests,
   removeFriend,
-  cancelFrRequest,
-} from "../../services/friendsService";
-import { getAllUsers } from "../../services/userService";
-import { AuthContext } from "../../context/AuthContext";
-import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx";
-import SecondaryBtn from "../../components/buttons/SecondaryBtn";
-import PrimaryBtn from "../../components/buttons/PrimaryBtn";
-import * as SecureStore from "expo-secure-store";
-import Bg from "../../../assets/wave.svg";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "react-query";
-import TertiaryBtn from "../../components/buttons/TertiaryBtn";
-var _ = require('lodash');
-
+  cancelFrRequest
+} from "../../services/friendsService"
+import { getAllUsers } from "../../services/userService"
+import { AuthContext } from "../../context/AuthContext"
+// import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
+import SecondaryBtn from "../../components/buttons/SecondaryBtn"
+import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import * as SecureStore from "expo-secure-store"
+import Bg from "../../../assets/wave.svg"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import TertiaryBtn from "../../components/buttons/TertiaryBtn"
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const _ = require("lodash")
 
 const PageFriends = () => {
-  const { accessToken } = useContext(AuthContext);
+  const { accessToken } = useContext(AuthContext)
 
-  const [refreshing, setRefreshing] = useState(false);
+  const [ refreshing, setRefreshing ] = useState(false)
 
-  const [otherPeople, setOtherPeople] = useState([]);
+  const [ otherPeople, setOtherPeople ] = useState([])
 
   const currentUser = useQuery("currentUser", async () =>
     JSON.parse(await SecureStore.getItemAsync("User"))
-  );
+  )
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const friends: any = useQuery("friends", () => getFriends(accessToken), {
     onError: (error) => {
-      console.log("friends get req error", error);
-    },
-  });
+      console.log("friends get req error", error)
+    }
+  })
 
   const invites: any = useQuery(
     "invites",
     () => getSendedRequests(accessToken),
     {
       onError: (error) => {
-        console.log("invites request error", error);
-      },
+        console.log("invites request error", error)
+      }
     }
-  );
+  )
 
   // fetching the users from db and setting other people array onSuccess
   // to set the array of other people we remove friends array and invites array from users.
   const users: any = useQuery("users", () => getAllUsers(accessToken), {
     enabled: !!currentUser && !!friends.data && !!invites.data,
     onSuccess: (users) => {
-      const usersCopy = [...users];
-      const userIds = usersCopy.map(user => user.id);
-      const friendIds = friends.data.map(friend => friend.userId);
-      const inviteIds = invites.data.map(invite => invite.friendId);
-      const currentUserId = [currentUser.data.id];
-      const otherPeopleIds = _.difference(userIds, friendIds, inviteIds, currentUser.data.id, currentUserId);
-      const otherPeople = users.filter(user => otherPeopleIds.includes(user.id));
-      setOtherPeople(otherPeople);
+      const usersCopy = [ ...users ]
+      const userIds = usersCopy.map((user) => user.id)
+      const friendIds = friends.data.map((friend) => friend.userId)
+      const inviteIds = invites.data.map((invite) => invite.friendId)
+      const currentUserId = [ currentUser.data.id ]
+      const otherPeopleIds = _.difference(
+        userIds,
+        friendIds,
+        inviteIds,
+        currentUser.data.id,
+        currentUserId
+      )
+      const otherPeople = users.filter((user) =>
+        otherPeopleIds.includes(user.id)
+      )
+      setOtherPeople(otherPeople)
     },
     onError: (error) => {
-      console.log("error", error);
-    },
-  });
+      console.log("error", error)
+    }
+  })
 
   // we use react query mutation to change values in front end
-  const mutation = useMutation((id) => addFriend(accessToken, id));
+  const mutation = useMutation((id) => addFriend(accessToken, id))
   const mutationCancelInvites = useMutation((id) =>
     cancelFrRequest(accessToken, id)
-  );
-  const mutationDeleteFriend = useMutation( (id) => removeFriend(accessToken, id))
+  )
+  const mutationDeleteFriend = useMutation((id) =>
+    removeFriend(accessToken, id)
+  )
 
   const sendInvite = async (id) => {
     try {
-      const oldInvited = [...invites.data];
-      const oldOtherPeople = [...otherPeople];
-      const newOtherPeople = otherPeople.filter((user) => user.id !== id);
-      const newInvited = await getSendedRequests(accessToken);
-      
-      queryClient.setQueryData(["invites"], newInvited);
-      setOtherPeople(newOtherPeople);
+      const oldInvited = [ ...invites.data ]
+      const oldOtherPeople = [ ...otherPeople ]
+      const newOtherPeople = otherPeople.filter((user) => user.id !== id)
+      const newInvited = await getSendedRequests(accessToken)
+
+      queryClient.setQueryData([ "invites" ], newInvited)
+      setOtherPeople(newOtherPeople)
 
       mutation.mutate(id, {
         onError: (error) => {
-          console.log("error", error);
-          queryClient.setQueryData(["invites"], oldInvited);
-          queryClient.setQueryData(["invites"], oldInvited);
-          setOtherPeople(oldOtherPeople);
+          console.log("error", error)
+          queryClient.setQueryData([ "invites" ], oldInvited)
+          queryClient.setQueryData([ "invites" ], oldInvited)
+          setOtherPeople(oldOtherPeople)
         },
-        onSuccess: () => queryClient.invalidateQueries("invites"),
-      });
+        onSuccess: () => queryClient.invalidateQueries("invites")
+      })
     } catch (err) {
-      console.log("Adding friend failed", err);
+      console.log("Adding friend failed", err)
     }
-  };
+  }
 
   const deleteFriend = async (friend) => {
     try {
-      const oldFriends = [...friends.data];
-      const oldOtherPeople = [...otherPeople];
-      const newOtherPeople = [...oldOtherPeople, users.data.find((user) => user.id === friend.userId)];
-      const newFriends = oldFriends.filter( (user) => user.id !== friend.id);
-      
+      const oldFriends = [ ...friends.data ]
+      const oldOtherPeople = [ ...otherPeople ]
+      const newOtherPeople = [
+        ...oldOtherPeople,
+        users.data.find((user) => user.id === friend.userId)
+      ]
+      const newFriends = oldFriends.filter((user) => user.id !== friend.id)
+
       setOtherPeople(newOtherPeople)
-      queryClient.setQueryData(["friends"], newFriends);
-      
+      queryClient.setQueryData([ "friends" ], newFriends)
+
       mutationDeleteFriend.mutate(friend.id, {
         onError: (error) => {
-          console.log("error", error);
-          queryClient.setQueryData(["friends"], oldFriends);
-          setOtherPeople(oldOtherPeople);
-        },
+          console.log("error", error)
+          queryClient.setQueryData([ "friends" ], oldFriends)
+          setOtherPeople(oldOtherPeople)
+        }
       })
-      
     } catch (err) {
-      console.log("can't remove friend", err);
+      console.log("can't remove friend", err)
     }
-  };
+  }
 
   const cancelInvite = async (userInvite) => {
     try {
-      const oldInvited = [...invites.data];
-      const oldOtherPeople = [...otherPeople];
+      const oldInvited = [ ...invites.data ]
+      const oldOtherPeople = [ ...otherPeople ]
 
-      const user_users = users.data.find( (user) => user.id === userInvite.friendId);
-      const newOtherPeople = [...otherPeople, user_users];
+      const userUsers = users.data.find(
+        (user) => user.id === userInvite.friendId
+      )
+      const newOtherPeople = [ ...otherPeople, userUsers ]
 
-      let newInvited = [];
-      
-      newInvited = oldInvited.filter((user) => user.friendId !== userInvite.friendId);
-      
-      queryClient.setQueryData(["invites"], newInvited);
-      setOtherPeople(newOtherPeople);
+      let newInvited = []
+
+      newInvited = oldInvited.filter(
+        (user) => user.friendId !== userInvite.friendId
+      )
+
+      queryClient.setQueryData([ "invites" ], newInvited)
+      setOtherPeople(newOtherPeople)
 
       mutationCancelInvites.mutate(userInvite.id, {
         onError: (error) => {
-          console.log("error", error);
-          queryClient.setQueryData(["invites"], oldInvited);
-          queryClient.setQueryData(["invites"], oldInvited);
-          setOtherPeople(oldOtherPeople);
-        },
-      });
-      
+          console.log("error", error)
+          queryClient.setQueryData([ "invites" ], oldInvited)
+          queryClient.setQueryData([ "invites" ], oldInvited)
+          setOtherPeople(oldOtherPeople)
+        }
+      })
     } catch (err) {
-      console.log("Cancel friend invite failed", err);
+      console.log("Cancel friend invite failed", err)
     }
-  };
+  }
 
-  let [fontsLoaded] = useFonts({
-    Poppins_600SemiBold,
-    Poppins_400Regular,
-  });
+  const [ fontsLoaded ] = useFonts({
+    Poppins600SemiBold,
+    Poppins400Regular
+  })
 
   if (!fontsLoaded) {
-    return null;
+    return null
   }
 
   return (
@@ -190,7 +198,7 @@ const PageFriends = () => {
           />
         }
       >
-        <Bg style={styles.wave}/>
+        <Bg style={styles.wave} />
         <View>
           <Text style={styles.title}>Friends</Text>
           {!friends.isLoading && friends.data.length > 0 ? (
@@ -213,9 +221,7 @@ const PageFriends = () => {
               </View>
             ))
           ) : (
-            <Text style={styles.description}>
-              No friends yet!
-            </Text>
+            <Text style={styles.description}>No friends yet!</Text>
           )}
         </View>
 
@@ -271,40 +277,25 @@ const PageFriends = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default PageFriends;
+export default PageFriends
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
-  buttons: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  surface: {
-    borderRadius: 5,
-    paddingRight: 10,
-    marginHorizontal: 10,
-    marginVertical: 6,
-    fontFamily: "Poppins_600SemiBold",
-  },
-  touchcard: {},
   pfp: {
     height: 45,
     width: 45,
     borderWidth: 1,
     borderColor: "#CCCCCC",
     borderRadius: 999,
-    backgroundColor: "green",
+    backgroundColor: "green"
   },
-  screen: {
-    backgroundColor: "white",
-  },
+  screen: { backgroundColor: "white" },
   card: {
     flex: 1,
     justifyContent: "center",
@@ -315,42 +306,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#CCCCCC",
     borderRadius: 8,
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
   joined: {
     flex: 1,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "center"
   },
   title: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     fontSize: 16,
     color: "#052D40",
     paddingLeft: 12,
-    width: "70%",
+    width: "70%"
   },
   description: {
-    fontFamily: "Poppins_500Medium",
+    fontFamily: "Poppins500Medium",
     margin: 0,
     padding: 0,
     fontSize: 12,
     color: "#052D40",
     paddingVertical: 4,
-    paddingLeft: 12,
-  },
-  date: {
-    fontFamily: "Poppins_700Bold",
-    margin: 0,
-    padding: 0,
-    fontSize: 12,
-    color: "#031D29",
-  },
-  icon: {
-    marginHorizontal: 8,
+    paddingLeft: 12
   },
   wave: {
     width: "100%",
-    position: "absolute",
+    position: "absolute"
   },
   wrapperTop: {
     flex: 1,
@@ -358,34 +339,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    margin: 8,
-  },
-  wrapperBottom: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 4,
-  },
-  moodtitle: {
-    fontFamily: "Poppins_600SemiBold",
-    fontSize: 20,
-    marginVertical: 8,
-    color: "#031D29",
-    paddingLeft: 20,
-  },
-  btnPrimary: {
-    backgroundColor: "#419FD9",
-    borderRadius: 999,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-  },
-  btnSecondary: {},
-  buttontext: {
-    fontFamily: "Poppins_600SemiBold",
-    fontSize: 12,
-    margin: 8,
-    color: "white",
-  },
-});
+    margin: 8
+  }
+})

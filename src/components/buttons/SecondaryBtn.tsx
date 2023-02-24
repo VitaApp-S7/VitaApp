@@ -1,19 +1,15 @@
-import React, { useState } from "react";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text, StyleSheet, Pressable, TouchableOpacity } from "react-native";
+import React from "react"
+import { Text, StyleSheet, TouchableOpacity } from "react-native"
 
 const SecondaryBtn = (props) => {
   return (
-    <TouchableOpacity
-      onPress={props.onPress}
-      style={styles.SecondaryBtn}
-    >
+    <TouchableOpacity onPress={props.onPress} style={styles.SecondaryBtn}>
       <Text style={styles.buttontext}>{props.text}</Text>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
-export default SecondaryBtn;
+export default SecondaryBtn
 
 const styles = StyleSheet.create({
   SecondaryBtn: {
@@ -26,9 +22,9 @@ const styles = StyleSheet.create({
     borderColor: "#FA9901"
   },
   buttontext: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     fontSize: 12,
     margin: 8,
-    color: "#FA9901",
-  },
-});
+    color: "#FA9901"
+  }
+})

@@ -1,118 +1,109 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-} from "react-native";
+import React, { useContext, useEffect, useState } from "react"
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native"
 import {
   getAllActivities,
   startActivity,
   cancelActivity,
   getAllActiveActivities,
   completeActivity,
-  getAllCompletedActivities,
-  getAllMoodboosterRequests,
-} from "../../services/moodboosterService";
+  getAllMoodboosterRequests
+} from "../../services/moodboosterService"
 
-import { Card, IconButton, Button, Paragraph } from "react-native-paper";
+import { Card, Paragraph } from "react-native-paper"
 import {
   useFonts,
-  Poppins_600SemiBold,
-  Poppins_400Regular,
-  Poppins_500Medium,
-} from "@expo-google-fonts/poppins";
+  Poppins_600SemiBold as Poppins600SemiBold,
+  Poppins_400Regular as Poppins400Regular,
+  Poppins_500Medium as Poppins500Medium
+} from "@expo-google-fonts/poppins"
 
-import { AuthContext } from "../../context/AuthContext";
-import Toast from "react-native-toast-message";
-import ContentLoader, { Rect, Circle, Path } from "react-content-loader/native";
-import PrimaryBtn from "../buttons/PrimaryBtn";
-import SecondaryBtn from "../buttons/SecondaryBtn";
-import InviteFriends from "../../components/challengeFriends/inviteFriends";
-import { MoodboosterContext } from "../../screens/page-home/moodboosterContext";
+import { AuthContext } from "../../context/AuthContext"
+import Toast from "react-native-toast-message"
+import ContentLoader, { Rect } from "react-content-loader/native"
+import PrimaryBtn from "../buttons/PrimaryBtn"
+import SecondaryBtn from "../buttons/SecondaryBtn"
+import InviteFriends from "../../components/challengeFriends/inviteFriends"
+import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
 
 const Moodbooster = ({ changeMood }) => {
-  const [data, setData] = useState([]);
-  const [activeData, setActiveData] = useState([]);
-  const [disabledState, setDisabledState] = useState(false);
-  const [loadingState, setLoadingState] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const { requestData, setRequestData } =
-    useContext(MoodboosterContext);
+  const [ data, setData ] = useState([])
+  const [ activeData, setActiveData ] = useState([])
+  const [ disabledState, setDisabledState ] = useState(false)
+  const [ loadingState, setLoadingState ] = useState(false)
+  const [ refreshing, setRefreshing ] = useState(false)
+  const { setRequestData } = useContext(MoodboosterContext)
   //TOAST AFTER COMPLETE
   const completedToast = (toastData) => {
     Toast.show({
       type: "success",
       text1: "Completed moodbooster!",
-      text2: toastData.moodbooster.description,
-    });
-  };
+      text2: toastData.moodbooster.description
+    })
+  }
   const cancelledToast = (toastData) => {
     Toast.show({
       type: "error",
       text1: "Cancelled moodbooster!",
-      text2: toastData.moodbooster.description,
-    });
-  };
+      text2: toastData.moodbooster.description
+    })
+  }
 
   const handleActivities = async () => {
-    var activeActivities = await getAllActiveActivities(accessToken);
-    var activities = await getAllActivities(accessToken);
-    const allMoodboosterRequests = await getAllMoodboosterRequests(accessToken);
+    const activeActivities = await getAllActiveActivities(accessToken)
+    const activities = await getAllActivities(accessToken)
+    const allMoodboosterRequests = await getAllMoodboosterRequests(accessToken)
     if (allMoodboosterRequests.length === 0) {
-      setRequestData(0);
-    } else { 
-      setRequestData(allMoodboosterRequests.length);
+      setRequestData(0)
+    } else {
+      setRequestData(allMoodboosterRequests.length)
     }
     // console.log(activeActivities);
 
-    setData(await activities);
-    setActiveData(await activeActivities);
+    setData(await activities)
+    setActiveData(await activeActivities)
     if (await activeActivities[0]) {
-      setDisabledState(true);
-      setLoadingState(false);
+      setDisabledState(true)
+      setLoadingState(false)
+    } else {
+      setDisabledState(false)
     }
-    else {
-      setDisabledState(false);
-    }
-    changeMood();
-  };
+    changeMood()
+  }
 
   useEffect(() => {
-    handleActivities();
-  }, []);
-  const { accessToken } = useContext(AuthContext);
+    handleActivities()
+  }, [])
+  const { accessToken } = useContext(AuthContext)
 
-  let [fontsLoaded] = useFonts({
-    Poppins_600SemiBold,
-    Poppins_400Regular,
-    Poppins_500Medium,
-  });
+  const [ fontsLoaded ] = useFonts({
+    Poppins600SemiBold,
+    Poppins400Regular,
+    Poppins500Medium
+  })
 
   if (!fontsLoaded) {
-    return null;
+    return null
   }
 
   const handleToStart = async (index) => {
-    setLoadingState(true);
-    await startActivity(data[index].id, accessToken);
-    handleActivities();
-    setDisabledState(true);
-  };
+    setLoadingState(true)
+    await startActivity(data[index].id, accessToken)
+    handleActivities()
+    setDisabledState(true)
+  }
   const handleToComplete = async (index) => {
-    await completeActivity(activeData[index].id, accessToken);
-    handleActivities();
-    setDisabledState(false);
-    completedToast(activeData[index]);
-    changeMood(activeData[index].moodbooster.points);
-  };
+    await completeActivity(activeData[index].id, accessToken)
+    handleActivities()
+    setDisabledState(false)
+    completedToast(activeData[index])
+    changeMood(activeData[index].moodbooster.points)
+  }
   const handleToCancel = async (index) => {
-    await cancelActivity(activeData[index].id, accessToken);
-    cancelledToast(activeData[index]);
-    handleActivities();
-    setDisabledState(false);
-  };
+    await cancelActivity(activeData[index].id, accessToken)
+    cancelledToast(activeData[index])
+    handleActivities()
+    setDisabledState(false)
+  }
 
   const ActiveCards = () => (
     <View>
@@ -120,11 +111,7 @@ const Moodbooster = ({ changeMood }) => {
         <Card
           style={styles.surface}
           mode="outlined"
-          theme={{
-            colors: {
-              outline: "rgba(0, 0, 0, 0.2)",
-            },
-          }}
+          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
           key={index}
         >
           <Card.Content>
@@ -147,18 +134,14 @@ const Moodbooster = ({ changeMood }) => {
         </Card>
       ))}
     </View>
-  );
+  )
   const MainCard = () => (
     <View>
       {data.map((item, index) => (
         <Card
           style={styles.surface}
           mode="outlined"
-          theme={{
-            colors: {
-              outline: "rgba(0, 0, 0, 0.2)",
-            },
-          }}
+          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
           key={index}
         >
           <Card.Content>
@@ -174,7 +157,7 @@ const Moodbooster = ({ changeMood }) => {
         </Card>
       ))}
     </View>
-  );
+  )
 
   return (
     <ScrollView
@@ -200,33 +183,26 @@ const Moodbooster = ({ changeMood }) => {
         </ContentLoader>
       )}
     </ScrollView>
-  );
-};
+  )
+}
 const styles = StyleSheet.create({
   buttons: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10,
+    paddingRight: 10
   },
   description: {
-    fontFamily: "Poppins_500Medium",
+    fontFamily: "Poppins500Medium",
     fontSize: 16,
-    color: "#031D29",
+    color: "#031D29"
   },
   surface: {
     marginHorizontal: 8,
     marginVertical: 4,
-    fontFamily: "Poppins_600SemiBold",
-    backgroundColor: "#FFFFFF",
-  },
-  btntext: {
-    fontSize: 12,
-    fontFamily: "Poppins_700Bold",
-  },
-  container: {
-    flex: 1,
-  },
-});
+    fontFamily: "Poppins600SemiBold",
+    backgroundColor: "#FFFFFF"
+  }
+})
 
-export default Moodbooster;
+export default Moodbooster

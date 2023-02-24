@@ -1,52 +1,48 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import PageHome from "../screens/page-home/page-home";
-import PageFriends from "../screens/page-friends/page-friends";
-import Feed from "./FeedNav";
-import Home from "./HomeNav";
-import React from "react";
-import FriendsNav from "./FriendsNav";
-import { useNavigation } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import Feed from "./FeedNav"
+import Home from "./HomeNav"
+import React from "react"
+import FriendsNav from "./FriendsNav"
 
 import {
   useFonts,
-  Poppins_600SemiBold,
-  Poppins_400Regular,
-} from "@expo-google-fonts/poppins";
+  Poppins_600SemiBold as Poppins600SemiBold,
+  Poppins_400Regular as Poppins400Regular
+} from "@expo-google-fonts/poppins"
 
 export const InAppTabNav = () => {
-  const Tab = createBottomTabNavigator();
-  const navigation = useNavigation();
+  const Tab = createBottomTabNavigator()
 
-  let [fontsLoaded] = useFonts({
-    Poppins_600SemiBold,
-    Poppins_400Regular,
-  });
+  const [ fontsLoaded ] = useFonts({
+    Poppins600SemiBold,
+    Poppins400Regular
+  })
 
   return (
     <Tab.Navigator
       initialRouteName="Boosters"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+          let iconName
           if (route.name === "Boosters") {
-            iconName = focused ? "trending-up" : "trending-up-outline";
+            iconName = focused ? "trending-up" : "trending-up-outline"
           } else if (route.name === "Feed") {
-            iconName = focused ? "newspaper" : "newspaper-outline";
+            iconName = focused ? "newspaper" : "newspaper-outline"
           } else if (route.name === "Friends") {
-            iconName = focused ? "ios-person" : "ios-person-outline";
+            iconName = focused ? "ios-person" : "ios-person-outline"
           }
 
           // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={size} color={color} />
         },
         tabBarActiveTintColor: "#0A5172",
         tabBarInactiveTintColor: "gray",
         tabBarLabelStyle: {
-          fontFamily: "Poppins_600SemiBold",
-          fontSize: 11,
+          fontFamily: "Poppins600SemiBold",
+          fontSize: 11
         },
-        tabBarStyle: {},
+        tabBarStyle: {}
       })}
     >
       <Tab.Screen
@@ -65,5 +61,5 @@ export const InAppTabNav = () => {
         options={{ headerShown: true }}
       />
     </Tab.Navigator>
-  );
-};
+  )
+}

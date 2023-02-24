@@ -1,20 +1,19 @@
-import React, { useState } from "react";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text, StyleSheet, Pressable, Touchable, TouchableHighlight, TouchableOpacity } from "react-native";
+import React from "react"
+import { Text, StyleSheet, TouchableOpacity } from "react-native"
 
 const PrimaryBtn = (props) => {
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      style={ props.disabled ? styles.disabledBtn : styles.PrimaryBtn}
+      style={props.disabled ? styles.disabledBtn : styles.PrimaryBtn}
       disabled={props.disabled}
     >
       <Text style={styles.buttontext}>{props.text}</Text>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
-export default PrimaryBtn;
+export default PrimaryBtn
 
 const styles = StyleSheet.create({
   PrimaryBtn: {
@@ -22,7 +21,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 24,
     paddingVertical: 8,
-    margin: 4,
+    margin: 4
   },
   disabledBtn: {
     backgroundColor: "#419FD9",
@@ -33,9 +32,9 @@ const styles = StyleSheet.create({
     margin: 4
   },
   buttontext: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     fontSize: 12,
     margin: 8,
-    color: "white",
-  },
-});
+    color: "white"
+  }
+})

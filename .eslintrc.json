@@ -1,0 +1,72 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "react-native/react-native": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "tsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "react-native"],
+  "rules": {
+    "react-native/no-unused-styles": 2,
+    "react-native/split-platform-components": 2,
+    "no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true,
+        "destructuredArrayIgnorePattern": "[A-Z]",
+        "caughtErrors": "none"
+      }
+    ],
+    "react-native/no-inline-styles": 0,
+    "react-native/no-raw-text": 2,
+    "react/prop-types": "off",
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "semi": ["error", "never"],
+    "quotes": ["error", "double"],
+    "indent": ["error", 2],
+    "object-property-newline": "error",
+    "comma-dangle": ["error", "never"],
+    "no-useless-computed-key": "error",
+    "array-bracket-newline": ["error", { "multiline": true }],
+    "object-curly-newline": ["error", { "multiline": true }],
+    "object-curly-spacing": [
+      "error",
+      "always",
+      {
+        "arraysInObjects": false,
+        "objectsInObjects": false
+      }
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "always",
+      {
+        "objectsInArrays": false,
+        "arraysInArrays": false
+      }
+    ],
+    "camelcase": ["error", { "properties": "never" }],
+    "prefer-template": "error",
+    "import/no-unresolved": "off"
+  }
+}
