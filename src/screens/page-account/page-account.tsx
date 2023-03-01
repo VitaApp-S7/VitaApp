@@ -1,34 +1,25 @@
-import { useContext } from "react";
-import {
-  View,
-  Text,
-  ImageBackground,
-  StyleSheet,
-  Image,
-  ScrollView,
-  Button,
-  TouchableOpacity,
-} from "react-native";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useContext } from "react"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { AuthContext } from "../../context/AuthContext"
 
 const PageAccount = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext)
 
   return (
-        <View style={styles.bottomcontainer}>
-          <TouchableOpacity
-            style={styles.loginbutton}
-            onPress={() => {
-              logout();
-            }}
-          >
-            <Text style={styles.buttontext}>LOG OUT</Text>
-          </TouchableOpacity>
-        </View>
-  );
-};
+    <View style={styles.bottomcontainer}>
+      <TouchableOpacity
+        style={styles.loginbutton}
+        onPress={() => {
+          logout()
+        }}
+      >
+        <Text style={styles.buttontext}>LOG OUT</Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
 
-export default PageAccount;
+export default PageAccount
 
 const styles = StyleSheet.create({
   loginbutton: {
@@ -38,17 +29,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
     width: "80%",
-    margin: 4,
+    margin: 4
   },
   buttontext: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     fontSize: 14,
     margin: 8,
-    color: "white",
+    color: "white"
   },
   bottomcontainer: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    width: "100%",
-  },
-});
+    width: "100%"
+  }
+})

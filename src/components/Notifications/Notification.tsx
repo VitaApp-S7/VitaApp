@@ -1,94 +1,87 @@
-import { StatusBar } from 'expo-status-bar';
-import React, {useEffect, useRef,useState} from 'react';
-import { StyleSheet, Platform ,Button, Text, View } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
-import * as Device from 'expo-device';
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useEffect, useRef, useState } from "react"
+import { StyleSheet, Platform, View } from "react-native"
+import * as Notifications from "expo-notifications"
+import * as Permissions from "expo-permissions"
+import * as Device from "expo-device"
 
-import {
-  setUserExpoPushToken
-} from "../../services/NotificationService";
-
+import { setUserExpoPushToken } from "../../services/NotificationService"
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+    shouldSetBadge: false
+  })
+})
 
 export default function TestPage() {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
-  
+  const [ expoPushToken, setExpoPushToken ] = useState("")
+  const [ notification, setNotification ] = useState(false)
+  const notificationListener = useRef()
+  const responseListener = useRef()
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token=>console.log(token));
-
+    registerForPushNotificationsAsync().then((token) => console.log(token))
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
+      Notifications.removeNotificationSubscription(notificationListener.current)
+      Notifications.removeNotificationSubscription(responseListener.current)
+    }
   }, [])
 
-  return (
-
-   <View></View>
-  );
+  return <View></View>
 }
 
+// eslint-disable-next-line no-unused-vars
 async function schedulePushNotification() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "You've got mail! 📬",
-      body: 'Here is the notification body',
-      data: { data: 'goes here' },
+      body: "Here is the notification body",
+      data: { data: "goes here" }
     },
-    trigger: { seconds: 2 },
-  });
+    trigger: { seconds: 2 }
+  })
 }
 
 async function registerForPushNotificationsAsync() {
-  let token;
+  let token
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
       importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
+      vibrationPattern: [ 0, 250, 250, 250 ],
+      lightColor: "#FF231F7C"
+    })
   }
 
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
     }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!")
+      return
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    token = (await Notifications.getExpoPushTokenAsync()).data
   } else {
-    alert('Must use physical device for Push Notifications');
+    alert("Must use physical device for Push Notifications")
   }
 
-  return token;
+  return token
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     alignItems: "center",
+//     justifyContent: "center"
+//   }
+// })

@@ -1,16 +1,10 @@
-import {
-  View,
-  Text,
-  ImageBackground,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from "react-native";
-import parseDate from "../../services/dataParser";
-import OpenURLButton from "../../components/OpenURLButton";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
+import React from "react"
+import parseDate from "../../services/dataParser"
+import OpenURLButton from "../../components/OpenURLButton"
 
 const PageNewsDetails = ({ route }) => {
-  const { item } = route.params;
+  const { item } = route.params
 
   return (
     <ScrollView style={styles.screen}>
@@ -27,49 +21,42 @@ const PageNewsDetails = ({ route }) => {
         <Text style={styles.description}>{item.description}</Text>
       </View>
     </ScrollView>
-  );
-};
+  )
+}
 
-export default PageNewsDetails;
+export default PageNewsDetails
 
 const styles = StyleSheet.create({
   header: {
     width: "100%",
-    height: 200,
+    height: 200
   },
-  wrapper: {
-    margin: 16,
-  },
+  wrapper: { margin: 16 },
   title: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     margin: 0,
     padding: 0,
     fontSize: 20,
-    color: "#031D29",
+    color: "#031D29"
   },
   description: {
-    fontFamily: "Poppins_500Medium",
+    fontFamily: "Poppins500Medium",
     margin: 0,
     padding: 0,
     fontSize: 12,
     color: "#052D40",
-    paddingVertical: 4,
+    paddingVertical: 4
   },
   date: {
-    fontFamily: "Poppins_700Bold",
+    fontFamily: "Poppins700Bold",
     margin: 0,
     padding: 0,
     fontSize: 12,
-    color: "#031D29",
+    color: "#031D29"
   },
   screen: {
     backgroundColor: "white",
-    height: "100%",
-  },
-  contentimage: {
-    width: "100%",
-    height: 150,
-    paddingVertical: 4,
+    height: "100%"
   },
   wrapperTop: {
     flex: 1,
@@ -77,6 +64,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    paddingVertical: 4,
-  },
-});
+    paddingVertical: 4
+  }
+})

@@ -1,27 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState } from "react"
 
 const MoodPointsContext = React.createContext()
 const MoodUpdateContext = React.createContext()
 
 export function useMoodPoints() {
-    return useContext(MoodPointsContext)
+  return useContext(MoodPointsContext)
 }
 
 export function useMoodPointsUpdate() {
-    return useContext(MoodUpdateContext)
+  return useContext(MoodUpdateContext)
 }
 
 export function MoodProvider({ children }) {
-    const [points, SetPoints] = useState(10);
+  const [ points, SetPoints ] = useState(10)
 
 
 
-    return (
-        <MoodPointsContext.Provider value={points} >
-            <MoodUpdateContext.Provider value={SetPoints}>
-                {children}
-            </MoodUpdateContext.Provider>
-        </MoodPointsContext.Provider>
-    )
+  return (
+    <MoodPointsContext.Provider value={points} >
+      <MoodUpdateContext.Provider value={SetPoints}>
+        {children}
+      </MoodUpdateContext.Provider>
+    </MoodPointsContext.Provider>
+  )
 }
 

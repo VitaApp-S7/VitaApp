@@ -1,19 +1,15 @@
-import React, { useState } from "react";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text, StyleSheet, Pressable, TouchableOpacity } from "react-native";
+import React from "react"
+import { Text, StyleSheet, TouchableOpacity } from "react-native"
 
 const TertiaryBtn = (props) => {
   return (
-    <TouchableOpacity
-      onPress={props.onPress}
-      style={styles.TertiaryBtn}
-    >
+    <TouchableOpacity onPress={props.onPress} style={styles.TertiaryBtn}>
       <Text style={styles.buttontext}>{props.text}</Text>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
-export default TertiaryBtn;
+export default TertiaryBtn
 
 const styles = StyleSheet.create({
   TertiaryBtn: {
@@ -23,12 +19,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
     // width: "40%",
-    margin: 4,
+    margin: 4
   },
   buttontext: {
-    fontFamily: "Poppins_600SemiBold",
+    fontFamily: "Poppins600SemiBold",
     fontSize: 12,
     margin: 8,
-    color: "white",
-  },
-});
+    color: "white"
+  }
+})

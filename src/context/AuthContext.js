@@ -1,26 +1,30 @@
-import React, { createContext, useState } from "react";
-import * as SecureStore from 'expo-secure-store';
+import React, { createContext, useState } from "react"
+import * as SecureStore from "expo-secure-store"
 
-export const AuthContext = createContext(); 
+export const AuthContext = createContext() 
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
     
-    const [accessToken, setAccessToken] = useState(null);
+  const [ accessToken, setAccessToken ] = useState(null)
 
 
-    const login = async (token) => {
-        setAccessToken(token);
-    }
+  const login = async (token) => {
+    setAccessToken(token)
+  }
     
-    const logout = async () => {
-        await SecureStore.deleteItemAsync("User")
-        await SecureStore.deleteItemAsync("FirstLogin")
-        setAccessToken(null);
-    }
+  const logout = async () => {
+    await SecureStore.deleteItemAsync("User")
+    await SecureStore.deleteItemAsync("FirstLogin")
+    setAccessToken(null)
+  }
 
-    return (
-       <AuthContext.Provider value={{login, logout, accessToken}}>
-            {children}
-       </AuthContext.Provider>
-    )
+  return (
+    <AuthContext.Provider value={{
+      login,
+      logout,
+      accessToken 
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
