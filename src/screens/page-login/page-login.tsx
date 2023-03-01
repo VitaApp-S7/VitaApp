@@ -38,7 +38,7 @@ const PageLogin = () => {
         "profile",
         "email",
         "offline_access",
-        "api://82b5a9e1-eaa2-4ee8-a3a0-7d3c41a4a1b5/User.All"
+        "api://215b09e4-54cb-49aa-837b-546f73fc29f6/User.All",
       ],
       redirectUri: makeRedirectUri({
         scheme:
