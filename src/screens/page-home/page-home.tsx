@@ -68,7 +68,7 @@ const PageHome = ({ navigation }) => {
   }
   const moodUp = () => {
     if (changeMood >= 20) {
-      setChangeMood(20);
+      setChangeMood(20)
     } else {
       setChangeMood(changeMood + 1)
     }
