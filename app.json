@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "yannick0430",
+    "name": "GAC_VitaApp",
     "scheme": "gacprjscheme",
     "slug": "stuff",
     "version": "1.0.0",
@@ -23,14 +23,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yannick0430.gacproject"
+      "bundleIdentifier": "nl.gac.vitaapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.yannick0430.gacproject"
+      "package": "nl.gac.vitaapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
