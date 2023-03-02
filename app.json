@@ -1,7 +1,10 @@
 {
   "expo": {
     "name": "GAC_VitaApp",
-    "scheme": "gacprjscheme",
+    "scheme": "nl.gac.vitaapp",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "slug": "stuff",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,6 +12,8 @@
     "notification": {
       "icon": "./assets/logo.png"
     },
+    "currentFullName": "@vitaapp/stuff",
+    "originalFullName": "@vitaapp/stuff",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -16,7 +21,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/5d6942ac-e779-47ab-885a-7d876e3ef01a"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -40,6 +46,7 @@
         "projectId": "5d6942ac-e779-47ab-885a-7d876e3ef01a"
       }
     },
-    "owner": "vitaapp"
+    "owner": "vitaapp",
+    "plugins": []
   }
 }
