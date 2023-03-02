@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "GAC_VitaApp",
-    "scheme": "gacprjscheme",
+    "scheme": "nl.gac.vitaapp",
     "slug": "stuff",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,21 +16,26 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/5d6942ac-e779-47ab-885a-7d876e3ef01a"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "nl.gac.vitaapp"
+      "bundleIdentifier": "nl.gac.vitaapp",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "nl.gac.vitaapp"
+      "package": "nl.gac.vitaapp",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +45,7 @@
         "projectId": "5d6942ac-e779-47ab-885a-7d876e3ef01a"
       }
     },
-    "owner": "vitaapp"
+    "owner": "vitaapp",
+    "plugins": []
   }
 }

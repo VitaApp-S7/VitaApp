@@ -5,15 +5,12 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "prebuildCommand": "prebuild --npm"
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "prebuildCommand": "prebuild --npm"
+      "distribution": "internal"
     },
     "production": {
-      "prebuildCommand": "prebuild --npm"
     }
   },
   "submit": {
