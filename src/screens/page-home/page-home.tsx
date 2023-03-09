@@ -15,36 +15,12 @@ import {
   Poppins_700Bold as Poppins700Bold,
   Poppins_600SemiBold as Poppins600SemiBold
 } from "@expo-google-fonts/poppins"
-import { getUser, updateUserMood } from "../../services/userService"
-import { AuthContext } from "../../context/AuthContext"
 import ChallengeFriends from "../../components/challengeFriends/challengeFriends"
-import { MoodboosterContext } from "./moodboosterContext"
-import * as SecureStore from "expo-secure-store"
 import ResponsiveHeader from "../../components/responsiveHeader/responsiveHeader"
 
 // eslint-disable-next-line no-unused-vars
-const PageHome = ({ navigation }) => {
-  const [ name, setName ] = useState("")
-  const [ requestData, setRequestData ] = useState(0)
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-
-  const [ mood, setMood ] = useState(10)
+const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
-  const [ refreshAction, setRefreshAction ] = useState(() => null)
-  const { accessToken } = useContext(AuthContext)
-
-  const userMood = async () => {
-    const userData = await getUser(accessToken)
-    const currentUser = JSON.parse(await SecureStore.getItemAsync("User"))
-    setName(currentUser.name)
-    setMood(userData.mood)
-    console.log("userrrrrr", userData, currentUser)
-  }
-
-  useEffect(() => {
-    userMood()
-    console.log(mood)
-  }, [])
 
   const [ fontsLoaded ] = useFonts({
     Poppins500Medium,
@@ -57,28 +33,21 @@ const PageHome = ({ navigation }) => {
   }
 
   return (
-    <MoodboosterContext.Provider
-      value={{
-        requestData,
-        setRequestData
-      }}
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => setRefreshing(true)}
+        />
+      }
     >
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => refreshAction}
-          />
-        }
-      >
-        <ResponsiveHeader userMood={() => userMood} moodPoints={mood} />
-        <View style={styles.moodboostertop}>
-          <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
-          <ChallengeFriends />
-        </View>
-        <Moodbooster refreshAction={setRefreshAction} changeMood={userMood} />
-      </ScrollView>
-    </MoodboosterContext.Provider>
+      <ResponsiveHeader />
+      <View style={styles.moodboostertop}>
+        <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
+        <ChallengeFriends />
+      </View>
+      <Moodbooster refresh={refreshing} setRefreshing={setRefreshing} />
+    </ScrollView>
   )
 }
 

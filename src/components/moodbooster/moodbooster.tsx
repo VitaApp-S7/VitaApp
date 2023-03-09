@@ -1,12 +1,17 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react"
 import { View, StyleSheet } from "react-native"
 import {
   getAllActivities,
   startActivity,
   cancelActivity,
   getAllActiveActivities,
-  completeActivity,
-  getAllMoodboosterRequests
+  completeActivity
 } from "../../services/moodboosterService"
 
 import { Card, Paragraph, Title } from "react-native-paper"
@@ -23,14 +28,18 @@ import ContentLoader, { Rect } from "react-content-loader/native"
 import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
-import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
+import { MoodPointsContext } from "../PopUps/MoodPointsContext"
+// import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
+interface Moodbooster {
+  refresh: boolean
+  setRefreshing: Dispatch<SetStateAction<boolean>>
+}
 
-const Moodbooster = ({ refreshAction, changeMood }) => {
+const Moodbooster = (props: Moodbooster) => {
   const [ data, setData ] = useState([])
   const [ activeData, setActiveData ] = useState([])
   const [ disabledState, setDisabledState ] = useState(false)
-  const [ loadingState, setLoadingState ] = useState(false)
-  const { setRequestData } = useContext(MoodboosterContext)
+  const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
   //TOAST AFTER COMPLETE
   const completedToast = (toastData) => {
     Toast.show({
@@ -50,31 +59,31 @@ const Moodbooster = ({ refreshAction, changeMood }) => {
   const handleActivities = async () => {
     const activeActivities = await getAllActiveActivities(accessToken)
     const activities = await getAllActivities(accessToken)
-    const allMoodboosterRequests = await getAllMoodboosterRequests(accessToken)
-    if (allMoodboosterRequests.length === 0) {
-      setRequestData(0)
-    } else {
-      setRequestData(allMoodboosterRequests.length)
-    }
     // console.log(activeActivities);
 
-    setData(await activities)
-    setActiveData(await activeActivities)
-    if (await activeActivities[0]) {
+    setData(activities)
+
+    setActiveData(activeActivities)
+    if (activeActivities[0]) {
       setDisabledState(true)
-      setLoadingState(false)
     } else {
       setDisabledState(false)
     }
-    changeMood()
+    console.log(activities)
   }
 
   useEffect(() => {
-    refreshAction(handleActivities())
     handleActivities()
   }, [])
-  const { accessToken } = useContext(AuthContext)
 
+  useEffect(() => {
+    if (props.refresh === true) {
+      handleActivities()
+      props.setRefreshing(false)
+    }
+  }, [ props.refresh ])
+
+  const { accessToken } = useContext(AuthContext)
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
     Poppins400Regular,
@@ -86,7 +95,6 @@ const Moodbooster = ({ refreshAction, changeMood }) => {
   }
 
   const handleToStart = async (index) => {
-    setLoadingState(true)
     await startActivity(data[index].id, accessToken)
     handleActivities()
     setDisabledState(true)
@@ -96,7 +104,7 @@ const Moodbooster = ({ refreshAction, changeMood }) => {
     handleActivities()
     setDisabledState(false)
     completedToast(activeData[index])
-    changeMood(activeData[index].moodbooster.points)
+    setMoodPoints(moodPoints + activeData[index].moodbooster.points)
   }
   const handleToCancel = async (index) => {
     await cancelActivity(activeData[index].id, accessToken)
@@ -161,8 +169,7 @@ const Moodbooster = ({ refreshAction, changeMood }) => {
   )
 
   return (
-    <View
-    >
+    <View>
       <ActiveCards />
       {data[0] ? (
         <MainCard />

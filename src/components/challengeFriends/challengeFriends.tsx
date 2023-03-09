@@ -20,7 +20,6 @@ import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import { Card, Paragraph } from "react-native-paper"
 import Toast from "react-native-toast-message"
-import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
 
 const challengeFriends = () => {
   const [ isModalVisible, setModalVisible ] = useState(false)
@@ -28,7 +27,6 @@ const challengeFriends = () => {
   // const [dataState, setDataState] = useState(false);
   const [ friends, setFriends ] = useState([])
   // const [moodboosterRequests, setMoodboosterRequests] = useState(0);
-  const { requestData, setRequestData } = useContext(MoodboosterContext)
   const cancelledToast = (toastData) => {
     Toast.show({
       type: "error",
@@ -41,6 +39,13 @@ const challengeFriends = () => {
       text1: `Accepted invitation from ${toastData}`
     })
   }
+
+  useEffect(() => {
+    handleActivities()
+    return () => {
+      return
+    }
+  }, [])
 
   const toggleModalOn = () => {
     setModalVisible(!isModalVisible)
@@ -68,18 +73,11 @@ const challengeFriends = () => {
     try {
       const res = await getAllMoodboosterRequests(accessToken)
 
-      if (res.length === 0) {
-        setRequestData(0)
-      } else {
-        setRequestData(res.length)
-      }
       return res
     } catch (err) {
       console.log(err)
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  useEffect(() => {}, [])
 
   const FriendsList = () => (
     <ScrollView>
@@ -120,7 +118,7 @@ const challengeFriends = () => {
   return (
     <View>
       <TouchableOpacity onPress={toggleModalOn} style={styles.friendsbtn}>
-        <Text style={styles.buttontext}>{requestData}</Text>
+        <Text style={styles.buttontext}>{friends?.length ?? 0}</Text>
         <Ionicons style={styles.icon} name="people" size={24} color="#052D40" />
       </TouchableOpacity>
       <Modal isVisible={isModalVisible} style={styles.modal}>
