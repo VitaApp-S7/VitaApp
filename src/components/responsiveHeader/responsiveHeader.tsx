@@ -6,8 +6,8 @@ import {
   View
 } from "react-native"
 import StartupMood from "../PopUps/StartupMood"
-import { Text } from "react-native-paper"
 import Modal from "react-native-modal"
+import { Text } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import TertiaryBtn from "../buttons/TertiaryBtn"
 import React, { useContext, useState } from "react"
@@ -15,60 +15,62 @@ import { updateUserMood } from "../../services/userService"
 import { AuthContext } from "../../context/AuthContext"
 import { MoodPointsContext } from "../PopUps/MoodPointsContext"
 
-export interface ResponsiveHeader {
-  name: string
-  moodPoints: number
-  scrollOffset?: number
-}
-
-const ResponsiveHeader = (props: ResponsiveHeader) => {
-  const [ changeMood, setChangeMood ] = useState(0)
-  const [ isModalVisible, setModalVisible ] = useState(false)
-  const { accessToken } = useContext(AuthContext)
+const ResponsiveHeader = () => {
+  const [ isModalVisible, setModalVisible ] = useState<boolean>(false)
   const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
-
-  const moodDown = () => {
-    if (changeMood <= 0) {
-      setChangeMood(0)
-    } else {
-      setChangeMood(changeMood - 1)
-    }
-  }
-  const moodUp = () => {
-    if (changeMood >= 20) {
-      setChangeMood(20)
-    } else {
-      setChangeMood(changeMood + 1)
-    }
-  }
-  const toggleModalOn = () => {
-    setChangeMood(moodPoints)
+  const { accessToken, user } = useContext(AuthContext)
+  const UpdateUserMood = async () => {
+    updateUserMood(accessToken, moodPoints) 
     setModalVisible(!isModalVisible)
   }
-  const toggleModalOff = async () => {
-    if (changeMood !== moodPoints) {
-      await updateUserMood(accessToken, changeMood)
-      setMoodPoints(changeMood)
-      setModalVisible(!isModalVisible)
-      console.log("Updated Mood!")
-    } else {
-      setModalVisible(!isModalVisible)
-      console.log("Cancelled!")
+
+  const ChangePic = () => {
+    if (moodPoints > 7) {
+      return (
+        <Image
+          source={require("../../../assets/Hairy.png")}
+          style={{
+            width: 180,
+	    height: 180
+          }}
+        />
+      ) //<Moodperson />;
+    } else if (moodPoints <= 7 && moodPoints >= 4) {
+      return (
+        <Image
+          source={require("../../../assets/Hairy.png")}
+          style={{
+            width: 180,
+            height: 180
+          }}
+        />
+      ) //<MoodpersonNeutral />;
+    } else if (moodPoints < 4) {
+      return (
+        <Image
+          source={require("../../../assets/Hairy.png")}
+          style={{
+            width: 180,
+            height: 180
+          }}
+        />
+      ) //<MoodpersonSad />;
     }
   }
 
   return (
     <View style={styles.screen}>
       <StartupMood changeMood={moodPoints} />
-      <View style={styles.top}>
+      <View>
         <ImageBackground
           source={require("../../../assets/wave.png")}
           style={styles.wave}
         >
           <View style={styles.homeTop}>
-            <Text style={styles.heading2}>{props.name}</Text>
+            <Text style={styles.heading2}>{user.name}</Text>
+            <ChangePic />
             <View style={styles.moodcontainer}>
-              <TouchableOpacity onPress={toggleModalOn}>
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <Image
                   style={styles.moodbg}
                   source={require("../../../assets/moodbg2.png")}
@@ -82,7 +84,9 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
                     Manually change mood
                   </Text>
                   <View style={styles.moodModalGroup}>
-                    <TouchableOpacity onPress={moodDown}>
+                    <TouchableOpacity
+                      onPress={() => setMoodPoints(moodPoints - 1)}
+                    >
                       <Ionicons
                         style={styles.modalIcons}
                         name="remove-circle-outline"
@@ -90,8 +94,10 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
                         color="#052D40"
                       />
                     </TouchableOpacity>
-                    <Text style={styles.moodnmbrModal}>{changeMood}</Text>
-                    <TouchableOpacity onPress={moodUp}>
+                    <Text style={styles.moodnmbrModal}>{moodPoints}</Text>
+                    <TouchableOpacity
+                      onPress={() => setMoodPoints(moodPoints + 1)}
+                    >
                       <Ionicons
                         style={styles.modalIcons}
                         name="add-circle-outline"
@@ -100,7 +106,7 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
                       />
                     </TouchableOpacity>
                   </View>
-                  <TertiaryBtn text="DONE" onPress={toggleModalOff} />
+                  <TertiaryBtn text="DONE" onPress={async () => await UpdateUserMood()} />
                 </View>
               </Modal>
             </View>
@@ -136,8 +142,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     marginTop: 8
   },
-  top: { height: "40%" },
-  wave: { height: "90%" },
+  wave: { height: 300 },
   heading2: {
     fontSize: 20,
     marginTop: 18,
@@ -148,7 +153,7 @@ const styles = StyleSheet.create({
   homeTop: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 16
+    marginTop: 50
   },
   changeMoodTitle: {
     fontFamily: "Poppins600SemiBold",
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 86
   },
   screen: {
-    flex: 1,
+    height: 420,
     backgroundColor: "white"
   }
 })
