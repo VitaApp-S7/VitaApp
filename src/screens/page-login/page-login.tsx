@@ -29,7 +29,7 @@ const PageLogin = () => {
 
   // Authentication Request
   // eslint-disable-next-line no-unused-vars
-  const [ request, response, promptAsync ] = useAuthRequest(
+  const  [ request, response, promptAsync ] = useAuthRequest(
     {
       responseType: ResponseType.Token,
       clientId: "50f18b4e-1a58-4004-b6b8-5a15e3a2e863",
@@ -41,10 +41,7 @@ const PageLogin = () => {
         "api://215b09e4-54cb-49aa-837b-546f73fc29f6/User.All"
       ],
       redirectUri: makeRedirectUri({
-        scheme:
-          process.env.NODE_ENV === "production"
-            ? "https://auth.expo.io/@vitaapp/stuff"
-            : "",
+        scheme: process.env.NODE_ENV === "production" ? "nl.gac.vitaapp" : "",
         useProxy: true
         //scheme: url,
       })
@@ -57,6 +54,10 @@ const PageLogin = () => {
     await SecureStore.setItemAsync(key, value)
   }
 
+  async function load(key) {
+    return await SecureStore.getItemAsync(key)
+  }
+
   const { login } = useContext(AuthContext)
 
   //login function
@@ -66,19 +67,19 @@ const PageLogin = () => {
     const user = await getUser(token)
     await save("User", JSON.stringify(user)) // user= id, nam, ... , mood
     await save("token", token)
-    const expoToken = (
-      await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })
-    ).data
-    const cleanedToken = expoToken
-      .replace("ExponentPushToken[", "")
-      .replace("]", "")
-    await save("expoToken", expoToken)
-    await SetExpo(token, cleanedToken)
-    login(token)
+    // const expoToken = (
+    //   await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })
+    // ).data
+    // const cleanedToken = expoToken
+    //   .replace("ExponentPushToken[", "")
+    //   .replace("]", "")
+    // await save("expoToken", expoToken)
+    // await SetExpo(token, cleanedToken)
+    login(token, user)
   }
 
   React.useEffect(() => {
-    if (response && response.type === "success") {
+    if ((response && response.type === "success")) {
       const accessToken = response.params.access_token
 
       if (accessToken != null) {
@@ -87,6 +88,8 @@ const PageLogin = () => {
         // handle redirect error
         alert("Auth not working at the moment. Please try again later")
       }
+    } else {
+      load("token").then((token) => handleLogin(token)).catch(() => {});
     }
   }, [ response ])
 
