@@ -9,7 +9,7 @@ import {
   getAllMoodboosterRequests
 } from "../../services/moodboosterService"
 
-import { Card, Paragraph } from "react-native-paper"
+import { Card, Paragraph, Title } from "react-native-paper"
 import {
   useFonts,
   Poppins_600SemiBold as Poppins600SemiBold,
@@ -145,7 +145,8 @@ const Moodbooster = ({ changeMood }) => {
           key={index}
         >
           <Card.Content>
-            <Paragraph style={styles.description}>{item.description}</Paragraph>
+            <Title style={styles.description}>{item.description}</Title>
+            <Paragraph style={styles.category}>{item.category.name}</Paragraph>
           </Card.Content>
           <Card.Actions style={styles.buttons}>
             <PrimaryBtn
@@ -195,6 +196,11 @@ const styles = StyleSheet.create({
   description: {
     fontFamily: "Poppins500Medium",
     fontSize: 16,
+    color: "#031D29"
+  },
+  category: {
+    fontFamily: "Poppins400Regular",
+    fontSize: 14,
     color: "#031D29"
   },
   surface: {

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react"
+import { Card, Paragraph, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import {
   View,
@@ -121,34 +122,71 @@ const PageEvent = ({ navigation }) => {
       <Text style={styles.moodtitle}>Available</Text>
       {notJoinedEvents ? (
         notJoinedEvents.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <TouchableOpacity
-              onPress={() => handleOnPress(item)}
-              style={{ width: "100%" }}
-            >
-              <View style={styles.wrapperTop}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.date}>{parseDate(item.date)}</Text>
-              </View>
-              <Text style={styles.description}>{item.description}</Text>
-            </TouchableOpacity>
+          // <View key={index} style={styles.card}>
+          //   <TouchableOpacity
+          //     onPress={() => handleOnPress(item)}
+          //     style={{ width: "100%" }}
+          //   >
+          //     <View style={styles.wrapperTop}>
+          //       <Text style={styles.title}>{item.title}</Text>
+          //       <Text style={styles.date}>{parseDate(item.date)}</Text>
+          //     </View>
+          //     <Text style={styles.description}>{item.description}</Text>
+          //   </TouchableOpacity>
 
-            <View style={styles.wrapperBottom}>
-              <View style={styles.joined}>
-                <Text style={styles.description}>{item.userIds.length}/20</Text>
-                <Ionicons
+          //   <View style={styles.wrapperBottom}>
+          //     <View style={styles.joined}>
+          //       <Text style={styles.description}>{item.userIds.length}/20</Text>
+          //       <Ionicons
+          //         style={styles.icon}
+          //         name="people"
+          //         size={24}
+          //         color="#031D29"
+          //       />
+          //     </View>
+          //     <PrimaryBtn
+          //       text="JOIN"
+          //       onPress={() => joinEventOnPress(item.id)}
+          //     ></PrimaryBtn>
+          //   </View>
+          // </View>
+
+          <Card
+          style={styles.surface}
+          mode="outlined"
+          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+          key={index}
+        >
+          <TouchableOpacity
+               onPress={() => handleOnPress(item)}
+               style={{ width: "100%" }}
+             >
+              <Card.Title style={styles.title}
+    title={<Title style={styles.title}>{item.title}</Title>}
+    right={(props) => <Subheading style={styles.date}>{parseDate(item.date)}  </Subheading>}
+    titleNumberOfLines={3}
+  />
+          <Card.Content >
+            <Paragraph numberOfLines={10} style={styles.description}>{item.description}</Paragraph>
+          </Card.Content>
+          </TouchableOpacity>
+          <Card.Actions style={styles.buttons}>
+          <View style={styles.joined}>
+                 <Text style={styles.description}>{item.userIds.length}/20</Text>
+                 <Ionicons
                   style={styles.icon}
                   name="people"
                   size={24}
                   color="#031D29"
                 />
               </View>
-              <PrimaryBtn
+          <PrimaryBtn
                 text="JOIN"
                 onPress={() => joinEventOnPress(item.id)}
-              ></PrimaryBtn>
-            </View>
-          </View>
+          ></PrimaryBtn>
+          </Card.Actions>
+        </Card>
+          
         ))
       ) : (
         <Text>No events to join!</Text>
@@ -160,6 +198,18 @@ const PageEvent = ({ navigation }) => {
 export default PageEvent
 
 const styles = StyleSheet.create({
+  buttons: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingRight: 10
+  },
+  surface: {
+    marginHorizontal: 8,
+    marginVertical: 4,
+    fontFamily: "Poppins600SemiBold",
+    backgroundColor: "#FFFFFF"
+  },
   screen: {
     flex: 1,
     backgroundColor: "white"
