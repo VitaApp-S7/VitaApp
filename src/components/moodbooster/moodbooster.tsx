@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { View, StyleSheet, ScrollView, RefreshControl } from "react-native"
+import { View, StyleSheet } from "react-native"
 import {
   getAllActivities,
   startActivity,
@@ -25,12 +25,11 @@ import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
 import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
 
-const Moodbooster = ({ changeMood }) => {
+const Moodbooster = ({ refreshAction, changeMood }) => {
   const [ data, setData ] = useState([])
   const [ activeData, setActiveData ] = useState([])
   const [ disabledState, setDisabledState ] = useState(false)
   const [ loadingState, setLoadingState ] = useState(false)
-  const [ refreshing, setRefreshing ] = useState(false)
   const { setRequestData } = useContext(MoodboosterContext)
   //TOAST AFTER COMPLETE
   const completedToast = (toastData) => {
@@ -71,6 +70,7 @@ const Moodbooster = ({ changeMood }) => {
   }
 
   useEffect(() => {
+    refreshAction(handleActivities())
     handleActivities()
   }, [])
   const { accessToken } = useContext(AuthContext)
@@ -161,10 +161,7 @@ const Moodbooster = ({ changeMood }) => {
   )
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleActivities} />
-      }
+    <View
     >
       <ActiveCards />
       {data[0] ? (
@@ -183,12 +180,12 @@ const Moodbooster = ({ changeMood }) => {
           <Rect x="10" y="220" rx="2" ry="2" width="340" height="100" />
         </ContentLoader>
       )}
-    </ScrollView>
+    </View>
   )
 }
 const styles = StyleSheet.create({
   buttons: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 10
