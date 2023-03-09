@@ -1,7 +1,7 @@
 //const baseUrl = "http://145.93.160.237:5000";
 
 //CLOUD
-const baseUrl = "https://vitaappgw.northeurope.cloudapp.azure.com"
+const baseUrl = "http://vitaappgw.northeurope.cloudapp.azure.com"
 
 export const protectedResources = {
   graphMe: {
