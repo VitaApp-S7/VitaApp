@@ -1,4 +1,4 @@
-//const baseUrl = "http://145.93.160.237:5000";
+// const baseUrl = "http://145.93.160.237:5000";
 
 //CLOUD
 const baseUrl = "http://vitaappgw.northeurope.cloudapp.azure.com"
