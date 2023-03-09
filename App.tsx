@@ -6,7 +6,6 @@ import { MoodProvider } from "./src/components/PopUps/MoodPointsContext"
 import { NameProvider } from "./src/context/NameContext"
 // import * as Linking from "expo-linking"
 import Toast from "react-native-toast-message"
-import Notification from "./src/components/Notifications/Notification"
 import "react-native-url-polyfill/auto"
 import { QueryClient, QueryClientProvider } from "react-query"
 
@@ -26,7 +25,6 @@ const App = () => {
           <NameProvider>
             <AppNav />
           </NameProvider>
-          <Notification />
         </AuthProvider>
         <Toast />
       </MoodProvider>

@@ -63,14 +63,14 @@ const PageLogin = () => {
     const user = await getUser(token)
     await save("User", JSON.stringify(user)) // user= id, nam, ... , mood
     await save("token", token)
-    const expoToken = (
-      await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })
-    ).data
-    const cleanedToken = expoToken
-      .replace("ExponentPushToken[", "")
-      .replace("]", "")
-    await save("expoToken", expoToken)
-    await SetExpo(token, cleanedToken)
+    // const expoToken = (
+    //   await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })
+    // ).data
+    // const cleanedToken = expoToken
+    //   .replace("ExponentPushToken[", "")
+    //   .replace("]", "")
+    // await save("expoToken", expoToken)
+    // await SetExpo(token, cleanedToken)
     login(token)
   }
 
