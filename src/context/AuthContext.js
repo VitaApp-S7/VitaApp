@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await SecureStore.deleteItemAsync("User")
     await SecureStore.deleteItemAsync("FirstLogin")
+    await SecureStore.deleteItemAsync("token")
     setAccessToken(null)
   }
 
