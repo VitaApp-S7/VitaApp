@@ -13,6 +13,7 @@ import TertiaryBtn from "../buttons/TertiaryBtn"
 import React, { useContext, useState } from "react"
 import { updateUserMood } from "../../services/userService"
 import { AuthContext } from "../../context/AuthContext"
+import { MoodPointsContext } from "../PopUps/MoodPointsContext"
 
 export interface ResponsiveHeader {
   name: string
@@ -24,6 +25,7 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
   const [ changeMood, setChangeMood ] = useState(0)
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AuthContext)
+  const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
 
   const moodDown = () => {
     if (changeMood <= 0) {
@@ -40,13 +42,13 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
     }
   }
   const toggleModalOn = () => {
-    setChangeMood(mood)
+    setChangeMood(moodPoints)
     setModalVisible(!isModalVisible)
   }
   const toggleModalOff = async () => {
-    if (changeMood !== mood) {
+    if (changeMood !== moodPoints) {
       await updateUserMood(accessToken, changeMood)
-      userMood()
+      setMoodPoints(changeMood)
       setModalVisible(!isModalVisible)
       console.log("Updated Mood!")
     } else {
@@ -57,7 +59,7 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
 
   return (
     <View style={styles.screen}>
-      <StartupMood changeMood={userMood} />
+      <StartupMood changeMood={moodPoints} />
       <View style={styles.top}>
         <ImageBackground
           source={require("../../../assets/wave.png")}
@@ -65,14 +67,13 @@ const ResponsiveHeader = (props: ResponsiveHeader) => {
         >
           <View style={styles.homeTop}>
             <Text style={styles.heading2}>{props.name}</Text>
-            <ChangePic />
             <View style={styles.moodcontainer}>
               <TouchableOpacity onPress={toggleModalOn}>
                 <Image
                   style={styles.moodbg}
                   source={require("../../../assets/moodbg2.png")}
                 />
-                <Text style={styles.moodnmbr}>{props.moodPoints}</Text>
+                <Text style={styles.moodnmbr}>{moodPoints}</Text>
               </TouchableOpacity>
 
               <Modal isVisible={isModalVisible} style={styles.modal}>
