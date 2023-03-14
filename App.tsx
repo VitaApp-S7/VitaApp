@@ -2,7 +2,7 @@
 import { AuthProvider } from "./src/context/AuthContext"
 import AppNav from "./src/navigation/AppNav"
 import React from "react"
-import MoodPointsProvider, { MoodProvider } from "./src/components/PopUps/MoodPointsContext"
+import MoodPointsProvider from "./src/components/PopUps/MoodPointsContext"
 import { NameProvider } from "./src/context/NameContext"
 // import * as Linking from "expo-linking"
 import Toast from "react-native-toast-message"
@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "react-query"
 
 const queryClient = new QueryClient()
 
-const App = () => {
+export default function () {
   // const url = Linking.useURL()
 
   // const onScreenLoad = () => {
@@ -22,18 +22,14 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <MoodPointsProvider>
-        <MoodProvider>
-          <AuthProvider>
-            <NameProvider>
-              <AppNav />
-            </NameProvider>
-            <Notification />
-          </AuthProvider>
-          <Toast />
-        </MoodProvider>
+        <AuthProvider>
+          <NameProvider>
+            <AppNav />
+          </NameProvider>
+          <Notification />
+        </AuthProvider>
+        <Toast />
       </MoodPointsProvider>
     </QueryClientProvider>
   )
 }
-//TOAST has to be last child otherwise it won't work!
-export default App
