@@ -21,15 +21,15 @@ export default function () {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MoodPointsProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <MoodPointsProvider>
           <NameProvider>
             <AppNav />
           </NameProvider>
           <Notification />
-        </AuthProvider>
-        <Toast />
-      </MoodPointsProvider>
+          <Toast />
+        </MoodPointsProvider>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }

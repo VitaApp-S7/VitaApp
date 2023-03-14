@@ -46,11 +46,10 @@ const StartupMood = ({ changeMood }) => {
     }
   }
 
-  const updateMoodPopUp = async (points) => {
+  const updateMoodPopUp = async points => {
     setModalVisible(false)
     await SetModalVisable(accessToken, false)
     await updateUserMood(accessToken, points)
-    changeMood(points)
     setMoodPoints(points)
     console.log(modalVisible)
   }
@@ -79,15 +78,15 @@ const StartupMood = ({ changeMood }) => {
         <View style={styles.modalView}>
           <Text style={styles.modalText}>How are we feeling today?</Text>
           <View style={{ flexDirection: "row" }}>
-            <Pressable style={styles.btn} onPress={() => updateMoodPopUp(1)}>
+            <Pressable style={styles.btn} onPress={async () => await updateMoodPopUp(1)}>
               {/* <Image source={require("../../../assets/modal_frowney.svg")} style={styles.emoji}/> */}
               <Frowney />
             </Pressable>
-            <Pressable style={styles.btn} onPress={() => updateMoodPopUp(5)}>
+            <Pressable style={styles.btn} onPress={async () => await updateMoodPopUp(5)}>
               {/* <Image source={require("../../../assets/modal_neutral.svg")} style={styles.emoji}/> */}
               <Neutral />
             </Pressable>
-            <Pressable style={styles.btn} onPress={() => updateMoodPopUp(10)}>
+            <Pressable style={styles.btn} onPress={async () => await updateMoodPopUp(10)}>
               {/* <Image source={require("../../../assets/modal_happy.svg")} style={styles.emoji}/> */}
               <Happy />
             </Pressable>
