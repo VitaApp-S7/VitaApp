@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+import React, { useState, useContext, useEffect } from "react"
+
+import { AuthContext } from "../../context/AuthContext"
 
 interface MoodPointsContextType {
   moodPoints: number
@@ -10,7 +12,14 @@ export const MoodPointsContext = React.createContext<MoodPointsContextType>({
 })
 
 const MoodPointsProvider = (props: any) => {
+  const { user } = useContext(AuthContext)
   const [ moodPoints, setMoodPoints ] = useState(10)
+
+  useEffect(() => {
+    if(user !== undefined && user !== null){
+      setMoodPoints(user.mood)
+    }
+  }, [user])
 
   return (
     <MoodPointsContext.Provider

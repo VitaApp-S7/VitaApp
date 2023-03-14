@@ -75,7 +75,7 @@ const PageLogin = () => {
     //   .replace("]", "")
     // await save("expoToken", expoToken)
     // await SetExpo(token, cleanedToken)
-    login(token)
+    login(token, user)
   }
 
   React.useEffect(() => {
@@ -89,7 +89,7 @@ const PageLogin = () => {
         alert("Auth not working at the moment. Please try again later")
       }
     } else {
-      load("token").then((token) => handleLogin(token));
+      load("token").then((token) => handleLogin(token)).catch(() => {});
     }
   }, [ response ])
 
