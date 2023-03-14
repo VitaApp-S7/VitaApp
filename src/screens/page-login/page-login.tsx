@@ -54,6 +54,10 @@ const PageLogin = () => {
     await SecureStore.setItemAsync(key, value)
   }
 
+  async function load(key) {
+    return await SecureStore.getItemAsync(key)
+  }
+
   const { login } = useContext(AuthContext)
 
   //login function
@@ -75,7 +79,7 @@ const PageLogin = () => {
   }
 
   React.useEffect(() => {
-    if (response && response.type === "success") {
+    if ((response && response.type === "success")) {
       const accessToken = response.params.access_token
 
       if (accessToken != null) {
@@ -84,6 +88,8 @@ const PageLogin = () => {
         // handle redirect error
         alert("Auth not working at the moment. Please try again later")
       }
+    } else {
+      load("token").then((token) => handleLogin(token));
     }
   }, [ response ])
 
