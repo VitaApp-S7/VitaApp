@@ -82,7 +82,7 @@ const PageLogin = () => {
   }
 
   React.useEffect(() => {
-    if ((response && response.type === "success")) {
+    if (response && response.type === "success") {
       const accessToken = response.params.access_token
 
       if (accessToken != null) {
@@ -92,7 +92,9 @@ const PageLogin = () => {
         alert("Auth not working at the moment. Please try again later")
       }
     } else {
-      load("token").then((token) => handleLogin(token)).catch(() => {});
+      load("token")
+        .then((token) => handleLogin(token))
+        .catch(() => {})
     }
   }, [ response ])
 
@@ -113,6 +115,7 @@ const PageLogin = () => {
         <TouchableOpacity
           style={styles.loginbutton}
           onPress={() => {
+            console.log(request)
             promptAsync({ useProxy: true })
           }}
         >

@@ -29,6 +29,11 @@ import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
 import { MoodPointsContext } from "../PopUps/MoodPointsContext"
+import {
+  MoodboosterStartedType,
+  MoodboosterType
+} from "../../types/MoodboosterTypes"
+import { useNavigation } from "@react-navigation/native"
 // import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
 interface Moodbooster {
   refresh: boolean
@@ -40,6 +45,7 @@ const Moodbooster = (props: Moodbooster) => {
   const [ activeData, setActiveData ] = useState([])
   const [ disabledState, setDisabledState ] = useState(false)
   const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
+  const navigation = useNavigation()
   //TOAST AFTER COMPLETE
   const completedToast = (toastData) => {
     Toast.show({
@@ -69,7 +75,6 @@ const Moodbooster = (props: Moodbooster) => {
     } else {
       setDisabledState(false)
     }
-    console.log(activities)
   }
 
   useEffect(() => {
@@ -113,6 +118,11 @@ const Moodbooster = (props: Moodbooster) => {
     setDisabledState(false)
   }
 
+  const handleOnPress = (item: MoodboosterType | MoodboosterStartedType) => {
+    console.log(typeof navigation)
+    navigation.navigate("Moodbooster Details", { item })
+  }
+
   const ActiveCards = () => (
     <View>
       {activeData.map((item, index) => (
@@ -121,6 +131,7 @@ const Moodbooster = (props: Moodbooster) => {
           mode="outlined"
           theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
           key={index}
+          onPress={() => handleOnPress(item)}
         >
           <Card.Content>
             <Paragraph style={styles.description}>
@@ -151,6 +162,7 @@ const Moodbooster = (props: Moodbooster) => {
           mode="outlined"
           theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
           key={index}
+          onPress={() => handleOnPress(item)}
         >
           <Card.Content>
             <Title style={styles.description}>{item.description}</Title>

@@ -5,8 +5,10 @@ import Ionicons from "react-native-vector-icons/Ionicons"
 import React from "react"
 import { View, TouchableOpacity } from "react-native"
 import PageHistory from "../screens/page-history/page-history"
+import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
+import { RouteParamList } from "../types/RouteParamList"
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator<RouteParamList>()
 
 const Home = () => {
   return (
@@ -40,6 +42,11 @@ const Home = () => {
       <Stack.Screen
         name="History"
         component={PageHistory}
+        options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="Moodbooster Details"
+        component={PageMoodboosterDetails}
         options={{ headerShown: true }}
       />
     </Stack.Navigator>
