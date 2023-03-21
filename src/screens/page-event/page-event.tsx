@@ -17,13 +17,13 @@ import {
 import { getEvents, joinEvent, leaveEvent } from "../../services/eventService"
 import Bg from "../../../assets/wave.svg"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
-import { AuthContext } from "../../context/AuthContext"
 import * as SecureStore from "expo-secure-store"
 
 import parseDate from "../../services/dataParser"
+import { AppContext } from "../../context/AppContext"
 
 const PageEvent = ({ navigation }) => {
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
   const [ notJoinedEvents, setNotJoinedEvents ] = useState([])
   const [ joinedEvents, setJoinedEvents ] = useState([])
   const [ events, setEvents ] = useState([])
@@ -152,40 +152,40 @@ const PageEvent = ({ navigation }) => {
           // </View>
 
           <Card
-          style={styles.surface}
-          mode="outlined"
-          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-          key={index}
-        >
-          <TouchableOpacity
-               onPress={() => handleOnPress(item)}
-               style={{ width: "100%" }}
-             >
+            style={styles.surface}
+            mode="outlined"
+            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+            key={index}
+          >
+            <TouchableOpacity
+              onPress={() => handleOnPress(item)}
+              style={{ width: "100%" }}
+            >
               <Card.Title style={styles.title}
-    title={<Title style={styles.title}>{item.title}</Title>}
-    right={(props) => <Subheading style={styles.date}>{parseDate(item.date)}  </Subheading>}
-    titleNumberOfLines={3}
-  />
-          <Card.Content >
-            <Paragraph numberOfLines={10} style={styles.description}>{item.description}</Paragraph>
-          </Card.Content>
-          </TouchableOpacity>
-          <Card.Actions style={styles.buttons}>
-          <View style={styles.joined}>
-                 <Text style={styles.description}>{item.userIds.length}/20</Text>
-                 <Ionicons
+                title={<Title style={styles.title}>{item.title}</Title>}
+                right={(props) => <Subheading style={styles.date}>{parseDate(item.date)}  </Subheading>}
+                titleNumberOfLines={3}
+              />
+              <Card.Content >
+                <Paragraph numberOfLines={10} style={styles.description}>{item.description}</Paragraph>
+              </Card.Content>
+            </TouchableOpacity>
+            <Card.Actions style={styles.buttons}>
+              <View style={styles.joined}>
+                <Text style={styles.description}>{item.userIds.length}/20</Text>
+                <Ionicons
                   style={styles.icon}
                   name="people"
                   size={24}
                   color="#031D29"
                 />
               </View>
-          <PrimaryBtn
+              <PrimaryBtn
                 text="JOIN"
                 onPress={() => joinEventOnPress(item.id)}
-          ></PrimaryBtn>
-          </Card.Actions>
-        </Card>
+              ></PrimaryBtn>
+            </Card.Actions>
+          </Card>
           
         ))
       ) : (

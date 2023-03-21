@@ -4,14 +4,14 @@ import Modal from "react-native-modal"
 import TertiaryBtn from "../buttons/TertiaryBtn"
 import { IconButton } from "react-native-paper"
 import { inviteMoodbooster } from "../../services/moodboosterService"
-import { AuthContext } from "../../context/AuthContext"
 import { getFriends } from "../../services/friendsService"
 import PrimaryBtn from "../buttons/PrimaryBtn"
 import Toast from "react-native-toast-message"
+import { AppContext } from "../../context/AppContext"
 
 const inviteFriends = (props) => {
   const [ isModalVisible, setModalVisible ] = useState(false)
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
   // const [dataState, setDataState] = useState(false);
   const [ friends, setFriends ] = useState([])
 

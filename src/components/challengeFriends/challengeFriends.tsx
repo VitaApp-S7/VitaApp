@@ -10,7 +10,7 @@ import React, { useContext, useEffect, useState } from "react"
 import Modal from "react-native-modal"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import TertiaryBtn from "../buttons/TertiaryBtn"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 import {
   acceptMoodboosterRequest,
   getAllMoodboosterRequests
@@ -23,7 +23,7 @@ import Toast from "react-native-toast-message"
 
 const challengeFriends = () => {
   const [ isModalVisible, setModalVisible ] = useState(false)
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
   // const [dataState, setDataState] = useState(false);
   const [ friends, setFriends ] = useState([])
   // const [moodboosterRequests, setMoodboosterRequests] = useState(0);

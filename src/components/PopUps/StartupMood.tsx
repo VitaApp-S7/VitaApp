@@ -7,22 +7,20 @@ import {
   Poppins_700Bold as Poppins700Bold,
   Poppins_600SemiBold as Poppins600SemiBold
 } from "@expo-google-fonts/poppins"
-import { AuthContext } from "../../context/AuthContext"
 import { updateUserMood } from "../../services/userService"
 
 import { SetModalVisable, SetDate, GetDate } from "../../services/userService"
 import Frowney from "../../../assets/modalFrowney.svg"
 import Neutral from "../../../assets/modalNeutral.svg"
 import Happy from "../../../assets/modalHappy.svg"
-import { MoodPointsContext } from "./MoodPointsContext"
+import { AppContext } from "../../context/AppContext"
 
 const StartupMood = ({ changeMood }) => {
-  const { accessToken } = useContext(AuthContext)
   const [ modalVisible, setModalVisible ] = useState(false)
   // const mood = useMoodPoints()
   // const updateMood = useMoodPointsUpdate()
   
-  const { setMoodPoints } = useContext(MoodPointsContext)
+  const { setMoodPoints, accessToken } = useContext(AppContext)
 
   const date = new Date()
 

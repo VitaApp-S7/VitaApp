@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import React from "react"
 import { Text, StyleSheet, ScrollView } from "react-native"
 import { getAllCompletedActivities } from "../../services/moodboosterService"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 import { Card, Paragraph } from "react-native-paper"
 
 const PageHistory = () => {
@@ -17,7 +17,7 @@ const PageHistory = () => {
   useEffect(() => {
     handleActivities()
   }, [])
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
 
   return (
     <ScrollView>

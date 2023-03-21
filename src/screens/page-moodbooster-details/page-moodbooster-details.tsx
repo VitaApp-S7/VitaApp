@@ -8,11 +8,10 @@ import {
 import Toast from "react-native-toast-message"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RouteParamList } from "../../types/RouteParamList"
-import { AuthContext } from "../../context/AuthContext"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import { MoodboosterStartedType } from "../../types/MoodboosterTypes"
-import { MoodPointsContext } from "../../components/PopUps/MoodPointsContext"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
+import { AppContext } from "../../context/AppContext"
 
 const PageMoodboosterDetails = () => {
   const item = useRoute<RouteProp<RouteParamList, "Moodbooster Details">>()
@@ -22,9 +21,8 @@ const PageMoodboosterDetails = () => {
     ? item
     : { moodbooster: item }
 
-  const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
+  const { moodPoints, setMoodPoints, accessToken } = useContext(AppContext)
   const [ disabledState, setDisabledState ] = useState(false)
-  const { accessToken } = useContext(AuthContext)
 
   const completedToast = () => {
     Toast.show({
