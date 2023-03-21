@@ -20,7 +20,7 @@ const ResponsiveHeader = () => {
   const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
   const { accessToken, user } = useContext(AuthContext)
   const UpdateUserMood = async () => {
-    updateUserMood(accessToken, moodPoints) 
+    await updateUserMood(accessToken, moodPoints)
     setModalVisible(!isModalVisible)
   }
 

@@ -78,7 +78,7 @@ const PageLogin = () => {
       .replace("]", "")
     await save("expoToken", expoToken)
     await SetExpo(token, cleanedToken)
-    login(token)
+    await login(token, user)
   }
 
   React.useEffect(() => {
