@@ -21,7 +21,7 @@ import {
   cancelFrRequest
 } from "../../services/friendsService"
 import { getAllUsers } from "../../services/userService"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
@@ -33,7 +33,7 @@ import TertiaryBtn from "../../components/buttons/TertiaryBtn"
 const _ = require("lodash")
 
 const PageFriends = () => {
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
 
   const [ refreshing, setRefreshing ] = useState(false)
 

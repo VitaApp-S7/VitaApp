@@ -12,13 +12,11 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import TertiaryBtn from "../buttons/TertiaryBtn"
 import React, { useContext, useState } from "react"
 import { updateUserMood } from "../../services/userService"
-import { AuthContext } from "../../context/AuthContext"
-import { MoodPointsContext } from "../PopUps/MoodPointsContext"
+import { AppContext } from "../../context/AppContext"
 
 const ResponsiveHeader = () => {
   const [ isModalVisible, setModalVisible ] = useState<boolean>(false)
-  const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
-  const { accessToken, user } = useContext(AuthContext)
+  const { accessToken, user, moodPoints, setMoodPoints } = useContext(AppContext)
   const UpdateUserMood = async () => {
     await updateUserMood(accessToken, moodPoints)
     setModalVisible(!isModalVisible)

@@ -15,7 +15,7 @@ import {
   Poppins_400Regular as Poppins400Regular
 } from "@expo-google-fonts/poppins"
 import { useState, useContext, useEffect } from "react"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import {
   acceptFrRequest,
@@ -33,7 +33,7 @@ const PageRequests = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   // const wave = require("../../../assets/wave.png")
 
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
 
   const [ requests, setRequests ] = useState([])
   //const [isRequests, setIsRequests] = useState(false);

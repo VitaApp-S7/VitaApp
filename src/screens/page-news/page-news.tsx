@@ -12,13 +12,13 @@ import {
   Poppins_400Regular as Poppins400Regular
 } from "@expo-google-fonts/poppins"
 import { getNews } from "../../services/newsService"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
 import parseDate from "../../services/dataParser"
 
 const PageNews = ({ navigation }) => {
   const [ news, setNews ] = useState([])
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken } = useContext(AppContext)
 
   useEffect(() => {
     handleData()

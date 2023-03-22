@@ -1,9 +1,9 @@
 import React, { useContext } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { AuthContext } from "../../context/AuthContext"
+import { AppContext } from "../../context/AppContext"
 
 const PageAccount = () => {
-  const { logout } = useContext(AuthContext)
+  const { logout } = useContext(AppContext)
 
   return (
     <View style={styles.bottomcontainer}>

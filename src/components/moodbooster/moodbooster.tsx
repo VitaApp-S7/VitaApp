@@ -21,20 +21,17 @@ import {
   Poppins_400Regular as Poppins400Regular,
   Poppins_500Medium as Poppins500Medium
 } from "@expo-google-fonts/poppins"
-
-import { AuthContext } from "../../context/AuthContext"
 import Toast from "react-native-toast-message"
 import ContentLoader, { Rect } from "react-content-loader/native"
 import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
-import { MoodPointsContext } from "../PopUps/MoodPointsContext"
 import {
   MoodboosterStartedType,
   MoodboosterType
 } from "../../types/MoodboosterTypes"
 import { useNavigation } from "@react-navigation/native"
-// import { MoodboosterContext } from "../../screens/page-home/moodboosterContext"
+import { AppContext } from "../../context/AppContext"
 interface Moodbooster {
   refresh: boolean
   setRefreshing: Dispatch<SetStateAction<boolean>>
@@ -44,7 +41,7 @@ const Moodbooster = (props: Moodbooster) => {
   const [ data, setData ] = useState([])
   const [ activeData, setActiveData ] = useState([])
   const [ disabledState, setDisabledState ] = useState(false)
-  const { moodPoints, setMoodPoints } = useContext(MoodPointsContext)
+  const { moodPoints, setMoodPoints, accessToken } = useContext(AppContext)
   const navigation = useNavigation()
   //TOAST AFTER COMPLETE
   const completedToast = (toastData) => {
@@ -88,7 +85,6 @@ const Moodbooster = (props: Moodbooster) => {
     }
   }, [ props.refresh ])
 
-  const { accessToken } = useContext(AuthContext)
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
     Poppins400Regular,

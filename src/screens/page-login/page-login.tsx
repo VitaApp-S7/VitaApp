@@ -8,7 +8,6 @@ import {
 } from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
 import { checkUser, getUser, SetExpo } from "../../services/userService"
-import { AuthContext } from "../../context/AuthContext"
 // import * as Linking from "expo-linking"
 import Intrologo from "../../../assets/intrologo.svg"
 import {
@@ -18,6 +17,7 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold
 } from "@expo-google-fonts/poppins"
 import * as Notifications from "expo-notifications"
+import { AppContext } from "../../context/AppContext"
 
 const PageLogin = () => {
   // Endpoint
@@ -61,7 +61,7 @@ const PageLogin = () => {
     return await SecureStore.getItemAsync(key)
   }
 
-  const { login } = useContext(AuthContext)
+  const { login } = useContext(AppContext)
 
   //login function
   const handleLogin = async (token) => {
