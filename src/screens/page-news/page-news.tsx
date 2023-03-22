@@ -15,6 +15,7 @@ import { getNews } from "../../services/newsService"
 import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
 import parseDate from "../../services/dataParser"
+import NativeWebView from "../../components/Webview/nativeWebView"
 
 const PageNews = ({ navigation }) => {
   const [ news, setNews ] = useState([])
@@ -65,9 +66,10 @@ const PageNews = ({ navigation }) => {
           >
             <View style={styles.wrapperTop}>
               <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.date}>{parseDate(item.date)}</Text>
+              {/*<Text style={styles.date}>{parseDate(item.date)}</Text> */}
             </View>
-            <Text style={styles.description}>{item.description}</Text>
+{/*            <Text style={styles.description}>{item.description}</Text> */}
+              <NativeWebView />
           </TouchableOpacity>
         </View>
       ))}
