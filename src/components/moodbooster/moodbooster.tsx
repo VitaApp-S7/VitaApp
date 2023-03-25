@@ -27,7 +27,7 @@ import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
 import {
-  MoodboosterStartedType,
+  UserMoodboosterType,
   MoodboosterType
 } from "../../types/MoodboosterTypes"
 import { useNavigation } from "@react-navigation/native"
@@ -114,7 +114,7 @@ const Moodbooster = (props: Moodbooster) => {
     setDisabledState(false)
   }
 
-  const handleOnPress = (item: MoodboosterType | MoodboosterStartedType) => {
+  const handleOnPress = (item: MoodboosterType | UserMoodboosterType) => {
     console.log(typeof navigation)
     navigation.navigate("Moodbooster Details", { item })
   }

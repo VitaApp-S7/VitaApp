@@ -1,20 +1,19 @@
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
+  Image,
   RefreshControl,
-  Image
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from "react-native"
-import React from "react"
+import React, { useContext, useState } from "react"
 import { Card, Paragraph } from "react-native-paper"
 import {
-  useFonts,
+  Poppins_400Regular as Poppins400Regular,
   Poppins_600SemiBold as Poppins600SemiBold,
-  Poppins_400Regular as Poppins400Regular
+  useFonts
 } from "@expo-google-fonts/poppins"
-import { useState, useContext, useEffect } from "react"
 import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import {
@@ -25,6 +24,8 @@ import {
 import Bg from "../../../assets/wave.svg"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
+import { useQuery, useQueryClient } from "react-query"
+import FriendType from "../../types/FriendType"
 // const wait = (timeout) => {
 //   return new Promise((resolve) => setTimeout(resolve, timeout))
 // }
@@ -35,38 +36,21 @@ const PageRequests = () => {
 
   const { accessToken } = useContext(AppContext)
 
-  const [ requests, setRequests ] = useState([])
-  //const [isRequests, setIsRequests] = useState(false);
   const [ refreshing, setRefreshing ] = useState(false)
+  
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    fetchRequests()
-  }, [])
-
-  const fetchRequests = async () => {
-    const res = await fetchFrRequests()
-
-    if (res.status === 200) {
-      setRequests(await res.data)
-    }
-
-    // setRefreshing(true);
-    // setRefreshing(false);
-  }
-
-  const fetchFrRequests = async () => {
-    try {
-      return await getFrRequests(accessToken)
-    } catch (err) {
-      console.log("couldn't get friend requests", err)
-    }
-  }
+  const requestsQuery = useQuery<FriendType[]>(
+    "friendRequests",
+    async () => await getFrRequests(accessToken),
+    { onError: (err) => console.log(err) }
+  )
 
   const handleCancelRequest = async (id) => {
     try {
       const res = await cancelFrRequest(accessToken, id)
       if (res.status === 200) {
-        setRequests(requests.filter((item) => item.id !== id))
+        queryClient.setQueryData("friendRequests", requestsQuery.data.filter((item) => item.id !== id))
       }
     } catch (err) {
       console.log("request couldn't be cancelled", err)
@@ -77,7 +61,7 @@ const PageRequests = () => {
     try {
       const res = await acceptFrRequest(accessToken, id)
       if (res.status === 200) {
-        setRequests(requests.filter((item) => item.id !== id))
+        queryClient.setQueryData("friendRequests", requestsQuery.data.filter((item) => item.id !== id))
       }
     } catch (err) {
       console.log("request couldn't be accepted", err)
@@ -98,25 +82,22 @@ const PageRequests = () => {
       <ScrollView
         contentContainerStyle={styles.screen}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchRequests} />
+          <RefreshControl refreshing={refreshing} onRefresh={async () => {
+            setRefreshing(true)
+            await queryClient.invalidateQueries("friendRequests")
+            setRefreshing(false)
+          }} />
         }
       >
         <Bg style={styles.wave} />
         <View>
-          {requests.length ? (
-            requests.map((item, index) => (
-              // <Card style={styles.surface} elevation={1} key={index}>
-              //   <Card.Title title={item.name} />
-              //   <Card.Actions>
-              //     <Button mode="contained" onPress={() => handleAcceptRequest(item.id)}>Accept</Button>
-              //     <Button mode="contained" onPress={() => handleCancelRequest(item.id)}>Cancel</Button>
-              //   </Card.Actions>
-              // </Card>
+          {requestsQuery.isSuccess && requestsQuery.data.length > 0 ? (
+            requestsQuery.data.map(item => (
               <Card
                 style={styles.surface}
                 mode="outlined"
                 theme={{ colors: { outline: "rgba(0, 0, 0, 0)" }}}
-                key={index}
+                key={item.id}
               >
                 <Card.Content style={styles.cardcontent}>
                   <Image

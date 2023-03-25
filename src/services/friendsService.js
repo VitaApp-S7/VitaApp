@@ -27,7 +27,7 @@ export async function removeFriend(token, id) {
 
 export async function getFrRequests(token) {
   var response = await axios.get(`${url}/requests`, { headers: { Authorization: `Bearer ${token}` }})
-  return response
+  return response.data
 }
 
 export async function acceptFrRequest(token, friendReqId) {

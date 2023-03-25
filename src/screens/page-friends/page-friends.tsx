@@ -1,24 +1,25 @@
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
+  Image,
+  ImageSourcePropType,
   RefreshControl,
-  Image
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from "react-native"
 import {
-  useFonts,
+  Poppins_400Regular as Poppins400Regular,
   Poppins_600SemiBold as Poppins600SemiBold,
-  Poppins_400Regular as Poppins400Regular
+  useFonts
 } from "@expo-google-fonts/poppins"
-import React, { useState, useContext } from "react"
+import React, { useContext, useState } from "react"
 import {
   addFriend,
+  cancelFrRequest,
   getFriends,
   getSendedRequests,
-  removeFriend,
-  cancelFrRequest
+  removeFriend
 } from "../../services/friendsService"
 import { getAllUsers } from "../../services/userService"
 import { AppContext } from "../../context/AppContext"
@@ -29,8 +30,13 @@ import * as SecureStore from "expo-secure-store"
 import Bg from "../../../assets/wave.svg"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import TertiaryBtn from "../../components/buttons/TertiaryBtn"
+import UserType from "../../types/UserType"
+import FriendType from "../../types/FriendType"
+import SendedFriendType from "../../types/SendedFriendType"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const _ = require("lodash")
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pfp: ImageSourcePropType = require("../../../assets/pfp.png")
 
 const PageFriends = () => {
   const { accessToken } = useContext(AppContext)
@@ -39,19 +45,23 @@ const PageFriends = () => {
 
   const [ otherPeople, setOtherPeople ] = useState([])
 
-  const currentUser = useQuery("currentUser", async () =>
+  const currentUser = useQuery<UserType>("currentUser", async () =>
     JSON.parse(await SecureStore.getItemAsync("User"))
   )
 
   const queryClient = useQueryClient()
 
-  const friends: any = useQuery("friends", () => getFriends(accessToken), {
-    onError: (error) => {
-      console.log("friends get req error", error)
+  const friends = useQuery<FriendType[]>(
+    "friends",
+    () => getFriends(accessToken),
+    {
+      onError: (error) => {
+        console.log("friends get req error", error)
+      }
     }
-  })
+  )
 
-  const invites: any = useQuery(
+  const invites = useQuery<SendedFriendType[]>(
     "invites",
     () => getSendedRequests(accessToken),
     {
@@ -63,25 +73,19 @@ const PageFriends = () => {
 
   // fetching the users from db and setting other people array onSuccess
   // to set the array of other people we remove friends array and invites array from users.
-  const users: any = useQuery("users", () => getAllUsers(accessToken), {
-    enabled: !!currentUser && !!friends.data && !!invites.data,
+  const users = useQuery<UserType[]>("users", () => getAllUsers(accessToken), {
+    enabled:
+      currentUser.status === "success" &&
+      friends.status === "success" &&
+      invites.status === "success",
     onSuccess: (users) => {
-      const usersCopy = [ ...users ]
-      const userIds = usersCopy.map((user) => user.id)
-      const friendIds = friends.data.map((friend) => friend.userId)
-      const inviteIds = invites.data.map((invite) => invite.friendId)
-      const currentUserId = [ currentUser.data.id ]
       const otherPeopleIds = _.difference(
-        userIds,
-        friendIds,
-        inviteIds,
-        currentUser.data.id,
-        currentUserId
+        users.map((user) => user.id),
+        friends.data.map((friend) => friend.userId),
+        invites.data.map((invite) => invite.friendId),
+        [ currentUser.data.id ]
       )
-      const otherPeople = users.filter((user) =>
-        otherPeopleIds.includes(user.id)
-      )
-      setOtherPeople(otherPeople)
+      setOtherPeople(users.filter((user) => otherPeopleIds.includes(user.id)))
     },
     onError: (error) => {
       console.log("error", error)
@@ -89,7 +93,7 @@ const PageFriends = () => {
   })
 
   // we use react query mutation to change values in front end
-  const mutation = useMutation((id) => addFriend(accessToken, id))
+  const mutationAddFriend = useMutation((id) => addFriend(accessToken, id))
   const mutationCancelInvites = useMutation((id) =>
     cancelFrRequest(accessToken, id)
   )
@@ -107,7 +111,7 @@ const PageFriends = () => {
       queryClient.setQueryData([ "invites" ], newInvited)
       setOtherPeople(newOtherPeople)
 
-      mutation.mutate(id, {
+      mutationAddFriend.mutate(id, {
         onError: (error) => {
           console.log("error", error)
           queryClient.setQueryData([ "invites" ], oldInvited)
@@ -187,6 +191,8 @@ const PageFriends = () => {
     return null
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -194,87 +200,96 @@ const PageFriends = () => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => queryClient.invalidateQueries()}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await Promise.all([
+                friends.refetch(),
+                invites.refetch(),
+                users.refetch()
+              ])
+              setRefreshing(false)
+            }}
           />
         }
       >
-        <Bg style={styles.wave} />
-        <View>
-          <Text style={styles.title}>Friends</Text>
-          {!friends.isLoading && friends.data.length > 0 ? (
-            friends.data.map((item, index) => (
-              <View style={styles.card} key={index}>
-                <View style={styles.wrapperTop}>
-                  <View style={styles.joined}>
-                    <Image
-                      style={styles.pfp}
-                      source={require("../../../assets/pfp.png")}
-                    />
-                    <Text style={styles.title}>{item.name}</Text>
+        {!users.isSuccess ? (
+          <>
+            <Bg style={styles.wave} />
+            <Text style={styles.title}>Loading ...</Text>
+          </>
+        ) : (
+          <>
+            <Bg style={styles.wave} />
+            <>
+              <Text style={styles.title}>Friends</Text>
+              {!friends.isLoading && friends.data.length > 0 ? (
+                friends.data.map((item, index) => (
+                  <View style={styles.card} key={index}>
+                    <View style={styles.wrapperTop}>
+                      <View style={styles.joined}>
+                        <Image style={styles.pfp} source={pfp} />
+                        <Text style={styles.title}>{item.name}</Text>
+                      </View>
+
+                      <TertiaryBtn
+                        text={"REMOVE"}
+                        onPress={() => deleteFriend(item)}
+                      ></TertiaryBtn>
+                    </View>
                   </View>
+                ))
+              ) : (
+                <Text style={styles.description}>No friends yet!</Text>
+              )}
+            </>
 
-                  <TertiaryBtn
-                    text={"REMOVE"}
-                    onPress={() => deleteFriend(item)}
-                  ></TertiaryBtn>
-                </View>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.description}>No friends yet!</Text>
-          )}
-        </View>
+            <>
+              <Text style={styles.title}>Invited</Text>
+              {invites.status === "success" && invites.data.length > 0 ? (
+                invites.data.map((item, index) => (
+                  <View style={styles.card} key={index}>
+                    <View style={styles.wrapperTop}>
+                      <View style={styles.joined}>
+                        <Image style={styles.pfp} source={pfp} />
+                        <Text style={styles.title}>{item.name}</Text>
+                      </View>
 
-        <View>
-          <Text style={styles.title}>Invited</Text>
-          {!invites.isLoading && invites.data.length > 0 ? (
-            invites.data.map((item, index) => (
-              <View style={styles.card} key={index}>
-                <View style={styles.wrapperTop}>
-                  <View style={styles.joined}>
-                    <Image
-                      style={styles.pfp}
-                      source={require("../../../assets/pfp.png")}
-                    />
-                    <Text style={styles.title}>{item.name}</Text>
+                      <SecondaryBtn
+                        text={"CANCEL"}
+                        onPress={() => cancelInvite(item)}
+                      ></SecondaryBtn>
+                    </View>
                   </View>
+                ))
+              ) : (
+                <Text style={styles.description}>No invitations send!</Text>
+              )}
+            </>
 
-                  <SecondaryBtn
-                    text={"CANCEL"}
-                    onPress={() => cancelInvite(item)}
-                  ></SecondaryBtn>
-                </View>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.description}>No invitations send!</Text>
-          )}
-        </View>
-        <View>
-          <Text style={styles.title}>Other people</Text>
-          {otherPeople.length > 0 ? (
-            otherPeople.map((item, index) => (
-              <View style={styles.card} key={index}>
-                <View style={styles.wrapperTop}>
-                  <View style={styles.joined}>
-                    <Image
-                      style={styles.pfp}
-                      source={require("../../../assets/pfp.png")}
-                    ></Image>
-                    <Text style={styles.title}>{item.name}</Text>
+            <>
+              <Text style={styles.title}>Other people</Text>
+              {otherPeople.length > 0 ? (
+                otherPeople.map((item, index) => (
+                  <View style={styles.card} key={index}>
+                    <View style={styles.wrapperTop}>
+                      <View style={styles.joined}>
+                        <Image style={styles.pfp} source={pfp}></Image>
+                        <Text style={styles.title}>{item.name}</Text>
+                      </View>
+
+                      <PrimaryBtn
+                        text={"INVITE"}
+                        onPress={() => sendInvite(item.id)}
+                      ></PrimaryBtn>
+                    </View>
                   </View>
-
-                  <PrimaryBtn
-                    text={"INVITE"}
-                    onPress={() => sendInvite(item.id)}
-                  ></PrimaryBtn>
-                </View>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.description}>No users?</Text>
-          )}
-        </View>
+                ))
+              ) : (
+                <Text style={styles.description}>No users?</Text>
+              )}
+            </>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   )
@@ -293,7 +308,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#CCCCCC",
     borderRadius: 999,
-    backgroundColor: "green"
+    backgroundColor: "white"
   },
   screen: { backgroundColor: "white" },
   card: {
@@ -318,6 +333,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#052D40",
     paddingLeft: 12,
+    paddingTop: 6,
     width: "70%"
   },
   description: {
@@ -326,7 +342,6 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 12,
     color: "#052D40",
-    paddingVertical: 4,
     paddingLeft: 12
   },
   wave: {
