@@ -18,8 +18,10 @@ import {
 } from "@expo-google-fonts/poppins"
 import * as Notifications from "expo-notifications"
 import { AppContext } from "../../context/AppContext"
+import Constants from "expo-constants"
 
 const PageLogin = () => {
+  Constants.manifest.originalFullName = "@vitaapp/stuff"
   // Endpoint
   const discovery = useAutoDiscovery(
     "https://login.microsoftonline.com/913b1a98-9696-4db5-b548-9e17b6d3fc68/v2.0"
@@ -43,9 +45,10 @@ const PageLogin = () => {
       redirectUri: makeRedirectUri({
         scheme:
           process.env.NODE_ENV === "production"
-            ? "https://auth.expo.io/@vitaapp/stuff"
+            ? "gacprjscheme"
             : "",
-        useProxy: true
+        useProxy: true,
+        projectNameForProxy: "@vitaapp/stuff"
         //scheme: url,
       })
     },
@@ -70,14 +73,6 @@ const PageLogin = () => {
     const user = await getUser(token)
     await save("User", JSON.stringify(user)) // user= id, nam, ... , mood
     await save("token", token)
-    const expoToken = (
-      await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })
-    ).data
-    const cleanedToken = expoToken
-      .replace("ExponentPushToken[", "")
-      .replace("]", "")
-    await save("expoToken", expoToken)
-    await SetExpo(token, cleanedToken)
     await login(token, user)
   }
 

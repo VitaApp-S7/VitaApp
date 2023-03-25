@@ -30,7 +30,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "nl.gac.vitaapp"
+      "package": "nl.gac.vitaapp",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +41,15 @@
         "projectId": "5d6942ac-e779-47ab-885a-7d876e3ef01a"
       }
     },
-    "owner": "vitaapp"
+    "owner": "vitaapp",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#ffffff"
+        }
+      ]
+    ]
   }
 }

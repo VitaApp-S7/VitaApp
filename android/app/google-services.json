@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "75492208867",
+    "project_id": "vita-app-e5ff9",
+    "storage_bucket": "vita-app-e5ff9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75492208867:android:c9f6f8324cef4729a315d6",
+        "android_client_info": {
+          "package_name": "nl.gac.vitaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75492208867-2tbr631pumjrj1quj39ocj2cnhckrbf8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.gac.vitaapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "75492208867-gaqr20loibojd4o4erbvt638ed0l7sf8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.gac.vitaapp",
+            "certificate_hash": "a4e7e46f898a4c22a2a34d29272372e908c0a759"
+          }
+        },
+        {
+          "client_id": "75492208867-gnefal5jjtehggim85chqfgrci8njnbk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.gac.vitaapp",
+            "certificate_hash": "0bf6827fee16177d59ed08e408d836c8b37b0d3b"
+          }
+        },
+        {
+          "client_id": "75492208867-fmrv4a2uehf93218hc575bfss3n5519f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd48voehFGudngyv820VVHBcmQKUh2QLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75492208867-fmrv4a2uehf93218hc575bfss3n5519f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

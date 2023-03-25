@@ -76,6 +76,7 @@ export async function SetExpo(token, expoToken) {
       "Authorization": `Bearer ${ token }`
     }
   })
+  console.log(`${expoToken} written to database`)
   return await res.data
 }
 
