@@ -26,13 +26,12 @@ import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
-import * as SecureStore from "expo-secure-store"
 import Bg from "../../../assets/wave.svg"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import TertiaryBtn from "../../components/buttons/TertiaryBtn"
-import UserType from "../../types/UserType"
 import FriendType from "../../types/FriendType"
 import SendedFriendType from "../../types/SendedFriendType"
+import PublicUserType from "../../types/PublicUserType"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const _ = require("lodash")
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -45,14 +44,12 @@ const PageFriends = () => {
 
   const [ otherPeople, setOtherPeople ] = useState([])
 
-  const currentUser = useQuery<UserType>("currentUser", async () =>
-    JSON.parse(await SecureStore.getItemAsync("User"))
-  )
+  const appContext = useContext(AppContext)
 
   const queryClient = useQueryClient()
 
   const friends = useQuery<FriendType[]>(
-    "friends",
+    [ "friends" ],
     () => getFriends(accessToken),
     {
       onError: (error) => {
@@ -62,7 +59,7 @@ const PageFriends = () => {
   )
 
   const invites = useQuery<SendedFriendType[]>(
-    "invites",
+    [ "invites" ],
     () => getSendedRequests(accessToken),
     {
       onError: (error) => {
@@ -73,17 +70,17 @@ const PageFriends = () => {
 
   // fetching the users from db and setting other people array onSuccess
   // to set the array of other people we remove friends array and invites array from users.
-  const users = useQuery<UserType[]>("users", () => getAllUsers(accessToken), {
+  const users = useQuery<PublicUserType[]>([ "users" ], () => getAllUsers(accessToken), {
     enabled:
-      currentUser.status === "success" &&
-      friends.status === "success" &&
-      invites.status === "success",
+      !!appContext.user?.id &&
+      !!friends.data &&
+      !!invites.data,
     onSuccess: (users) => {
       const otherPeopleIds = _.difference(
         users.map((user) => user.id),
         friends.data.map((friend) => friend.userId),
         invites.data.map((invite) => invite.friendId),
-        [ currentUser.data.id ]
+        [ appContext.user.id ]
       )
       setOtherPeople(users.filter((user) => otherPeopleIds.includes(user.id)))
     },
@@ -118,7 +115,7 @@ const PageFriends = () => {
           queryClient.setQueryData([ "invites" ], oldInvited)
           setOtherPeople(oldOtherPeople)
         },
-        onSuccess: () => queryClient.invalidateQueries("invites")
+        onSuccess: () => queryClient.invalidateQueries([ "invites" ])
       })
     } catch (err) {
       console.log("Adding friend failed", err)

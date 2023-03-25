@@ -69,9 +69,9 @@ const PageLogin = () => {
   //login function
   const handleLogin = async (token) => {
     const firstLogin = await checkUser(token)
-    await save("FirstLogin", JSON.stringify(firstLogin)) //stringified because it gives an error message
+    await save("FirstLogin", JSON.stringify(firstLogin))
     const user = await getUser(token)
-    await save("User", JSON.stringify(user)) // user= id, nam, ... , mood
+    await save("User", JSON.stringify(user))
     await save("token", token)
     await login(token, user)
   }

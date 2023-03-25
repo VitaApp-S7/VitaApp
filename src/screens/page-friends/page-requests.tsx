@@ -24,7 +24,7 @@ import {
 import Bg from "../../../assets/wave.svg"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import FriendType from "../../types/FriendType"
 // const wait = (timeout) => {
 //   return new Promise((resolve) => setTimeout(resolve, timeout))
@@ -41,7 +41,7 @@ const PageRequests = () => {
   const queryClient = useQueryClient()
 
   const requestsQuery = useQuery<FriendType[]>(
-    "friendRequests",
+    [ "friendRequests" ],
     async () => await getFrRequests(accessToken),
     { onError: (err) => console.log(err) }
   )
@@ -50,7 +50,7 @@ const PageRequests = () => {
     try {
       const res = await cancelFrRequest(accessToken, id)
       if (res.status === 200) {
-        queryClient.setQueryData("friendRequests", requestsQuery.data.filter((item) => item.id !== id))
+        queryClient.setQueryData([ "friendRequests" ], requestsQuery.data.filter((item) => item.id !== id))
       }
     } catch (err) {
       console.log("request couldn't be cancelled", err)
@@ -61,7 +61,7 @@ const PageRequests = () => {
     try {
       const res = await acceptFrRequest(accessToken, id)
       if (res.status === 200) {
-        queryClient.setQueryData("friendRequests", requestsQuery.data.filter((item) => item.id !== id))
+        queryClient.setQueryData([ "friendRequests" ], requestsQuery.data.filter((item) => item.id !== id))
       }
     } catch (err) {
       console.log("request couldn't be accepted", err)
@@ -84,7 +84,7 @@ const PageRequests = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={async () => {
             setRefreshing(true)
-            await queryClient.invalidateQueries("friendRequests")
+            await queryClient.invalidateQueries([ "friendRequests" ])
             setRefreshing(false)
           }} />
         }
