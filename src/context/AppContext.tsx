@@ -41,10 +41,10 @@ export const AppProvider = (props: PropsWithChildren) => {
   }
 
   useEffect(() => {
-    if(expoToken !== null && expoToken !== user.expoToken){
+    if(expoToken !== null && user !== null && expoToken !== user.expoToken){
       SetExpo(accessToken, expoToken)
     }
-  }, [ expoToken ])
+  }, [ expoToken, user ])
 
   const logout = async () => {
     await SecureStore.deleteItemAsync("User")
