@@ -1,5 +1,5 @@
 //import {useIsAuthenticated} from "@azure/msal-react";
-import AppNav from "./src/navigation/AppNav"
+import AppNav from "./src/navigation/AppNav/AppNav"
 import React from "react"
 // import * as Linking from "expo-linking"
 import Toast from "react-native-toast-message"

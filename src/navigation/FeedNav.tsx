@@ -12,7 +12,7 @@ import React from "react"
 const Tab = createMaterialTopTabNavigator()
 const Stack = createNativeStackNavigator()
 
-const Feed = () => {
+const FeedNav = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="News & Events" component={FeedTab} />
@@ -48,4 +48,4 @@ const FeedTab = () => {
   )
 }
 
-export default Feed
+export default FeedNav

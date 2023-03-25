@@ -1,11 +1,19 @@
 import React, { useContext } from "react"
 import { NavigationContainer } from "@react-navigation/native"
-import { AppContext } from "../context/AppContext"
-import PageLogin from "../screens/page-login/page-login"
+import { AppContext } from "../../context/AppContext"
+import PageLogin from "../../screens/page-login/page-login"
 import { InAppTabNav } from "./InAppTabNav"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
-const Stack = createNativeStackNavigator()
+type AppNavStackParamList = {
+  App: undefined;
+  Login: undefined;
+};
+
+const Stack = createNativeStackNavigator<AppNavStackParamList>()
+//type StackProps = BottomTabScreenProps<AppNavStackParamList>
+
+const screenOptions = { headerShown: false }
 
 const AppNav = () => {
   const { accessToken } = useContext(AppContext)
@@ -17,13 +25,13 @@ const AppNav = () => {
           <Stack.Screen
             name="App"
             component={InAppTabNav}
-            options={{ headerShown: false }}
+            options={screenOptions}
           />
         ) : (
           <Stack.Screen
             name="Login"
             component={PageLogin}
-            options={{ headerShown: false }}
+            options={screenOptions}
           />
         )}
       </Stack.Navigator>

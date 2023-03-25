@@ -1,6 +1,7 @@
 import {
   createNativeStackNavigator,
-  NativeStackNavigationOptions
+  NativeStackNavigationOptions,
+  NativeStackScreenProps
 } from "@react-navigation/native-stack"
 import PageAccount from "../screens/page-account/page-account"
 import PageHome from "../screens/page-home/page-home"
@@ -9,16 +10,20 @@ import React from "react"
 import PageHistory from "../screens/page-history/page-history"
 import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
 import { useNavigation } from "@react-navigation/native"
-import {
-  NavigationRouteParamList,
-  RouteParamList
-} from "../types/RouteParamList"
 import { TopBarNavigationButton } from "../components/buttons/TopBarNavigationButton"
 
-const Stack = createNativeStackNavigator<RouteParamList>()
+type BoostersNavStackParamList = {
+  Home: undefined;
+  Account: undefined;
+  History: undefined;
+  "Moodbooster Details": undefined;
+};
+
+const Stack = createNativeStackNavigator<BoostersNavStackParamList>()
+type StackProps = NativeStackScreenProps<BoostersNavStackParamList>;
 
 const HeaderRight = () => {
-  const navigation = useNavigation<NavigationRouteParamList>()
+  const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
     <TopBarNavigationButton onClick={() => navigation.navigate("Account")}>
@@ -28,7 +33,7 @@ const HeaderRight = () => {
 }
 
 const HeaderLeft = () => {
-  const navigation = useNavigation<NavigationRouteParamList>()
+  const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
     <TopBarNavigationButton onClick={() => navigation.navigate("History")}>
@@ -43,7 +48,7 @@ const options: NativeStackNavigationOptions = {
   headerTitleAlign: "center"
 }
 
-const Home = () => {
+const BoostersNav = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={PageHome} options={options} />
@@ -57,4 +62,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default BoostersNav
