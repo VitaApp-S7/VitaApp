@@ -5,9 +5,10 @@ import PageLogin from "../screens/page-login/page-login"
 import { InAppTabNav } from "./InAppTabNav"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
+const Stack = createNativeStackNavigator()
+
 const AppNav = () => {
   const { accessToken } = useContext(AppContext)
-  const Stack = createNativeStackNavigator()
 
   return (
     <NavigationContainer>
