@@ -26,19 +26,17 @@ const StartupMood = ({ changeMood }) => {
 
   useEffect(() => {
     IsModalVisable()
-  }),
-  []
+  }, [])
+
 
   async function IsModalVisable() {
     const test = await GetDate(accessToken)
 
     if (test.toString() !== date.toDateString()) {
       await SetDate(accessToken, date.toDateString())
-      SetModalVisable(accessToken, true)
       setModalVisible(true)
     } else {
       if (modalVisible === false) {
-        SetModalVisable(accessToken, false)
         setModalVisible(false)
       }
     }
