@@ -33,12 +33,7 @@ const StartupMood = ({ changeMood }) => {
     const test = await GetDate(accessToken)
 
     if (test.toString() !== date.toDateString()) {
-      await SetDate(accessToken, date.toDateString())
       setModalVisible(true)
-    } else {
-      if (modalVisible === false) {
-        setModalVisible(false)
-      }
     }
   }
 
@@ -46,8 +41,8 @@ const StartupMood = ({ changeMood }) => {
     setModalVisible(false)
     await SetModalVisable(accessToken, false)
     await updateUserMood(accessToken, points)
+    await SetDate(accessToken, new Date().toDateString())
     setMoodPoints(points)
-    console.log(modalVisible)
   }
 
   const [ fontsLoaded ] = useFonts({
