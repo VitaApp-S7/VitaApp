@@ -9,7 +9,7 @@ import Toast from "react-native-toast-message"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { RouteParamList } from "../../types/RouteParamList"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
-import { MoodboosterStartedType } from "../../types/MoodboosterTypes"
+import { UserMoodboosterType } from "../../types/MoodboosterTypes"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
 import { AppContext } from "../../context/AppContext"
 
@@ -17,7 +17,7 @@ const PageMoodboosterDetails = () => {
   const item = useRoute<RouteProp<RouteParamList, "Moodbooster Details">>()
     .params.item as any
 
-  const moodbooster: MoodboosterStartedType = item.moodbooster
+  const moodbooster: UserMoodboosterType = item.moodbooster
     ? item
     : { moodbooster: item }
 

@@ -1,12 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { StyleSheet, Platform, View } from "react-native"
 import * as Notifications from "expo-notifications"
 import * as Permissions from "expo-permissions"
 import * as Device from "expo-device"
 
 import { setUserExpoPushToken } from "../../services/NotificationService"
+import { AppContext } from "../../context/AppContext"
+import { SetExpo } from "../../services/userService"
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -16,14 +19,20 @@ Notifications.setNotificationHandler({
   })
 })
 
-export default function TestPage() {
-  const [ expoPushToken, setExpoPushToken ] = useState("")
-  const [ notification, setNotification ] = useState(false)
+export default function Notification() {
   const notificationListener = useRef()
   const responseListener = useRef()
 
+  const { setExpoToken } = useContext(AppContext)
+
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => console.log(token))
+    registerForPushNotificationsAsync()
+      .then(async token => {
+        const cleanedToken = token.replace("ExponentPushToken[", "").replace("]", "")
+        setExpoToken(cleanedToken)
+        console.log(token)
+      })
+      .catch(reason => console.log(reason))
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current)
@@ -49,15 +58,6 @@ async function schedulePushNotification() {
 async function registerForPushNotificationsAsync() {
   let token
 
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [ 0, 250, 250, 250 ],
-      lightColor: "#FF231F7C"
-    })
-  }
-
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync()
     let finalStatus = existingStatus
@@ -69,9 +69,18 @@ async function registerForPushNotificationsAsync() {
       alert("Failed to get push token for push notification!")
       return
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data
+    token = (await Notifications.getExpoPushTokenAsync({ projectId: "5d6942ac-e779-47ab-885a-7d876e3ef01a" })).data
   } else {
     alert("Must use physical device for Push Notifications")
+  }
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [ 0, 250, 250, 250 ],
+      lightColor: "#FF231F7C"
+    })
   }
 
   return token
