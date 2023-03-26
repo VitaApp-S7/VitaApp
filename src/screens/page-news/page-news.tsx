@@ -1,40 +1,40 @@
 import React, { useContext, useEffect, useState } from "react"
 import {
-  View,
-  Text,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  ScrollView
+  View
 } from "react-native"
 import {
-  useFonts,
+  Poppins_400Regular as Poppins400Regular,
   Poppins_600SemiBold as Poppins600SemiBold,
-  Poppins_400Regular as Poppins400Regular
+  useFonts
 } from "@expo-google-fonts/poppins"
 import { getNews } from "../../services/newsService"
 import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
 import parseDate from "../../services/dataParser"
+import { useQuery } from "@tanstack/react-query"
+import NewsType from "../../types/NewsType"
 
 const PageNews = ({ navigation }) => {
-  const [ news, setNews ] = useState([])
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, notification } = useContext(AppContext)
+  const [ refreshing, setRefreshing ] = useState(false)
+
+  const { refetch, data, isSuccess } = useQuery<NewsType[]>([ "news" ], async () => {
+    const response = await getNews(accessToken)
+    return response.data
+  })
 
   useEffect(() => {
-    handleData()
-  }, [])
-
-  const handleData = async () => {
-    try {
-      getNews(accessToken)
-        .then((res) => res.data)
-        .then((data) => {
-          setNews(data)
-        })
-    } catch (err) {
-      console.log("error fetching events : ", err)
+    if(notification !== null) {
+      if(notification.request.content.title == "New news item published"){
+        refetch()
+      }
     }
-  }
+  }, [ notification ])
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -53,24 +53,42 @@ const PageNews = ({ navigation }) => {
   }
 
   return (
-    <ScrollView style={styles.screen}>
-      <Bg style={styles.wave} />
-      <Text style={styles.moodtitle}>Latest news</Text>
+    <ScrollView
+      style={styles.screen}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={async () => {
+            setRefreshing(true)
+            await refetch()
+            setRefreshing(false)
+          }}
+        />
+      }
+    >
+      <View style={{ minHeight: 300 }}>
+        <Bg style={styles.wave} />
+        <Text style={styles.moodtitle}>Latest news</Text>
 
-      {news.map((item, index) => (
-        <View key={index} style={styles.card}>
-          <TouchableOpacity
-            onPress={() => handleOnPress(item)}
-            style={{ width: "100%" }}
-          >
-            <View style={styles.wrapperTop}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.date}>{parseDate(item.date)}</Text>
+        {isSuccess ? (
+          data.map((item, index) => (
+            <View key={index} style={styles.card}>
+              <TouchableOpacity
+                onPress={() => handleOnPress(item)}
+                style={{ width: "100%" }}
+              >
+                <View style={styles.wrapperTop}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.date}>{parseDate(item.date)}</Text>
+                </View>
+                <Text style={styles.description}>{item.description}</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.description}>{item.description}</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+          ))
+        ) : (
+          <Text style={styles.moodtitle}>Loading news...</Text>
+        )}
+      </View>
     </ScrollView>
   )
 }
@@ -78,9 +96,11 @@ const PageNews = ({ navigation }) => {
 export default PageNews
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: "white" },
+  screen: {
+    backgroundColor: "white",
+    height: 1000
+  },
   card: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 8,

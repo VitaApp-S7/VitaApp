@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useEffect, useMemo, useState } from "react"
 import UserType from "../types/UserType"
 import * as SecureStore from "expo-secure-store"
 import { SetExpo } from "../services/userService"
+import * as Notifications from "expo-notifications"
 
 interface AppContextType {
   user: UserType;
@@ -14,6 +15,8 @@ interface AppContextType {
   logout: () => Promise<void>;
   expoToken: string;
   setExpoToken: React.Dispatch<React.SetStateAction<string>>;
+  notification: Notifications.Notification;
+  setNotification: (notification: Notifications.Notification) => void;
 }
 
 export const AppContext = React.createContext<AppContextType>({
@@ -26,7 +29,9 @@ export const AppContext = React.createContext<AppContextType>({
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   expoToken: null,
-  setExpoToken: (accessToken) => accessToken
+  setExpoToken: (accessToken) => accessToken,
+  notification: null,
+  setNotification: (notification) => notification
 })
 
 export const AppProvider = (props: PropsWithChildren) => {
@@ -34,10 +39,15 @@ export const AppProvider = (props: PropsWithChildren) => {
   const [ accessToken, setAccessToken ] = useState<string>(null)
   const [ moodPoints, setMoodPoints ] = useState(10)
   const [ expoToken, setExpoToken ] = useState<string>(null)
+  const [ notification, setNotification ] = useState<Notifications.Notification>(null)
 
   const login = async (token: string, newUser: UserType) => {
     setAccessToken(token)
     setUser(newUser)
+  }
+
+  const setNotificationMethod = async (notification: Notifications.Notification) => {
+    setNotification(notification)
   }
 
   useEffect(() => {
@@ -65,9 +75,11 @@ export const AppProvider = (props: PropsWithChildren) => {
       login,
       logout,
       expoToken,
-      setExpoToken
+      setExpoToken,
+      notification,
+      setNotification: setNotificationMethod
     }
-  }, [ user, accessToken, moodPoints, expoToken ])
+  }, [ user, accessToken, moodPoints, expoToken, notification ])
 
   useEffect(() => {
     if (user !== undefined && user !== null) {

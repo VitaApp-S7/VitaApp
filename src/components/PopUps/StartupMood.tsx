@@ -25,31 +25,19 @@ const StartupMood = ({ changeMood }) => {
   const date = new Date()
 
   useEffect(() => {
-    IsModalVisable()
-  }),
-  []
-
-  async function IsModalVisable() {
-    const test = await GetDate(accessToken)
-
-    if (test.toString() !== date.toDateString()) {
-      await SetDate(accessToken, date.toDateString())
-      SetModalVisable(accessToken, true)
-      setModalVisible(true)
-    } else {
-      if (modalVisible === false) {
-        SetModalVisable(accessToken, false)
-        setModalVisible(false)
+    GetDate(accessToken).then((databaseDate) => {
+      if (databaseDate.toString() !== date.toDateString()) {
+        setModalVisible(true)
       }
-    }
-  }
+    })
+  }, [])
 
   const updateMoodPopUp = async points => {
     setModalVisible(false)
     await SetModalVisable(accessToken, false)
     await updateUserMood(accessToken, points)
+    await SetDate(accessToken, new Date().toDateString())
     setMoodPoints(points)
-    console.log(modalVisible)
   }
 
   const [ fontsLoaded ] = useFonts({
