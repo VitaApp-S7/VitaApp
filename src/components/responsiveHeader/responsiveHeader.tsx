@@ -14,46 +14,41 @@ import React, { useContext, useState } from "react"
 import { updateUserMood } from "../../services/userService"
 import { AppContext } from "../../context/AppContext"
 
+interface ChangePicProps {
+  moodPoints: number;
+}
+
+const ChangePic = ({ moodPoints }: ChangePicProps) => {
+  const limitOfHappiness = 7
+  const limitOfSadness = 4
+
+  let source
+  if(moodPoints > limitOfHappiness){
+    source = require("../../../assets/Hairy.png")
+  }
+  if(moodPoints <= limitOfHappiness && moodPoints >= limitOfSadness){
+    source = require("../../../assets/Hairy.png")
+  }
+  if(moodPoints < limitOfSadness){
+    source = require("../../../assets/Hairy.png")
+  }
+
+  return <Image
+    source={source}
+    style={{
+      width: 180,
+      height: 180
+    }}
+  />
+}
+
 const ResponsiveHeader = () => {
   const [ isModalVisible, setModalVisible ] = useState<boolean>(false)
-  const { accessToken, user, moodPoints, setMoodPoints } = useContext(AppContext)
+  const { accessToken, user, moodPoints, setMoodPoints } =
+    useContext(AppContext)
   const UpdateUserMood = async () => {
     await updateUserMood(accessToken, moodPoints)
     setModalVisible(!isModalVisible)
-  }
-
-  const ChangePic = () => {
-    if (moodPoints > 7) {
-      return (
-        <Image
-          source={require("../../../assets/Hairy.png")}
-          style={{
-            width: 180,
-	    height: 180
-          }}
-        />
-      ) //<Moodperson />;
-    } else if (moodPoints <= 7 && moodPoints >= 4) {
-      return (
-        <Image
-          source={require("../../../assets/Hairy.png")}
-          style={{
-            width: 180,
-            height: 180
-          }}
-        />
-      ) //<MoodpersonNeutral />;
-    } else if (moodPoints < 4) {
-      return (
-        <Image
-          source={require("../../../assets/Hairy.png")}
-          style={{
-            width: 180,
-            height: 180
-          }}
-        />
-      ) //<MoodpersonSad />;
-    }
   }
 
   return (
@@ -66,7 +61,7 @@ const ResponsiveHeader = () => {
         >
           <View style={styles.homeTop}>
             <Text style={styles.heading2}>{user.name}</Text>
-            <ChangePic />
+            <ChangePic moodPoints={moodPoints} />
             <View style={styles.moodcontainer}>
               <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <Image
@@ -104,7 +99,10 @@ const ResponsiveHeader = () => {
                       />
                     </TouchableOpacity>
                   </View>
-                  <TertiaryBtn text="DONE" onPress={async () => await UpdateUserMood()} />
+                  <TertiaryBtn
+                    text="DONE"
+                    onPress={async () => await UpdateUserMood()}
+                  />
                 </View>
               </Modal>
             </View>
