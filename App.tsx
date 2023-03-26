@@ -15,8 +15,7 @@ const queryClient = new QueryClient()
 
 const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
-  key: "VITAAPP_ASYNC_STORAGE",
-  throttleTime: 500
+  key: "VITAAPP_ASYNC_STORAGE"
 })
 
 export default function App() {
