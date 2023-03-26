@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   RefreshControl,
   ScrollView,
@@ -20,13 +20,21 @@ import { useQuery } from "@tanstack/react-query"
 import NewsType from "../../types/NewsType"
 
 const PageNews = ({ navigation }) => {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, notification } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const newsQuery = useQuery<NewsType[]>([ "news" ], async () => {
+  const { refetch, data, isSuccess } = useQuery<NewsType[]>([ "news" ], async () => {
     const response = await getNews(accessToken)
     return response.data
   })
+
+  useEffect(() => {
+    if(notification !== null) {
+      if(notification.request.content.title == "New news item published"){
+        refetch()
+      }
+    }
+  }, [ notification ])
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -52,7 +60,7 @@ const PageNews = ({ navigation }) => {
           refreshing={refreshing}
           onRefresh={async () => {
             setRefreshing(true)
-            await newsQuery.refetch()
+            await refetch()
             setRefreshing(false)
           }}
         />
@@ -62,8 +70,8 @@ const PageNews = ({ navigation }) => {
         <Bg style={styles.wave} />
         <Text style={styles.moodtitle}>Latest news</Text>
 
-        {newsQuery.isSuccess ? (
-          newsQuery.data.map((item, index) => (
+        {isSuccess ? (
+          data.map((item, index) => (
             <View key={index} style={styles.card}>
               <TouchableOpacity
                 onPress={() => handleOnPress(item)}

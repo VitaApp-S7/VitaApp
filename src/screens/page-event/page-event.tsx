@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Card, Paragraph, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import {
@@ -26,7 +26,7 @@ import EventType from "../../types/EventType"
 import TertiaryBtn from "../../components/buttons/TertiaryBtn"
 
 const PageEvent = ({ navigation }) => {
-  const { accessToken, user } = useContext(AppContext)
+  const { accessToken, user, notification } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
   const { data, isSuccess, refetch } = useQuery<EventType[]>(
@@ -47,9 +47,18 @@ const PageEvent = ({ navigation }) => {
     }
   )
 
+  useEffect(() => {
+    if(notification !== null) {
+      if(notification.request.content.title == "New event created"){
+        refetch()
+      }
+    }
+  }, [ notification ])
+
   const [ joinedEvents, setJoinedEvents ] = useState<EventType[]>(
     (data ? data : []).filter((event) => event.userIds.includes(user.id))
   )
+
   const [ notJoinedEvents, setNotJoinedEvents ] = useState<EventType[]>(
     (data ? data : []).filter((event) => !event.userIds.includes(user.id))
   )
