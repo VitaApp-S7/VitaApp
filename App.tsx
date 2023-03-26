@@ -12,6 +12,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Reactotron from "reactotron-react-native"
 import { QueryClientManager, reactotronReactQuery } from "reactotron-react-query"
+import { StatusBar } from "expo-status-bar"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +49,7 @@ export default function App() {
         <AppNav />
         <Notification />
         <Toast />
+        <StatusBar style={"dark"}></StatusBar>
       </AppProvider>
     </PersistQueryClientProvider>
   )
