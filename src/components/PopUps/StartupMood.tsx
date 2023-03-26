@@ -25,17 +25,12 @@ const StartupMood = ({ changeMood }) => {
   const date = new Date()
 
   useEffect(() => {
-    IsModalVisable()
+    GetDate(accessToken).then((databaseDate) => {
+      if (databaseDate.toString() !== date.toDateString()) {
+        setModalVisible(true)
+      }
+    })
   }, [])
-
-
-  async function IsModalVisable() {
-    const test = await GetDate(accessToken)
-
-    if (test.toString() !== date.toDateString()) {
-      setModalVisible(true)
-    }
-  }
 
   const updateMoodPopUp = async points => {
     setModalVisible(false)

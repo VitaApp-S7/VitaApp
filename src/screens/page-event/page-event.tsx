@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react"
+import React, { useCallback, useContext, useState } from "react"
 import { Card, Paragraph, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import {
@@ -23,15 +23,36 @@ import parseDate from "../../services/dataParser"
 import { AppContext } from "../../context/AppContext"
 import { useQuery } from "@tanstack/react-query"
 import EventType from "../../types/EventType"
+import TertiaryBtn from "../../components/buttons/TertiaryBtn"
 
 const PageEvent = ({ navigation }) => {
   const { accessToken, user } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const eventsQuery = useQuery<EventType[]>([ "events" ], async () => {
-    const response = await getEvents(accessToken)
-    return response.data
-  })
+  const { data, isSuccess, refetch } = useQuery<EventType[]>(
+    [ "events" ],
+    async () => {
+      const response = await getEvents(accessToken)
+      return response.data
+    },
+    {
+      onSuccess: (data) => {
+        setJoinedEvents(
+          data.filter((event) => event.userIds.includes(user.id))
+        )
+        setNotJoinedEvents(
+          data.filter((event) => !event.userIds.includes(user.id))
+        )
+      }
+    }
+  )
+
+  const [ joinedEvents, setJoinedEvents ] = useState<EventType[]>(
+    (data ? data : []).filter((event) => event.userIds.includes(user.id))
+  )
+  const [ notJoinedEvents, setNotJoinedEvents ] = useState<EventType[]>(
+    (data ? data : []).filter((event) => !event.userIds.includes(user.id))
+  )
 
   const handleOnPress = (item: any) => {
     navigation.navigate("Event Details", { item })
@@ -40,33 +61,26 @@ const PageEvent = ({ navigation }) => {
   const joinEventOnPress = async (id) => {
     const response = await joinEvent(accessToken, id)
     if (response.status === 200) {
-      // alert
+      setJoinedEvents([
+        ...joinedEvents,
+        ...notJoinedEvents.filter((event) => event.id === id)
+      ])
+      setNotJoinedEvents(notJoinedEvents.filter((event) => event.id !== id))
+      await refetch()
     }
   }
 
   const leaveEventOnPress = async (id) => {
     const response = await leaveEvent(accessToken, id)
     if (response.status === 200) {
-      // alert
+      setNotJoinedEvents([
+        ...notJoinedEvents,
+        ...joinedEvents.filter((event) => event.id === id)
+      ])
+      setJoinedEvents(joinedEvents.filter((event) => event.id !== id))
+      await refetch()
     }
   }
-
-  const processedEvents = useMemo(() => {
-    if (!eventsQuery.isSuccess)
-      return {
-        notJoinedEvents: [],
-        joinedEvents: []
-      }
-
-    return {
-      notJoinedEvents: eventsQuery.data.filter(
-        (event) => !event.userIds.includes(user.id)
-      ),
-      joinedEvents: eventsQuery.data.filter((event) =>
-        event.userIds.includes(user.id)
-      )
-    }
-  }, [ eventsQuery.data ])
 
   // fonts
   const [ fontsLoaded ] = useFonts({
@@ -74,11 +88,16 @@ const PageEvent = ({ navigation }) => {
     Poppins400Regular
   })
 
-  const RightCardTitle = useCallback((item) => (props) => (
-    <Subheading style={styles.date}>
-      {parseDate(item.date)}{<Text> </Text>}
-    </Subheading>
-  ),[])
+  const RightCardTitle = useCallback(
+    (item) => (props) =>
+      (
+        <Subheading style={styles.date}>
+          {parseDate(item.date)}
+          {<Text> </Text>}
+        </Subheading>
+      ),
+    []
+  )
 
   if (!fontsLoaded) {
     return null
@@ -93,7 +112,7 @@ const PageEvent = ({ navigation }) => {
             refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
-              await eventsQuery.refetch()
+              await refetch()
               setRefreshing(false)
             }}
           />
@@ -101,8 +120,8 @@ const PageEvent = ({ navigation }) => {
       >
         <Bg style={styles.wave} />
         <Text style={styles.moodtitle}>Signed Up</Text>
-        {processedEvents.joinedEvents.length > 0 ? (
-          processedEvents.joinedEvents.map((item, index) => (
+        {isSuccess && joinedEvents.length > 0 ? (
+          joinedEvents.map((item, index) => (
             <View key={index} style={styles.card}>
               <TouchableOpacity
                 onPress={() => handleOnPress(item)}
@@ -127,10 +146,10 @@ const PageEvent = ({ navigation }) => {
                     color="#031D29"
                   />
                 </View>
-                <PrimaryBtn
+                <TertiaryBtn
                   text={"LEAVE"}
-                  onPress={() => leaveEventOnPress(item.id)}
-                ></PrimaryBtn>
+                  onPress={async () => await leaveEventOnPress(item.id)}
+                ></TertiaryBtn>
               </View>
             </View>
           ))
@@ -140,8 +159,8 @@ const PageEvent = ({ navigation }) => {
           </Text>
         )}
         <Text style={styles.moodtitle}>Available</Text>
-        {processedEvents.notJoinedEvents.length > 0 ? (
-          processedEvents.notJoinedEvents.map((item, index) => (
+        {isSuccess && notJoinedEvents.length > 0 ? (
+          notJoinedEvents.map((item, index) => (
             // <View key={index} style={styles.card}>
             //   <TouchableOpacity
             //     onPress={() => handleOnPress(item)}
@@ -207,7 +226,7 @@ const PageEvent = ({ navigation }) => {
                 </View>
                 <PrimaryBtn
                   text="JOIN"
-                  onPress={() => joinEventOnPress(item.id)}
+                  onPress={async () => await joinEventOnPress(item.id)}
                 ></PrimaryBtn>
               </Card.Actions>
             </Card>
@@ -277,7 +296,7 @@ const styles = StyleSheet.create({
   icon: { paddingHorizontal: 8 },
   wave: {
     position: "absolute",
-    backgroundColor: "white" 
+    backgroundColor: "white"
   },
   wrapperTop: {
     flex: 1,
