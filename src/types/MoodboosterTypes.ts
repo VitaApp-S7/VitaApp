@@ -25,3 +25,9 @@ enum MoodboosterAcceptedStatus {
   COMPLETE = "COMPLETE",
   CANCELLED = "CANCELLED"
 }
+
+export const MoodboosterTypeToStarted = (
+  mb: MoodboosterType
+): MoodboosterStartedType => {
+  return { moodbooster: mb }
+}
