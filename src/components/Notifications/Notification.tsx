@@ -23,7 +23,7 @@ export default function Notification() {
   const notificationListener = useRef()
   const responseListener = useRef()
 
-  const { setExpoToken } = useContext(AppContext)
+  const { setExpoToken, setNotification } = useContext(AppContext)
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -33,6 +33,16 @@ export default function Notification() {
         console.log(token)
       })
       .catch(reason => console.log(reason))
+
+    // @ts-ignore
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification)
+    })
+
+    // @ts-ignore
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response)
+    })
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current)
