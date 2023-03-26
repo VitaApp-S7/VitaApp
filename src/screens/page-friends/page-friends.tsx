@@ -42,8 +42,6 @@ const PageFriends = () => {
 
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const [ otherPeople, setOtherPeople ] = useState([])
-
   const appContext = useContext(AppContext)
 
   const queryClient = useQueryClient()
@@ -70,7 +68,7 @@ const PageFriends = () => {
 
   // fetching the users from db and setting other people array onSuccess
   // to set the array of other people we remove friends array and invites array from users.
-  const users = useQuery<PublicUserType[]>([ "users" ], () => getAllUsers(accessToken), {
+  const users = useQuery<PublicUserType[]>([ "publicUsers" ], () => getAllUsers(accessToken), {
     enabled:
       !!appContext.user?.id &&
       !!friends.data &&
@@ -88,6 +86,13 @@ const PageFriends = () => {
       console.log("error", error)
     }
   })
+
+  const [ otherPeople, setOtherPeople ] = useState((users.data ? users.data : []).filter((user) => _.difference(
+    users.data.map((user) => user.id),
+    friends.data.map((friend) => friend.userId),
+    invites.data.map((invite) => invite.friendId),
+    [ appContext.user.id ]
+  ).includes(user.id)))
 
   // we use react query mutation to change values in front end
   const mutationAddFriend = useMutation((id) => addFriend(accessToken, id))
