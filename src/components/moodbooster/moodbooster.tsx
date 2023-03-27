@@ -1,11 +1,5 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext } from "react"
 import { View, StyleSheet } from "react-native"
-import {
-  startActivity,
-  cancelActivity,
-  completeActivity
-} from "../../services/moodboosterService"
-
 import { Card, Paragraph } from "react-native-paper"
 import {
   useFonts,
@@ -19,44 +13,43 @@ import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
 import {
   UserMoodboosterType,
-  MoodboosterType,
-  MoodboosterTypeToStarted
+  MoodboosterType
 } from "../../types/MoodboosterTypes"
 import { useNavigation } from "@react-navigation/native"
 import { AppContext } from "../../context/AppContext"
+import useMoodboosterMutations from "../../services/useMoodboosterMutations"
+
 interface Moodbooster {
-  mb: UserMoodboosterType | MoodboosterType
+  mb: MoodboosterType
+  userMb?: UserMoodboosterType
 }
 
 const Moodbooster = (props: Moodbooster) => {
-  const [ data, setData ] = useState<UserMoodboosterType>()
-  const [ canStart, setCanStart ] = useState(true)
-  const { moodPoints, setMoodPoints, accessToken } = useContext(AppContext)
+  const { moodPoints, setMoodPoints } = useContext(AppContext)
   const navigation = useNavigation()
-
-  useEffect(() => {
-    if (Object.keys(props.mb).includes("moodbooster")) {
-      setData(props.mb as UserMoodboosterType)
-      setCanStart(false)
-    } else {
-      setData(MoodboosterTypeToStarted(props.mb as MoodboosterType))
-      setCanStart(true)
-    }
-  }, [])
+  const {
+    startMoodboosterMutation,
+    updateMoodboostersQuery,
+    removeMoodboosterFromAllMoodboosters,
+    updateUserMoodboostersQuery,
+    completeMoodboosterMutation,
+    removeMoodboosterFromUserMoodboosterQuery,
+    cancelMoodboosterMutation
+  } = useMoodboosterMutations()
 
   //TOAST AFTER COMPLETE
   const completedToast = () => {
     Toast.show({
       type: "success",
       text1: "Completed moodbooster!",
-      text2: "dfs"
+      text2: props.mb.description
     })
   }
   const cancelledToast = () => {
     Toast.show({
       type: "error",
       text1: "Cancelled moodbooster!",
-      text2: data.moodbooster.description
+      text2: props.mb.description
     })
   }
 
@@ -71,27 +64,40 @@ const Moodbooster = (props: Moodbooster) => {
   }
 
   const handleToStart = async () => {
-    const userMoodbooster: UserMoodboosterType = await startActivity(
-      data.moodbooster.id,
-      accessToken
+    const userMoodbooster: UserMoodboosterType = await startMoodboosterMutation(
+      props.mb.id
     )
-    setData(userMoodbooster)
-    setCanStart(false)
+    updateUserMoodboostersQuery(userMoodbooster)
+    removeMoodboosterFromAllMoodboosters(props.mb.id)
   }
   const handleToComplete = async () => {
-    await completeActivity(data.id, accessToken)
-    setCanStart(false)
+    if (!props.userMb) {
+      return
+    }
+    await completeMoodboosterMutation(props.userMb.id)
+    updateMoodboostersQuery(props.mb)
+    removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
+
     completedToast()
-    setMoodPoints(moodPoints + data.moodbooster.points)
+    setMoodPoints(moodPoints + props.mb.points)
   }
   const handleToCancel = async () => {
-    await cancelActivity(data.id, accessToken)
+    if (!props.userMb) {
+      return
+    }
+    await cancelMoodboosterMutation(props.userMb.id)
+    updateMoodboostersQuery(props.mb)
+    removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
     cancelledToast()
-    setCanStart(true)
   }
 
   const handleOnPress = () => {
-    navigation.navigate("Moodbooster Details", { data })
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    navigation.navigate("Moodbooster Details", {
+      mb: props.mb,
+      userMb: props.userMb
+    })
   }
 
   return (
@@ -100,24 +106,24 @@ const Moodbooster = (props: Moodbooster) => {
         style={styles.surface}
         mode="outlined"
         theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-        key={data.moodbooster.id}
+        key={props.mb.id}
         onPress={() => handleOnPress()}
       >
         <Card.Content>
           <Paragraph style={styles.description}>
-            {data.moodbooster.description}
+            {props.mb.description}
           </Paragraph>
         </Card.Content>
         <Card.Actions style={styles.buttons}>
-          {canStart ? (
+          {!props.userMb ? (
             <PrimaryBtn
               text={"START"}
-              disabled={!canStart}
+              disabled={!!props.userMb}
               onPress={() => handleToStart()}
             ></PrimaryBtn>
           ) : (
             <>
-              <InviteFriends disabled={false} moodboosterId={data.id} />
+              <InviteFriends disabled={false} moodboosterId={props.userMb.id} />
               <SecondaryBtn
                 text={"CANCEL"}
                 onPress={() => handleToCancel()}

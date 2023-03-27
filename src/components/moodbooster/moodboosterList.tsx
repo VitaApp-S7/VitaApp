@@ -1,11 +1,11 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useContext,
-  useEffect,
-  useState
+  useEffect
 } from "react"
-import { View, StyleSheet } from "react-native"
+import { View } from "react-native"
 import {
   getAllActivities,
   getAllActiveActivities
@@ -24,33 +24,47 @@ import {
 } from "../../types/MoodboosterTypes"
 import { AppContext } from "../../context/AppContext"
 import Moodbooster from "./moodbooster"
+import { useQuery } from "@tanstack/react-query"
 interface MoodboosterList {
   refresh: boolean
   setRefreshing: Dispatch<SetStateAction<boolean>>
 }
 
 const MoodboosterList = (props: MoodboosterList) => {
-  const [ moodboosterList, setMoodboosterList ] = useState<MoodboosterType[]>()
-  const [ userMoodboosterList, setUserMoodboosterList ] =
-    useState<UserMoodboosterType[]>()
   const { accessToken } = useContext(AppContext)
 
-  //TOAST AFTER COMPLETE
-  const handleActivities = async () => {
-    const userMoodboosters = await getAllActiveActivities(accessToken)
-    const moodboosters = await getAllActivities(accessToken)
+  const moodboosters = useQuery<MoodboosterType[]>(
+    [ "moodboosters" ],
+    () => getAllActivities(accessToken),
+    {
+      onError: (error) => {
+        console.log("moodboosters get req error", error)
+      }
+    }
+  )
+  const userMoodboosters = useQuery<UserMoodboosterType[]>(
+    [ "userMoodboosters" ],
+    () => getAllActiveActivities(accessToken),
+    {
+      onError: (error) => {
+        console.log("user moodboosters get req error", error)
+      }
+    }
+  )
 
-    setMoodboosterList(moodboosters)
-    setUserMoodboosterList(userMoodboosters)
-  }
-
-  useEffect(() => {
-    handleActivities()
-  }, [])
+  const nonUserMoodboosters = useCallback(() => {
+    return moodboosters.data?.filter(
+      (mb) =>
+        !userMoodboosters.data?.find(
+          (userMb) => userMb.moodbooster.id === mb.id
+        )
+    )
+  }, [ moodboosters, userMoodboosters ])
 
   useEffect(() => {
     if (props.refresh === true) {
-      handleActivities()
+      moodboosters.refetch()
+      userMoodboosters.refetch()
       props.setRefreshing(false)
     }
   }, [ props.refresh ])
@@ -67,12 +81,12 @@ const MoodboosterList = (props: MoodboosterList) => {
 
   return (
     <View>
-      {moodboosterList ? (
+      {!moodboosters.isLoading || !userMoodboosters.isLoading ? (
         <View>
-          {userMoodboosterList?.map((item) => (
-            <Moodbooster mb={item} key={item.id} />
+          {userMoodboosters.data?.map((item) => (
+            <Moodbooster mb={item.moodbooster} userMb={item} key={item.id} />
           ))}
-          {moodboosterList?.map((item) => (
+          {nonUserMoodboosters()?.map((item) => (
             <Moodbooster mb={item} key={item.id} />
           ))}
         </View>
