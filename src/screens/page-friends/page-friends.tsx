@@ -27,7 +27,12 @@ import { AppContext } from "../../context/AppContext"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import Bg from "../../../assets/wave.svg"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient
+} from "@tanstack/react-query"
 import TertiaryBtn from "../../components/buttons/TertiaryBtn"
 import FriendType from "../../types/FriendType"
 import SendedFriendType from "../../types/SendedFriendType"
@@ -68,31 +73,40 @@ const PageFriends = () => {
 
   // fetching the users from db and setting other people array onSuccess
   // to set the array of other people we remove friends array and invites array from users.
-  const users = useQuery<PublicUserType[]>([ "publicUsers" ], () => getAllUsers(accessToken), {
-    enabled:
-      !!appContext.user?.id &&
-      !!friends.data &&
-      !!invites.data,
-    onSuccess: (users) => {
-      const otherPeopleIds = _.difference(
-        users.map((user) => user.id),
+  const users = useQuery<PublicUserType[]>(
+    [ "publicUsers" ],
+    () => getAllUsers(accessToken),
+    {
+      enabled: !!appContext.user?.id && !!friends.data && !!invites.data,
+      onSuccess: (users) => {
+        const otherPeopleIds = _.difference(
+          users.map((user) => user.id),
+          friends.data.map((friend) => friend.userId),
+          invites.data.map((invite) => invite.friendId),
+          [ appContext.user.id ]
+        )
+        setOtherPeople(
+          users.filter((user) => otherPeopleIds.includes(user.id))
+        )
+      },
+      onError: (error) => {
+        console.log("error", error)
+      },
+      staleTime: 30 * 60 * 1000,
+      cacheTime: 3 * 24 * 60 * 60 * 1000
+    }
+  )
+
+  const [ otherPeople, setOtherPeople ] = useState(
+    (users.data ? users.data : []).filter((user) =>
+      _.difference(
+        users.data.map((user) => user.id),
         friends.data.map((friend) => friend.userId),
         invites.data.map((invite) => invite.friendId),
         [ appContext.user.id ]
-      )
-      setOtherPeople(users.filter((user) => otherPeopleIds.includes(user.id)))
-    },
-    onError: (error) => {
-      console.log("error", error)
-    }
-  })
-
-  const [ otherPeople, setOtherPeople ] = useState((users.data ? users.data : []).filter((user) => _.difference(
-    users.data.map((user) => user.id),
-    friends.data.map((friend) => friend.userId),
-    invites.data.map((invite) => invite.friendId),
-    [ appContext.user.id ]
-  ).includes(user.id)))
+      ).includes(user.id)
+    )
+  )
 
   // we use react query mutation to change values in front end
   const mutationAddFriend = useMutation((id) => addFriend(accessToken, id))
