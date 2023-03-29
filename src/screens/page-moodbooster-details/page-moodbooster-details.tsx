@@ -1,58 +1,78 @@
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
 import React, { useContext, useState } from "react"
-import {
-  cancelActivity,
-  completeActivity,
-  startActivity
-} from "../../services/moodboosterService"
 import Toast from "react-native-toast-message"
-import { RouteProp, useRoute } from "@react-navigation/native"
-import { RouteParamList } from "../../types/RouteParamList"
+import { useRoute } from "@react-navigation/native"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import { UserMoodboosterType } from "../../types/MoodboosterTypes"
 import SecondaryBtn from "../../components/buttons/SecondaryBtn"
 import { AppContext } from "../../context/AppContext"
+import { BoostersNavProps } from "../../navigation/BoostersNav"
+import useMoodboosterMutations from "../../services/useMoodboosterMutations"
+import InviteFriends from "../../components/challengeFriends/inviteFriends"
 
 const PageMoodboosterDetails = () => {
-  const item = useRoute<RouteProp<RouteParamList, "Moodbooster Details">>()
-    .params.item as any
+  const route = useRoute<BoostersNavProps<"Moodbooster Details">["route"]>()
+  const moodbooster = route.params?.mb
+  const [ userMoodbooster, setUserMoodbooster ] =
+    useState<UserMoodboosterType | null>(route.params?.userMb)
 
-  const moodbooster: UserMoodboosterType = item.moodbooster
-    ? item
-    : { moodbooster: item }
-
-  const { moodPoints, setMoodPoints, accessToken } = useContext(AppContext)
-  const [ disabledState, setDisabledState ] = useState(false)
+  const { moodPoints, setMoodPoints } = useContext(AppContext)
+  const {
+    moodbooster: {
+      startMoodboosterMutation,
+      updateMoodboostersQuery,
+      removeMoodboosterFromAllMoodboosters,
+      updateUserMoodboostersQuery,
+      completeMoodboosterMutation,
+      removeMoodboosterFromUserMoodboosterQuery,
+      cancelMoodboosterMutation
+    }
+  } = useMoodboosterMutations()
 
   const completedToast = () => {
     Toast.show({
       type: "success",
       text1: "Completed moodbooster!",
-      text2: moodbooster.moodbooster.description
+      text2: moodbooster.description
     })
   }
   const cancelledToast = () => {
     Toast.show({
       type: "error",
       text1: "Cancelled moodbooster!",
-      text2: moodbooster.moodbooster.description
+      text2: moodbooster.description
     })
   }
 
   const handleToStart = async () => {
-    await startActivity(moodbooster.moodbooster.id, accessToken)
-    setDisabledState(true)
+    const userMb: UserMoodboosterType = await startMoodboosterMutation(
+      moodbooster.id
+    )
+    setUserMoodbooster(userMb)
+    updateUserMoodboostersQuery(userMb)
+    removeMoodboosterFromAllMoodboosters(moodbooster.id)
   }
   const handleToComplete = async () => {
-    await completeActivity(moodbooster.moodbooster.id, accessToken)
-    setDisabledState(false)
+    if (!userMoodbooster) {
+      return
+    }
+    await completeMoodboosterMutation(userMoodbooster.id)
+    updateMoodboostersQuery(moodbooster)
+    removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
+
     completedToast()
-    setMoodPoints(moodPoints + moodbooster.moodbooster.points)
+    setMoodPoints(moodPoints + moodbooster.points)
+    setUserMoodbooster(null)
   }
   const handleToCancel = async () => {
-    await cancelActivity(moodbooster.moodbooster.id, accessToken)
+    if (!userMoodbooster) {
+      return
+    }
+    await cancelMoodboosterMutation(userMoodbooster.id)
+    updateMoodboostersQuery(moodbooster)
+    removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
     cancelledToast()
-    setDisabledState(false)
+    setUserMoodbooster(null)
   }
 
   return (
@@ -63,15 +83,17 @@ const PageMoodboosterDetails = () => {
       ></Image>
       <View style={styles.wrapper}>
         <View style={styles.wrapperTop}>
-          <Text style={styles.title}>{moodbooster.moodbooster.title}</Text>
+          <Text style={styles.title}>{moodbooster.title}</Text>
         </View>
 
-        <Text style={styles.description}>
-          {moodbooster.moodbooster.description}
-        </Text>
+        <Text style={styles.description}>{moodbooster.description}</Text>
         <View style={styles.buttons}>
-          {moodbooster.id ? (
+          {userMoodbooster ? (
             <>
+              <InviteFriends
+                disabled={false}
+                moodboosterId={userMoodbooster.id}
+              />
               <SecondaryBtn
                 text={"CANCEL"}
                 onPress={() => handleToCancel()}
@@ -85,7 +107,7 @@ const PageMoodboosterDetails = () => {
           ) : (
             <PrimaryBtn
               text={"START"}
-              disabled={disabledState}
+              disabled={!!userMoodbooster}
               onPress={() => handleToStart()}
             ></PrimaryBtn>
           )}

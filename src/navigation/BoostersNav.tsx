@@ -11,16 +11,19 @@ import PageHistory from "../screens/page-history/page-history"
 import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
 import { useNavigation } from "@react-navigation/native"
 import { TopBarNavigationButton } from "../components/buttons/TopBarNavigationButton"
+import { MoodboosterType, UserMoodboosterType } from "../types/MoodboosterTypes"
 
 type BoostersNavStackParamList = {
-  Home: undefined;
-  Account: undefined;
-  History: undefined;
-  "Moodbooster Details": undefined;
-};
+  Home: undefined
+  Account: undefined
+  History: undefined
+  "Moodbooster Details": { mb: MoodboosterType; userMb?: UserMoodboosterType }
+}
 
 const Stack = createNativeStackNavigator<BoostersNavStackParamList>()
-type StackProps = NativeStackScreenProps<BoostersNavStackParamList>;
+type StackProps = NativeStackScreenProps<BoostersNavStackParamList>
+export type BoostersNavProps<T extends keyof BoostersNavStackParamList> =
+  NativeStackScreenProps<BoostersNavStackParamList, T>
 
 const HeaderRight = () => {
   const navigation = useNavigation<StackProps["navigation"]>()

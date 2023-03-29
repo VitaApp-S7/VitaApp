@@ -47,14 +47,6 @@ const PageEvent = ({ navigation }) => {
     }
   )
 
-  useEffect(() => {
-    if(notification !== null) {
-      if(notification.request.content.title == "New event created"){
-        refetch()
-      }
-    }
-  }, [ notification ])
-
   const [ joinedEvents, setJoinedEvents ] = useState<EventType[]>(
     (data ? data : []).filter((event) => event.userIds.includes(user.id))
   )

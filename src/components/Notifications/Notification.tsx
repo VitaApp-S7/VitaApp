@@ -41,7 +41,7 @@ export default function Notification() {
 
     // @ts-ignore
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response)
+      setNotification(response.notification)
     })
 
     return () => {
@@ -50,7 +50,7 @@ export default function Notification() {
     }
   }, [])
 
-  return <View></View>
+  return <></>
 }
 
 // eslint-disable-next-line no-unused-vars
