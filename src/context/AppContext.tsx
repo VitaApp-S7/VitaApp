@@ -3,7 +3,7 @@ import UserType from "../types/UserType"
 import * as SecureStore from "expo-secure-store"
 import { SetExpo } from "../services/userService"
 import * as Notifications from "expo-notifications"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import NewsType from "../types/NewsType"
 import { getNews } from "../services/newsService"
 import EventType from "../types/EventType"
@@ -48,6 +48,8 @@ export const AppProvider = (props: PropsWithChildren) => {
   const [ moodPoints, setMoodPoints ] = useState(10)
   const [ expoToken, setExpoToken ] = useState<string>(null)
   const [ notification, setNotification ] = useState<Notifications.Notification>(null)
+
+  const queryClient = useQueryClient()
 
   const friends = useQuery<FriendType[]>(
     [ "friends" ],
@@ -99,18 +101,18 @@ export const AppProvider = (props: PropsWithChildren) => {
     const title = notification.request.content.title
 
     if(title.includes("news") || title.includes("News")){
-      news.refetch()
+      queryClient.invalidateQueries([ "news" ])
     }
     if(title.includes("event") || title.includes("Event")){
-      events.refetch()
+      queryClient.invalidateQueries([ "events" ])
     }
     if(title.includes("request")){
-      friends.refetch()
+      queryClient.invalidateQueries([ "friends" ])
       if(title.includes("New")){
-        requests.refetch()
+        queryClient.invalidateQueries([ "friendRequests" ])
       }
       if(title.includes("accepted")){
-        invites.refetch()
+        queryClient.invalidateQueries([ "invites" ])
       }
     }
 
