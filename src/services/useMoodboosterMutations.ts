@@ -68,13 +68,15 @@ const useMoodboosterMutations = () => {
   }
 
   return {
-    startMoodboosterMutation,
-    cancelMoodboosterMutation,
-    completeMoodboosterMutation,
-    updateMoodboostersQuery,
-    updateUserMoodboostersQuery,
-    removeMoodboosterFromAllMoodboosters,
-    removeMoodboosterFromUserMoodboosterQuery
+    moodbooster: {
+      startMoodboosterMutation,
+      cancelMoodboosterMutation,
+      completeMoodboosterMutation,
+      updateMoodboostersQuery,
+      updateUserMoodboostersQuery,
+      removeMoodboosterFromAllMoodboosters,
+      removeMoodboosterFromUserMoodboosterQuery
+    }
   }
 }
 
