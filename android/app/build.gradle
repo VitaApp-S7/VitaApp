@@ -118,8 +118,8 @@ android {
         applicationId 'nl.gac.vitaapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
-        versionName "3.0.3"
+        versionCode 12
+        versionName "3.0.4"
         manifestPlaceholders = [appAuthRedirectScheme: 'gacprjscheme']
     }
 
