@@ -23,7 +23,7 @@ export default function Notification() {
   const notificationListener = useRef()
   const responseListener = useRef()
 
-  const { setExpoToken } = useContext(AppContext)
+  const { setExpoToken, setNotification } = useContext(AppContext)
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -34,13 +34,23 @@ export default function Notification() {
       })
       .catch(reason => console.log(reason))
 
+    // @ts-ignore
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification)
+    })
+
+    // @ts-ignore
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      setNotification(response.notification)
+    })
+
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current)
       Notifications.removeNotificationSubscription(responseListener.current)
     }
   }, [])
 
-  return <View></View>
+  return <></>
 }
 
 // eslint-disable-next-line no-unused-vars

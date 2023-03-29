@@ -1,57 +1,59 @@
-import React, { useContext, useEffect, useState, useCallback } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { Card, Paragraph, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import {
-  View,
-  Text,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  ScrollView
+  View
 } from "react-native"
 
 import {
-  useFonts,
+  Poppins_400Regular as Poppins400Regular,
   Poppins_600SemiBold as Poppins600SemiBold,
-  Poppins_400Regular as Poppins400Regular
+  useFonts
 } from "@expo-google-fonts/poppins"
 import { getEvents, joinEvent, leaveEvent } from "../../services/eventService"
 import Bg from "../../../assets/wave.svg"
 import PrimaryBtn from "../../components/buttons/PrimaryBtn"
-import * as SecureStore from "expo-secure-store"
 
 import parseDate from "../../services/dataParser"
 import { AppContext } from "../../context/AppContext"
+import { useQuery } from "@tanstack/react-query"
+import EventType from "../../types/EventType"
+import TertiaryBtn from "../../components/buttons/TertiaryBtn"
 
 const PageEvent = ({ navigation }) => {
-  const { accessToken } = useContext(AppContext)
-  const [ notJoinedEvents, setNotJoinedEvents ] = useState([])
-  const [ joinedEvents, setJoinedEvents ] = useState([])
-  const [ events, setEvents ] = useState([])
+  const { accessToken, user, notification } = useContext(AppContext)
+  const [ refreshing, setRefreshing ] = useState(false)
 
-  useEffect(() => {
-    eventsCallback()
-  }, [ events ])
+  const { data, isSuccess, refetch } = useQuery<EventType[]>(
+    [ "events" ],
+    async () => {
+      const response = await getEvents(accessToken)
+      return response.data
+    },
+    {
+      onSuccess: (data) => {
+        setJoinedEvents(
+          data.filter((event) => event.userIds.includes(user.id))
+        )
+        setNotJoinedEvents(
+          data.filter((event) => !event.userIds.includes(user.id))
+        )
+      }
+    }
+  )
 
-  const eventsCallback = useCallback(async () => {
-    const arrayevents = await getEvents(accessToken)
-    setEvents(arrayevents.data)
-  }, [])
+  const [ joinedEvents, setJoinedEvents ] = useState<EventType[]>(
+    (data ? data : []).filter((event) => event.userIds.includes(user.id))
+  )
 
-  useEffect(() => {
-    joinedNotJoined()
-  }, [ events ])
-
-  const joinedNotJoined = async () => {
-    const currentUser = JSON.parse(await SecureStore.getItemAsync("User"))
-    const notjoined = events.filter(
-      (event) => !event.userIds.includes(currentUser.id)
-    ) //filter
-    setNotJoinedEvents(notjoined)
-    const joined = events.filter((event) =>
-      event.userIds.includes(currentUser.id)
-    ) //filter
-    setJoinedEvents(joined)
-  }
+  const [ notJoinedEvents, setNotJoinedEvents ] = useState<EventType[]>(
+    (data ? data : []).filter((event) => !event.userIds.includes(user.id))
+  )
 
   const handleOnPress = (item: any) => {
     navigation.navigate("Event Details", { item })
@@ -60,14 +62,24 @@ const PageEvent = ({ navigation }) => {
   const joinEventOnPress = async (id) => {
     const response = await joinEvent(accessToken, id)
     if (response.status === 200) {
-      // alert
+      setJoinedEvents([
+        ...joinedEvents,
+        ...notJoinedEvents.filter((event) => event.id === id)
+      ])
+      setNotJoinedEvents(notJoinedEvents.filter((event) => event.id !== id))
+      await refetch()
     }
   }
 
   const leaveEventOnPress = async (id) => {
     const response = await leaveEvent(accessToken, id)
     if (response.status === 200) {
-      // alert
+      setNotJoinedEvents([
+        ...notJoinedEvents,
+        ...joinedEvents.filter((event) => event.id === id)
+      ])
+      setJoinedEvents(joinedEvents.filter((event) => event.id !== id))
+      await refetch()
     }
   }
 
@@ -77,121 +89,154 @@ const PageEvent = ({ navigation }) => {
     Poppins400Regular
   })
 
+  const RightCardTitle = useCallback(
+    (item) => (props) =>
+      (
+        <Subheading style={styles.date}>
+          {parseDate(item.date)}
+          {<Text> </Text>}
+        </Subheading>
+      ),
+    []
+  )
+
   if (!fontsLoaded) {
     return null
   }
 
   return (
-    <ScrollView style={styles.screen}>
-      <Bg style={styles.wave} />
-      <Text style={styles.moodtitle}>Signed Up</Text>
-      {joinedEvents.length ? (
-        joinedEvents.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <TouchableOpacity
-              onPress={() => handleOnPress(item)}
-              style={{ width: "100%" }}
-            >
-              <View style={styles.wrapperTop}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.date}>{parseDate(item.date)}</Text>
-              </View>
-              <Text style={styles.description}>{item.description}</Text>
-            </TouchableOpacity>
+    <>
+      <ScrollView
+        style={styles.screen}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await refetch()
+              setRefreshing(false)
+            }}
+          />
+        }
+      >
+        <Bg style={styles.wave} />
+        <Text style={styles.moodtitle}>Signed Up</Text>
+        {isSuccess && joinedEvents.length > 0 ? (
+          joinedEvents.map((item, index) => (
+            <View key={index} style={styles.card}>
+              <TouchableOpacity
+                onPress={() => handleOnPress(item)}
+                style={{ width: "100%" }}
+              >
+                <View style={styles.wrapperTop}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.date}>{parseDate(item.date)}</Text>
+                </View>
+                <Text style={styles.description}>{item.description}</Text>
+              </TouchableOpacity>
 
-            <View style={styles.wrapperBottom}>
-              <View style={styles.joined}>
-                <Text style={styles.description}>{item.userIds.length}/20</Text>
-                <Ionicons
-                  style={styles.icon}
-                  name="people"
-                  size={24}
-                  color="#031D29"
-                />
+              <View style={styles.wrapperBottom}>
+                <View style={styles.joined}>
+                  <Text style={styles.description}>
+                    {item.userIds.length}/20
+                  </Text>
+                  <Ionicons
+                    style={styles.icon}
+                    name="people"
+                    size={24}
+                    color="#031D29"
+                  />
+                </View>
+                <TertiaryBtn
+                  text={"LEAVE"}
+                  onPress={async () => await leaveEventOnPress(item.id)}
+                ></TertiaryBtn>
               </View>
-              <PrimaryBtn
-                text={"LEAVE"}
-                onPress={() => leaveEventOnPress(item.id)}
-              ></PrimaryBtn>
             </View>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.text}>Haven&apos;t signed up for events yet.</Text>
-      )}
-      <Text style={styles.moodtitle}>Available</Text>
-      {notJoinedEvents ? (
-        notJoinedEvents.map((item, index) => (
-          // <View key={index} style={styles.card}>
-          //   <TouchableOpacity
-          //     onPress={() => handleOnPress(item)}
-          //     style={{ width: "100%" }}
-          //   >
-          //     <View style={styles.wrapperTop}>
-          //       <Text style={styles.title}>{item.title}</Text>
-          //       <Text style={styles.date}>{parseDate(item.date)}</Text>
-          //     </View>
-          //     <Text style={styles.description}>{item.description}</Text>
-          //   </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.text}>
+            Haven&apos;t signed up for events yet.
+          </Text>
+        )}
+        <Text style={styles.moodtitle}>Available</Text>
+        {isSuccess && notJoinedEvents.length > 0 ? (
+          notJoinedEvents.map((item, index) => (
+            // <View key={index} style={styles.card}>
+            //   <TouchableOpacity
+            //     onPress={() => handleOnPress(item)}
+            //     style={{ width: "100%" }}
+            //   >
+            //     <View style={styles.wrapperTop}>
+            //       <Text style={styles.title}>{item.title}</Text>
+            //       <Text style={styles.date}>{parseDate(item.date)}</Text>
+            //     </View>
+            //     <Text style={styles.description}>{item.description}</Text>
+            //   </TouchableOpacity>
 
-          //   <View style={styles.wrapperBottom}>
-          //     <View style={styles.joined}>
-          //       <Text style={styles.description}>{item.userIds.length}/20</Text>
-          //       <Ionicons
-          //         style={styles.icon}
-          //         name="people"
-          //         size={24}
-          //         color="#031D29"
-          //       />
-          //     </View>
-          //     <PrimaryBtn
-          //       text="JOIN"
-          //       onPress={() => joinEventOnPress(item.id)}
-          //     ></PrimaryBtn>
-          //   </View>
-          // </View>
+            //   <View style={styles.wrapperBottom}>
+            //     <View style={styles.joined}>
+            //       <Text style={styles.description}>{item.userIds.length}/20</Text>
+            //       <Ionicons
+            //         style={styles.icon}
+            //         name="people"
+            //         size={24}
+            //         color="#031D29"
+            //       />
+            //     </View>
+            //     <PrimaryBtn
+            //       text="JOIN"
+            //       onPress={() => joinEventOnPress(item.id)}
+            //     ></PrimaryBtn>
+            //   </View>
+            // </View>
 
-          <Card
-            style={styles.surface}
-            mode="outlined"
-            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-            key={index}
-          >
-            <TouchableOpacity
-              onPress={() => handleOnPress(item)}
-              style={{ width: "100%" }}
+            <Card
+              style={styles.surface}
+              mode="outlined"
+              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+              key={index}
             >
-              <Card.Title style={styles.title}
-                title={<Title style={styles.title}>{item.title}</Title>}
-                right={(props) => <Subheading style={styles.date}>{parseDate(item.date)}  </Subheading>}
-                titleNumberOfLines={3}
-              />
-              <Card.Content >
-                <Paragraph numberOfLines={10} style={styles.description}>{item.description}</Paragraph>
-              </Card.Content>
-            </TouchableOpacity>
-            <Card.Actions style={styles.buttons}>
-              <View style={styles.joined}>
-                <Text style={styles.description}>{item.userIds.length}/20</Text>
-                <Ionicons
-                  style={styles.icon}
-                  name="people"
-                  size={24}
-                  color="#031D29"
+              <TouchableOpacity
+                onPress={() => handleOnPress(item)}
+                style={{ width: "100%" }}
+              >
+                <Card.Title
+                  style={styles.title}
+                  title={<Title style={styles.title}>{item.title}</Title>}
+                  right={RightCardTitle(item)}
+                  titleNumberOfLines={3}
                 />
-              </View>
-              <PrimaryBtn
-                text="JOIN"
-                onPress={() => joinEventOnPress(item.id)}
-              ></PrimaryBtn>
-            </Card.Actions>
-          </Card>
-          
-        ))
-      ) : (
-        <Text>No events to join!</Text>
-      )}
-    </ScrollView>
+                <Card.Content>
+                  <Paragraph numberOfLines={10} style={styles.description}>
+                    {item.description}
+                  </Paragraph>
+                </Card.Content>
+              </TouchableOpacity>
+              <Card.Actions style={styles.buttons}>
+                <View style={styles.joined}>
+                  <Text style={styles.description}>
+                    {item.userIds.length}/20
+                  </Text>
+                  <Ionicons
+                    style={styles.icon}
+                    name="people"
+                    size={24}
+                    color="#031D29"
+                  />
+                </View>
+                <PrimaryBtn
+                  text="JOIN"
+                  onPress={async () => await joinEventOnPress(item.id)}
+                ></PrimaryBtn>
+              </Card.Actions>
+            </Card>
+          ))
+        ) : (
+          <Text>No events to join!</Text>
+        )}
+      </ScrollView>
+    </>
   )
 }
 
@@ -212,7 +257,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    backgroundColor: "white"
+    backgroundColor: "#ffffff"
   },
   card: {
     flex: 1,
@@ -250,7 +295,10 @@ const styles = StyleSheet.create({
     color: "#031D29"
   },
   icon: { paddingHorizontal: 8 },
-  wave: { position: "absolute" },
+  wave: {
+    position: "absolute",
+    backgroundColor: "white"
+  },
   wrapperTop: {
     flex: 1,
     flexDirection: "row",

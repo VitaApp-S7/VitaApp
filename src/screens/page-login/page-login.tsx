@@ -109,9 +109,9 @@ const PageLogin = () => {
       <View style={styles.bottomcontainer}>
         <TouchableOpacity
           style={styles.loginbutton}
-          onPress={() => {
+          onPress={async () => {
             console.log(request)
-            promptAsync({ useProxy: true })
+            await promptAsync({ useProxy: true })
           }}
         >
           <Text style={styles.buttontext}>LOGIN</Text>
