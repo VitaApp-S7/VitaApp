@@ -110,7 +110,7 @@ const Moodbooster = (props: Moodbooster) => {
         onPress={() => handleOnPress()}
       >
         <Card.Content>
-          <Paragraph>{props.mb.title}</Paragraph>
+          <Paragraph style={styles.title}>{props.mb.title}</Paragraph>
           <Paragraph style={styles.description}>
             {props.mb.description}
           </Paragraph>
@@ -151,6 +151,13 @@ const styles = StyleSheet.create({
   description: {
     fontFamily: "Poppins500Medium",
     fontSize: 16,
+    color: "#031D29"
+  },
+  title: {
+    fontFamily: "Poppins600SemiBold",
+    margin: 0,
+    padding: 0,
+    fontSize: 20,
     color: "#031D29"
   },
   surface: {
