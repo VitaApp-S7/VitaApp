@@ -110,6 +110,7 @@ const Moodbooster = (props: Moodbooster) => {
         onPress={() => handleOnPress()}
       >
         <Card.Content>
+          <Paragraph>{props.mb.title}</Paragraph>
           <Paragraph style={styles.description}>
             {props.mb.description}
           </Paragraph>
