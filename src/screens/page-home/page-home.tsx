@@ -1,13 +1,6 @@
-import {
-  View,
-  StyleSheet,
-  Image,
-  RefreshControl,
-  ScrollView
-} from "react-native"
-import React, { useState, useEffect, useContext } from "react"
+import { View, StyleSheet, RefreshControl, ScrollView } from "react-native"
+import React, { useState } from "react"
 import { Text } from "react-native-paper"
-import Moodbooster from "../../components/moodbooster/moodbooster"
 
 import {
   useFonts,
@@ -17,6 +10,7 @@ import {
 } from "@expo-google-fonts/poppins"
 import ChallengeFriends from "../../components/challengeFriends/challengeFriends"
 import ResponsiveHeader from "../../components/responsiveHeader/responsiveHeader"
+import MoodboosterList from "../../components/moodbooster/moodboosterList"
 
 // eslint-disable-next-line no-unused-vars
 const PageHome = () => {
@@ -46,7 +40,7 @@ const PageHome = () => {
         <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
         <ChallengeFriends />
       </View>
-      <Moodbooster refresh={refreshing} setRefreshing={setRefreshing} />
+      <MoodboosterList refresh={refreshing} setRefreshing={setRefreshing} />
     </ScrollView>
   )
 }

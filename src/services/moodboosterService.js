@@ -1,29 +1,10 @@
 import axios from "axios"
 import { protectedResources } from "../../authConfig"
-
 const url = protectedResources.apiActivity.endpoint
-
-export async function startActivity(id, token) {
-  var response = await axios.put(
-    url + id,
-    {},
-    { headers: { Authorization: `Bearer ${token}` }}
-  )
-  return response.data
-}
 
 export async function getAllActivities(token) {
   // console.log(token)
   var response = await axios.get(`${url}active`, { headers: { Authorization: `Bearer ${token}` }})
-  return response.data
-}
-
-export async function completeActivity(id, token) {
-  var response = await axios.put(
-    `${url}complete/${id}`,
-    {},
-    { headers: { Authorization: `Bearer ${token}` }}
-  )
   return response.data
 }
 
@@ -43,15 +24,6 @@ export async function getAllCompletedActivities(token) {
 
 export async function getAllActiveActivities(token) {
   var response = await axios.get(`${url}accepted`, { headers: { Authorization: `Bearer ${token}` }})
-  return response.data
-}
-
-export async function cancelActivity(id, token) {
-  var response = await axios.put(
-    `${url}cancel/${id}`,
-    {},
-    { headers: { Authorization: `Bearer ${token}` }}
-  )
   return response.data
 }
 

@@ -1,20 +1,6 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState
-} from "react"
+import React, { useContext } from "react"
 import { View, StyleSheet } from "react-native"
-import {
-  getAllActivities,
-  startActivity,
-  cancelActivity,
-  getAllActiveActivities,
-  completeActivity
-} from "../../services/moodboosterService"
-
-import { Card, Paragraph, Title } from "react-native-paper"
+import { Card, Paragraph } from "react-native-paper"
 import {
   useFonts,
   Poppins_600SemiBold as Poppins600SemiBold,
@@ -22,7 +8,6 @@ import {
   Poppins_500Medium as Poppins500Medium
 } from "@expo-google-fonts/poppins"
 import Toast from "react-native-toast-message"
-import ContentLoader, { Rect } from "react-content-loader/native"
 import PrimaryBtn from "../buttons/PrimaryBtn"
 import SecondaryBtn from "../buttons/SecondaryBtn"
 import InviteFriends from "../../components/challengeFriends/inviteFriends"
@@ -32,58 +17,41 @@ import {
 } from "../../types/MoodboosterTypes"
 import { useNavigation } from "@react-navigation/native"
 import { AppContext } from "../../context/AppContext"
+import useMoodboosterMutations from "../../services/useMoodboosterMutations"
+
 interface Moodbooster {
-  refresh: boolean
-  setRefreshing: Dispatch<SetStateAction<boolean>>
+  mb: MoodboosterType
+  userMb?: UserMoodboosterType
 }
 
 const Moodbooster = (props: Moodbooster) => {
-  const [ data, setData ] = useState([])
-  const [ activeData, setActiveData ] = useState([])
-  const [ disabledState, setDisabledState ] = useState(false)
-  const { moodPoints, setMoodPoints, accessToken } = useContext(AppContext)
+  const { moodPoints, setMoodPoints } = useContext(AppContext)
   const navigation = useNavigation()
+  const {
+    startMoodboosterMutation,
+    updateMoodboostersQuery,
+    removeMoodboosterFromAllMoodboosters,
+    updateUserMoodboostersQuery,
+    completeMoodboosterMutation,
+    removeMoodboosterFromUserMoodboosterQuery,
+    cancelMoodboosterMutation
+  } = useMoodboosterMutations()
+
   //TOAST AFTER COMPLETE
-  const completedToast = (toastData) => {
+  const completedToast = () => {
     Toast.show({
       type: "success",
       text1: "Completed moodbooster!",
-      text2: toastData.moodbooster.description
+      text2: props.mb.description
     })
   }
-  const cancelledToast = (toastData) => {
+  const cancelledToast = () => {
     Toast.show({
       type: "error",
       text1: "Cancelled moodbooster!",
-      text2: toastData.moodbooster.description
+      text2: props.mb.description
     })
   }
-
-  const handleActivities = async () => {
-    const activeActivities = await getAllActiveActivities(accessToken)
-    const activities = await getAllActivities(accessToken)
-    // console.log(activeActivities);
-
-    setData(activities)
-
-    setActiveData(activeActivities)
-    if (activeActivities[0]) {
-      setDisabledState(true)
-    } else {
-      setDisabledState(false)
-    }
-  }
-
-  useEffect(() => {
-    handleActivities()
-  }, [])
-
-  useEffect(() => {
-    if (props.refresh === true) {
-      handleActivities()
-      props.setRefreshing(false)
-    }
-  }, [ props.refresh ])
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -95,106 +63,81 @@ const Moodbooster = (props: Moodbooster) => {
     return null
   }
 
-  const handleToStart = async (index) => {
-    await startActivity(data[index].id, accessToken)
-    handleActivities()
-    setDisabledState(true)
+  const handleToStart = async () => {
+    const userMoodbooster: UserMoodboosterType = await startMoodboosterMutation(
+      props.mb.id
+    )
+    updateUserMoodboostersQuery(userMoodbooster)
+    removeMoodboosterFromAllMoodboosters(props.mb.id)
   }
-  const handleToComplete = async (index) => {
-    await completeActivity(activeData[index].id, accessToken)
-    handleActivities()
-    setDisabledState(false)
-    completedToast(activeData[index])
-    setMoodPoints(moodPoints + activeData[index].moodbooster.points)
+  const handleToComplete = async () => {
+    if (!props.userMb) {
+      return
+    }
+    await completeMoodboosterMutation(props.userMb.id)
+    updateMoodboostersQuery(props.mb)
+    removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
+
+    completedToast()
+    setMoodPoints(moodPoints + props.mb.points)
   }
-  const handleToCancel = async (index) => {
-    await cancelActivity(activeData[index].id, accessToken)
-    cancelledToast(activeData[index])
-    handleActivities()
-    setDisabledState(false)
+  const handleToCancel = async () => {
+    if (!props.userMb) {
+      return
+    }
+    await cancelMoodboosterMutation(props.userMb.id)
+    updateMoodboostersQuery(props.mb)
+    removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
+    cancelledToast()
   }
 
-  const handleOnPress = (item: MoodboosterType | UserMoodboosterType) => {
-    console.log(typeof navigation)
-    navigation.navigate("Moodbooster Details", { item })
+  const handleOnPress = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    navigation.navigate("Moodbooster Details", {
+      mb: props.mb,
+      userMb: props.userMb
+    })
   }
-
-  const ActiveCards = () => (
-    <View>
-      {activeData.map((item, index) => (
-        <Card
-          style={styles.surface}
-          mode="outlined"
-          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-          key={index}
-          onPress={() => handleOnPress(item)}
-        >
-          <Card.Content>
-            <Paragraph style={styles.description}>
-              {item.moodbooster.description}
-            </Paragraph>
-          </Card.Content>
-          <Card.Actions style={styles.buttons}>
-            <InviteFriends disabled={false} moodboosterId={item.id} />
-            <SecondaryBtn
-              text={"CANCEL"}
-              onPress={() => handleToCancel(index)}
-            ></SecondaryBtn>
-            <PrimaryBtn
-              text={"COMPLETE"}
-              disabled={false}
-              onPress={() => handleToComplete(index)}
-            ></PrimaryBtn>
-          </Card.Actions>
-        </Card>
-      ))}
-    </View>
-  )
-  const MainCard = () => (
-    <View>
-      {data.map((item, index) => (
-        <Card
-          style={styles.surface}
-          mode="outlined"
-          theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-          key={index}
-          onPress={() => handleOnPress(item)}
-        >
-          <Card.Content>
-            <Title style={styles.description}>{item.description}</Title>
-            <Paragraph style={styles.category}>{item.category.name}</Paragraph>
-          </Card.Content>
-          <Card.Actions style={styles.buttons}>
-            <PrimaryBtn
-              text={"START"}
-              disabled={disabledState}
-              onPress={() => handleToStart(index)}
-            ></PrimaryBtn>
-          </Card.Actions>
-        </Card>
-      ))}
-    </View>
-  )
 
   return (
     <View>
-      <ActiveCards />
-      {data[0] ? (
-        <MainCard />
-      ) : (
-        <ContentLoader
-          speed={2}
-          width={400}
-          height={460}
-          viewBox="0 0 400 460"
-          backgroundColor="#e6e6e6"
-          foregroundColor="#d6d6d6"
-        >
-          <Rect x="10" y="0" rx="2" ry="2" width="350" height="100" />
-          <Rect x="10" y="110" rx="2" ry="2" width="320" height="100" />
-          <Rect x="10" y="220" rx="2" ry="2" width="340" height="100" />
-        </ContentLoader>
-      )}
+      <Card
+        style={styles.surface}
+        mode="outlined"
+        theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+        key={props.mb.id}
+        onPress={() => handleOnPress()}
+      >
+        <Card.Content>
+          <Paragraph>{props.mb.title}</Paragraph>
+          <Paragraph style={styles.description}>
+            {props.mb.description}
+          </Paragraph>
+        </Card.Content>
+        <Card.Actions style={styles.buttons}>
+          {!props.userMb ? (
+            <PrimaryBtn
+              text={"START"}
+              disabled={!!props.userMb}
+              onPress={() => handleToStart()}
+            ></PrimaryBtn>
+          ) : (
+            <>
+              <InviteFriends disabled={false} moodboosterId={props.userMb.id} />
+              <SecondaryBtn
+                text={"CANCEL"}
+                onPress={() => handleToCancel()}
+              ></SecondaryBtn>
+              <PrimaryBtn
+                text={"COMPLETE"}
+                disabled={false}
+                onPress={() => handleToComplete()}
+              ></PrimaryBtn>
+            </>
+          )}
+        </Card.Actions>
+      </Card>
     </View>
   )
 }
@@ -208,11 +151,6 @@ const styles = StyleSheet.create({
   description: {
     fontFamily: "Poppins500Medium",
     fontSize: 16,
-    color: "#031D29"
-  },
-  category: {
-    fontFamily: "Poppins400Regular",
-    fontSize: 14,
     color: "#031D29"
   },
   surface: {
