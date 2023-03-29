@@ -28,13 +28,15 @@ const Moodbooster = (props: Moodbooster) => {
   const { moodPoints, setMoodPoints } = useContext(AppContext)
   const navigation = useNavigation()
   const {
-    startMoodboosterMutation,
-    updateMoodboostersQuery,
-    removeMoodboosterFromAllMoodboosters,
-    updateUserMoodboostersQuery,
-    completeMoodboosterMutation,
-    removeMoodboosterFromUserMoodboosterQuery,
-    cancelMoodboosterMutation
+    moodbooster: {
+      startMoodboosterMutation,
+      updateMoodboostersQuery,
+      removeMoodboosterFromAllMoodboosters,
+      updateUserMoodboostersQuery,
+      completeMoodboosterMutation,
+      removeMoodboosterFromUserMoodboosterQuery,
+      cancelMoodboosterMutation
+    }
   } = useMoodboosterMutations()
 
   //TOAST AFTER COMPLETE
@@ -158,6 +160,7 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
     fontSize: 20,
+    lineHeight: 24,
     color: "#031D29"
   },
   surface: {

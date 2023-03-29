@@ -51,50 +51,6 @@ export const AppProvider = (props: PropsWithChildren) => {
 
   const queryClient = useQueryClient()
 
-  const friends = useQuery<FriendType[]>(
-    [ "friends" ],
-    () => getFriends(accessToken),
-    {
-      onError: (error) => {
-        console.log("friends get req error", error)
-      },
-      enabled: false
-    }
-  )
-
-  const invites = useQuery<SendedFriendType[]>(
-    [ "invites" ],
-    () => getSendedRequests(accessToken),
-    {
-      onError: (error) => {
-        console.log("invites request error", error)
-      },
-      enabled: false
-    }
-  )
-
-  const requests = useQuery<FriendType[]>(
-    [ "friendRequests" ],
-    async () => await getFrRequests(accessToken),
-    {
-      onError: (err) => console.log(err),
-      enabled: false 
-    }
-  )
-
-  const news = useQuery<NewsType[]>([ "news" ], async () => {
-    const response = await getNews(accessToken)
-    return response.data
-  }, { enabled: false })
-
-  const events = useQuery<EventType[]>(
-    [ "events" ],
-    async () => {
-      const response = await getEvents(accessToken)
-      return response.data
-    }, { enabled: false }
-  )
-
   useEffect(() => {
     if(notification === null) return
 
@@ -106,12 +62,12 @@ export const AppProvider = (props: PropsWithChildren) => {
     if(title.includes("event") || title.includes("Event")){
       queryClient.invalidateQueries([ "events" ])
     }
-    if(title.includes("request")){
+    if(title.includes("request") || title.includes("Request")){
       queryClient.invalidateQueries([ "friends" ])
-      if(title.includes("New")){
+      if(title.includes("new") || title.includes("New")){
         queryClient.invalidateQueries([ "friendRequests" ])
       }
-      if(title.includes("accepted")){
+      if(title.includes("accepted") || title.includes("Accepted")){
         queryClient.invalidateQueries([ "invites" ])
       }
     }

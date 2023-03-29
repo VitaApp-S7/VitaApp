@@ -18,13 +18,15 @@ const PageMoodboosterDetails = () => {
 
   const { moodPoints, setMoodPoints } = useContext(AppContext)
   const {
-    startMoodboosterMutation,
-    updateMoodboostersQuery,
-    removeMoodboosterFromAllMoodboosters,
-    updateUserMoodboostersQuery,
-    completeMoodboosterMutation,
-    removeMoodboosterFromUserMoodboosterQuery,
-    cancelMoodboosterMutation
+    moodbooster: {
+      startMoodboosterMutation,
+      updateMoodboostersQuery,
+      removeMoodboosterFromAllMoodboosters,
+      updateUserMoodboostersQuery,
+      completeMoodboosterMutation,
+      removeMoodboosterFromUserMoodboosterQuery,
+      cancelMoodboosterMutation
+    }
   } = useMoodboosterMutations()
 
   const completedToast = () => {
