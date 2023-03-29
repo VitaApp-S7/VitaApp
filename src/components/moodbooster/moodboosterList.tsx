@@ -53,12 +53,14 @@ const MoodboosterList = (props: MoodboosterList) => {
   )
 
   const nonUserMoodboosters = useCallback(() => {
-    return moodboosters.data?.filter(
-      (mb) =>
-        !userMoodboosters.data?.find(
-          (userMb) => userMb.moodbooster.id === mb.id
-        )
-    )
+    return moodboosters.data
+      ?.filter(
+        (mb) =>
+          !userMoodboosters.data?.find(
+            (userMb) => userMb.moodbooster.id === mb.id
+          )
+      )
+      .sort((mb, other) => mb.id.localeCompare(other.id))
   }, [ moodboosters, userMoodboosters ])
 
   useEffect(() => {
