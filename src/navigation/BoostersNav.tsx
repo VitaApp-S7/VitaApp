@@ -1,17 +1,20 @@
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
-  NativeStackScreenProps
-} from "@react-navigation/native-stack"
-import PageAccount from "../screens/page-account/page-account"
-import PageHome from "../screens/page-home/page-home"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import React from "react"
-import PageHistory from "../screens/page-history/page-history"
-import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
-import { useNavigation } from "@react-navigation/native"
-import { TopBarNavigationButton } from "../components/buttons/TopBarNavigationButton"
-import { MoodboosterType, UserMoodboosterType } from "../types/MoodboosterTypes"
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import PageAccount from "../screens/page-account/page-account";
+import PageHome from "../screens/page-home/page-home";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import React from "react";
+import PageHistory from "../screens/page-history/page-history";
+import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details";
+import { useNavigation } from "@react-navigation/native";
+import { ButtonTopBarNavigation } from "../components/buttons/ButtonTopBarNavigation";
+import {
+  MoodboosterType,
+  UserMoodboosterType,
+} from "../types/MoodboosterTypes";
 
 type BoostersNavStackParamList = {
   Home: undefined
@@ -29,9 +32,9 @@ const HeaderRight = () => {
   const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
-    <TopBarNavigationButton onClick={() => navigation.navigate("Account")}>
+    <ButtonTopBarNavigation onClick={() => navigation.navigate("Account")}>
       <Ionicons name="person-circle" size={32} color="#052D40" />
-    </TopBarNavigationButton>
+    </ButtonTopBarNavigation>
   )
 }
 
@@ -39,9 +42,9 @@ const HeaderLeft = () => {
   const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
-    <TopBarNavigationButton onClick={() => navigation.navigate("History")}>
+    <ButtonTopBarNavigation onClick={() => navigation.navigate("History")}>
       <Ionicons name="time" size={32} color="#052D40" />
-    </TopBarNavigationButton>
+    </ButtonTopBarNavigation>
   )
 }
 

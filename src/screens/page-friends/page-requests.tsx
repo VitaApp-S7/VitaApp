@@ -22,8 +22,8 @@ import {
   getFrRequests
 } from "../../services/friendsService"
 import Bg from "../../../assets/wave.svg"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
-import SecondaryBtn from "../../components/buttons/SecondaryBtn"
+import ButtonPrimary from "../../components/buttons/ButtonPrimary"
+import ButtonSecondary from "../../components/buttons/ButtonSecondary"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import FriendType from "../../types/FriendType"
 // const wait = (timeout) => {
@@ -107,14 +107,14 @@ const PageRequests = () => {
                   <Paragraph style={styles.title}>{item.name}</Paragraph>
                 </Card.Content>
                 <Card.Actions style={styles.buttons}>
-                  <SecondaryBtn
+                  <ButtonSecondary
                     text={"DECLINE"}
                     onPress={() => handleCancelRequest(item.id)}
-                  ></SecondaryBtn>
-                  <PrimaryBtn
+                  ></ButtonSecondary>
+                  <ButtonPrimary
                     text={"ACCEPT"}
                     onPress={() => handleAcceptRequest(item.id)}
-                  ></PrimaryBtn>
+                  ></ButtonPrimary>
                 </Card.Actions>
               </Card>
             ))

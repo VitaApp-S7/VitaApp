@@ -1,10 +1,10 @@
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions
-} from "@react-navigation/material-top-tabs"
-import React from "react"
-import PageFriends from "../screens/page-friends/page-friends"
-import PageRequests from "../screens/page-friends/page-requests"
+  MaterialTopTabNavigationOptions,
+} from "@react-navigation/material-top-tabs";
+import React from "react";
+import PageFriends from "../screens/page-friends/page-friends";
+import PageRequests from "../screens/page-friends/page-requests";
 
 const Tab = createMaterialTopTabNavigator()
 

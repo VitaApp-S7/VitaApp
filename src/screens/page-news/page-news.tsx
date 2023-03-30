@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query"
 import NewsType from "../../types/NewsType"
 import { Card, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import ButtonPrimary from "../../components/buttons/ButtonPrimary"
 import parseDate from "../../services/dataParser"
 
 const PageNews = ({ navigation }) => {

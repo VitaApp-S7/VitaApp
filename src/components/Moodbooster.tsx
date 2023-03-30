@@ -1,23 +1,23 @@
-import React, { useContext, useState } from "react"
-import { View, StyleSheet } from "react-native"
-import { Card, Paragraph } from "react-native-paper"
+import React, { useContext, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Card, Paragraph } from "react-native-paper";
 import {
-  useFonts,
-  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_400Regular as Poppins400Regular,
-  Poppins_500Medium as Poppins500Medium
-} from "@expo-google-fonts/poppins"
-import Toast from "react-native-toast-message"
-import PrimaryBtn from "../buttons/PrimaryBtn"
-import SecondaryBtn from "../buttons/SecondaryBtn"
-import InviteFriends from "../../components/challengeFriends/inviteFriends"
+  Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
+  useFonts,
+} from "@expo-google-fonts/poppins";
+import Toast from "react-native-toast-message";
+import ButtonPrimary from "./buttons/ButtonPrimary";
+import ButtonSecondary from "./buttons/ButtonSecondary";
+import InviteFriends from "./MoodboosterInvites";
 import {
+  MoodboosterType,
   UserMoodboosterType,
-  MoodboosterType
-} from "../../types/MoodboosterTypes"
-import { useNavigation } from "@react-navigation/native"
-import { AppContext } from "../../context/AppContext"
-import useMoodboosterMutations from "../../services/useMoodboosterMutations"
+} from "../types/MoodboosterTypes";
+import { useNavigation } from "@react-navigation/native";
+import { AppContext } from "../context/AppContext";
+import useMoodboosterMutations from "../services/useMoodboosterMutations";
 
 interface Moodbooster {
   mb: MoodboosterType
@@ -126,21 +126,21 @@ const Moodbooster = (props: Moodbooster) => {
         </Card.Content>
         <Card.Actions style={styles.buttons}>
           {!props.userMb ? (
-            <PrimaryBtn
+            <ButtonPrimary
               text={"START"}
               onPress={() => handleToStart()}
-            ></PrimaryBtn>
+            ></ButtonPrimary>
           ) : (
             <>
               <InviteFriends moodboosterId={props.userMb.id} />
-              <SecondaryBtn
+              <ButtonSecondary
                 text={"CANCEL"}
                 onPress={() => handleToCancel()}
-              ></SecondaryBtn>
-              <PrimaryBtn
+              ></ButtonSecondary>
+              <ButtonPrimary
                 text={"COMPLETE"}
                 onPress={() => handleToComplete()}
-              ></PrimaryBtn>
+              ></ButtonPrimary>
             </>
           )}
         </Card.Actions>

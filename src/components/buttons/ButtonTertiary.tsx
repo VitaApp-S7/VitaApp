@@ -1,15 +1,15 @@
-import React from "react"
-import { Text, StyleSheet, TouchableOpacity } from "react-native"
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-const TertiaryBtn = (props) => {
+const ButtonTertiary = (props) => {
   return (
     <TouchableOpacity onPress={props.onPress} style={styles.TertiaryBtn}>
       <Text style={styles.buttontext}>{props.text}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
-export default TertiaryBtn
+export default ButtonTertiary
 
 const styles = StyleSheet.create({
   TertiaryBtn: {

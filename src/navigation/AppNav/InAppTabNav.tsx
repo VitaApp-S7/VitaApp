@@ -1,18 +1,18 @@
 import {
   BottomTabScreenProps,
-  createBottomTabNavigator
-} from "@react-navigation/bottom-tabs"
-import { useRoute } from "@react-navigation/native"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import FeedNav from "../FeedNav"
-import BoostersNav from "../BoostersNav"
-import React from "react"
-import FriendsNav from "../FriendsNav"
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
+import { useRoute } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FeedNav from "../FeedNav";
+import BoostersNav from "../BoostersNav";
+import React from "react";
+import FriendsNav from "../FriendsNav";
 import {
   Poppins_400Regular as Poppins400Regular,
   Poppins_600SemiBold as Poppins600SemiBold,
-  useFonts
-} from "@expo-google-fonts/poppins"
+  useFonts,
+} from "@expo-google-fonts/poppins";
 
 type InAppTabNavTabParamList = {
   Boosters: undefined;

@@ -24,8 +24,8 @@ import {
 import { getAllUsers } from "../../services/userService"
 import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
-import SecondaryBtn from "../../components/buttons/SecondaryBtn"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import ButtonSecondary from "../../components/buttons/ButtonSecondary"
+import ButtonPrimary from "../../components/buttons/ButtonPrimary"
 import Bg from "../../../assets/wave.svg"
 import {
   useMutation,
@@ -33,7 +33,7 @@ import {
   useQuery,
   useQueryClient
 } from "@tanstack/react-query"
-import TertiaryBtn from "../../components/buttons/TertiaryBtn"
+import ButtonTertiary from "../../components/buttons/ButtonTertiary"
 import FriendType from "../../types/FriendType"
 import SendedFriendType from "../../types/SendedFriendType"
 import PublicUserType from "../../types/PublicUserType"
@@ -247,10 +247,10 @@ const PageFriends = () => {
                         <Text style={styles.title}>{item.name}</Text>
                       </View>
 
-                      <TertiaryBtn
+                      <ButtonTertiary
                         text={"REMOVE"}
                         onPress={() => deleteFriend(item)}
-                      ></TertiaryBtn>
+                      ></ButtonTertiary>
                     </View>
                   </View>
                 ))
@@ -270,10 +270,10 @@ const PageFriends = () => {
                         <Text style={styles.title}>{item.name}</Text>
                       </View>
 
-                      <SecondaryBtn
+                      <ButtonSecondary
                         text={"CANCEL"}
                         onPress={() => cancelInvite(item)}
-                      ></SecondaryBtn>
+                      ></ButtonSecondary>
                     </View>
                   </View>
                 ))
@@ -293,10 +293,10 @@ const PageFriends = () => {
                         <Text style={styles.title}>{item.name}</Text>
                       </View>
 
-                      <PrimaryBtn
+                      <ButtonPrimary
                         text={"INVITE"}
                         onPress={() => sendInvite(item.id)}
-                      ></PrimaryBtn>
+                      ></ButtonPrimary>
                     </View>
                   </View>
                 ))

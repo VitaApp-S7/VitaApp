@@ -3,28 +3,29 @@ import React, {
   SetStateAction,
   useCallback,
   useContext,
-  useEffect
-} from "react"
-import { View } from "react-native"
+  useEffect,
+} from "react";
+import { View } from "react-native";
 import {
+  getAllActiveActivities,
   getAllActivities,
-  getAllActiveActivities
-} from "../../services/moodboosterService"
+} from "../services/moodboosterService";
 
 import {
-  useFonts,
-  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_400Regular as Poppins400Regular,
-  Poppins_500Medium as Poppins500Medium
-} from "@expo-google-fonts/poppins"
-import ContentLoader, { Rect } from "react-content-loader/native"
+  Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
+  useFonts,
+} from "@expo-google-fonts/poppins";
+import ContentLoader, { Rect } from "react-content-loader/native";
 import {
+  MoodboosterType,
   UserMoodboosterType,
-  MoodboosterType
-} from "../../types/MoodboosterTypes"
-import { AppContext } from "../../context/AppContext"
-import Moodbooster from "./moodbooster"
-import { useQuery } from "@tanstack/react-query"
+} from "../types/MoodboosterTypes";
+import { AppContext } from "../context/AppContext";
+import Moodbooster from "./Moodbooster";
+import { useQuery } from "@tanstack/react-query";
+
 interface MoodboosterList {
   refresh: boolean
   setRefreshing: Dispatch<SetStateAction<boolean>>

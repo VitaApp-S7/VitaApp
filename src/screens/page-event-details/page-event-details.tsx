@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
 import parseDate from "../../services/dataParser"
 import React from "react"
 import OpenURLButton from "../../components/OpenURLButton"
-import TrixHtmlView from "../../components/Webview/trixHtmlView"
+import RichTextViewer from "../../components/RichTextViewer"
 
 const PageEventDetails = ({ route }) => {
   const { item } = route.params
@@ -19,7 +19,7 @@ const PageEventDetails = ({ route }) => {
           <Text style={styles.date}>{parseDate(item.date)}</Text>
         </View>
         {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-        <TrixHtmlView html={item.description} queryKey={`eventhtml${item.id}`} />
+        <RichTextViewer html={item.description} queryKey={`eventhtml${item.id}`} />
       </View>
     </ScrollView>
   )

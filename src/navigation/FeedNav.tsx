@@ -1,13 +1,13 @@
-import PageEvent from "../screens/page-event/page-event"
-import PageNews from "../screens/page-news/page-news"
+import PageEvent from "../screens/page-event/page-event";
+import PageNews from "../screens/page-news/page-news";
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions
-} from "@react-navigation/material-top-tabs"
-import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import PageEventDetails from "../screens/page-event-details/page-event-details"
-import PageNewsDetails from "../screens/page-news-details/page-news-details"
-import React from "react"
+  MaterialTopTabNavigationOptions,
+} from "@react-navigation/material-top-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import PageEventDetails from "../screens/page-event-details/page-event-details";
+import PageNewsDetails from "../screens/page-news-details/page-news-details";
+import React from "react";
 
 const Tab = createMaterialTopTabNavigator()
 const Stack = createNativeStackNavigator()

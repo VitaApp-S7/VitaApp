@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
 import React from "react"
 import parseDate from "../../services/dataParser"
 import OpenURLButton from "../../components/OpenURLButton"
-import TrixHtmlView from "../../components/Webview/trixHtmlView"
+import RichTextViewer from "../../components/RichTextViewer"
 
 const PageNewsDetails = ({ route }) => {
   const { item } = route.params
@@ -24,7 +24,7 @@ const PageNewsDetails = ({ route }) => {
             height: 1000,
             overflow: "hidden" 
           }}>
-            <TrixHtmlView html={item.description} queryKey={`eventhtml${item.id}`} />
+            <RichTextViewer html={item.description} queryKey={`eventhtml${item.id}`} />
           </View>
         </View>
       </View>

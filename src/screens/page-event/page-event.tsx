@@ -17,16 +17,16 @@ import {
 } from "@expo-google-fonts/poppins"
 import { getEvents, joinEvent, leaveEvent } from "../../services/eventService"
 import Bg from "../../../assets/wave.svg"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import ButtonPrimary from "../../components/buttons/ButtonPrimary"
 
 import parseDate from "../../services/dataParser"
 import { AppContext } from "../../context/AppContext"
 import { useQuery } from "@tanstack/react-query"
 import EventType from "../../types/EventType"
-import TertiaryBtn from "../../components/buttons/TertiaryBtn"
+import ButtonTertiary from "../../components/buttons/ButtonTertiary"
 
 const PageEvent = ({ navigation }) => {
-  const { accessToken, user, notification } = useContext(AppContext)
+  const { accessToken, user } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
   const { data, isSuccess, refetch } = useQuery<EventType[]>(
@@ -180,10 +180,10 @@ const PageEvent = ({ navigation }) => {
                     color="#031D29"
                   />
                 </View>
-                <TertiaryBtn
+                <ButtonTertiary
                   text="LEAVE"
                   onPress={async () => await leaveEventOnPress(item.id)}
-                ></TertiaryBtn>
+                ></ButtonTertiary>
               </Card.Actions>
             </Card>
           ))
@@ -224,10 +224,10 @@ const PageEvent = ({ navigation }) => {
                     color="#031D29"
                   />
                 </View>
-                <PrimaryBtn
+                <ButtonPrimary
                   text="JOIN"
                   onPress={async () => await joinEventOnPress(item.id)}
-                ></PrimaryBtn>
+                ></ButtonPrimary>
               </Card.Actions>
             </Card>
           ))

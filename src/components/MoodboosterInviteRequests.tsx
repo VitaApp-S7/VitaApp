@@ -1,27 +1,27 @@
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image
-} from "react-native"
-import React, { useContext, useEffect, useState } from "react"
-import Modal from "react-native-modal"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import TertiaryBtn from "../buttons/TertiaryBtn"
-import { AppContext } from "../../context/AppContext"
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import Modal from "react-native-modal";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import ButtonTertiary from "./buttons/ButtonTertiary";
+import { AppContext } from "../context/AppContext";
 import {
   acceptMoodboosterRequest,
-  getAllMoodboosterRequests
-} from "../../services/moodboosterService"
-import { declineMoodboosterRequest } from "../../services/moodboosterService"
-import PrimaryBtn from "../buttons/PrimaryBtn"
-import SecondaryBtn from "../buttons/SecondaryBtn"
-import { Card, Paragraph } from "react-native-paper"
-import Toast from "react-native-toast-message"
+  declineMoodboosterRequest,
+  getAllMoodboosterRequests,
+} from "../services/moodboosterService";
+import ButtonPrimary from "./buttons/ButtonPrimary";
+import ButtonSecondary from "./buttons/ButtonSecondary";
+import { Card, Paragraph } from "react-native-paper";
+import Toast from "react-native-toast-message";
 
-const challengeFriends = () => {
+const moodboosterInviteRequests = () => {
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AppContext)
   // const [dataState, setDataState] = useState(false);
@@ -91,7 +91,7 @@ const challengeFriends = () => {
           <Card.Content style={styles.cardcontent}>
             <Image
               style={styles.pfp}
-              source={require("../../../assets/pfp.png")}
+              source={require("../../assets/pfp.png")}
             ></Image>
             <View style={styles.textcontent}>
               <Paragraph style={styles.title}>{item.inviterName}</Paragraph>
@@ -101,14 +101,14 @@ const challengeFriends = () => {
             </View>
           </Card.Content>
           <Card.Actions style={styles.buttons}>
-            <SecondaryBtn
+            <ButtonSecondary
               text={"DECLINE"}
               onPress={() => handleToDecline(item)}
-            ></SecondaryBtn>
-            <PrimaryBtn
+            ></ButtonSecondary>
+            <ButtonPrimary
               text={"ACCEPT"}
               onPress={() => handleToAccept(item)}
-            ></PrimaryBtn>
+            ></ButtonPrimary>
           </Card.Actions>
         </Card>
       ))}
@@ -131,14 +131,14 @@ const challengeFriends = () => {
               <Text style={styles.modalempty}>No invitations</Text>
             )}
           </View>
-          <TertiaryBtn text="DONE" onPress={toggleModalOff} />
+          <ButtonTertiary text="DONE" onPress={toggleModalOff} />
         </View>
       </Modal>
     </View>
   )
 }
 
-export default challengeFriends
+export default moodboosterInviteRequests
 
 const styles = StyleSheet.create({
   buttontext: {

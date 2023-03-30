@@ -1,11 +1,11 @@
-import { TouchableOpacity, View } from "react-native"
-import React, { PropsWithChildren } from "react"
+import { TouchableOpacity, View } from "react-native";
+import React, { PropsWithChildren } from "react";
 
 interface TopBarButtonProps extends PropsWithChildren {
   onClick: () => void;
 }
 
-export const TopBarNavigationButton = (props: TopBarButtonProps) => {
+export const ButtonTopBarNavigation = (props: TopBarButtonProps) => {
   return (
     <View
       style={{
