@@ -24,13 +24,12 @@ const PageNews = ({ navigation }) => {
   const { accessToken } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const { refetch, data, isSuccess } = useQuery<NewsType[]>(
-    [ "news" ],
-    async () => {
-      const response = await getNews(accessToken)
-      return response.data
-    }
-  )
+  const { refetch, data } = useQuery<NewsType[]>([ "news" ], async () => {
+    const response = await getNews(accessToken)
+    return response.data.sort(
+      (news, other) => -news.date.localeCompare(other.date)
+    )
+  })
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -41,56 +40,51 @@ const PageNews = ({ navigation }) => {
     return null
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  // const wave = require("../../../assets/wave.png")
-
-  const handleOnPress = (item: any) => {
+  const handleOnPress = (item) => {
     navigation.navigate("News Details", { item })
   }
 
   return (
     <View style={styles.screen}>
-      <View style={{ minHeight: 300 }}>
-        <Bg style={styles.wave} />
-        <Text style={styles.moodtitle}>Latest news</Text>
+      <Bg style={styles.wave} />
+      <Text style={styles.moodtitle}>Latest news</Text>
 
-        <FlatList
-          data={data}
-          renderItem={(props) => (
-            <Card
-              style={styles.surface}
-              mode="outlined"
-              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-              key={props.item.id}
+      <FlatList
+        data={data}
+        renderItem={(props) => (
+          <Card
+            style={styles.surface}
+            mode="outlined"
+            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+            key={props.item.id}
+          >
+            <TouchableOpacity
+              onPress={() => handleOnPress(props.item)}
+              style={{ width: "100%" }}
             >
-              <TouchableOpacity
-                onPress={() => handleOnPress(props.item)}
-                style={{ width: "100%" }}
-              >
-                <Card.Title
-                  style={styles.title}
-                  title={<Title style={styles.title}>{props.item.title}</Title>}
-                  right={() => (
-                    <Subheading style={styles.date}>
-                      {parseDate(props.item.date)}
-                    </Subheading>
-                  )}
-                />
-              </TouchableOpacity>
-            </Card>
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={async () => {
-                setRefreshing(true)
-                await refetch()
-                setRefreshing(false)
-              }}
-            />
-          }
-        />
-      </View>
+              <Card.Title
+                style={styles.title}
+                title={<Title style={styles.title}>{props.item.title}</Title>}
+                right={() => (
+                  <Subheading style={styles.date}>
+                    {parseDate(props.item.date)}
+                  </Subheading>
+                )}
+              />
+            </TouchableOpacity>
+          </Card>
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await refetch()
+              setRefreshing(false)
+            }}
+          />
+        }
+      />
     </View>
   )
 }
@@ -100,7 +94,8 @@ export default PageNews
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: "white",
-    height: 1000
+    height: 1000,
+    minHeight: 300
   },
   surface: {
     marginHorizontal: 8,
