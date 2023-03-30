@@ -17,7 +17,7 @@ const FeedNav = () => {
     <Stack.Navigator>
       <Stack.Screen name="News & Events" component={FeedTab} />
       <Stack.Screen name="Event Details" component={PageEventDetails} />
-      <Stack.Screen name="News Details" component={PageNewsDetails} options={{ animation: "none" }} />
+      <Stack.Screen name="News Details" component={PageNewsDetails} />
     </Stack.Navigator>
   )
 }

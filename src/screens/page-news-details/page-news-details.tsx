@@ -2,25 +2,33 @@ import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
 import React from "react"
 import parseDate from "../../services/dataParser"
 import OpenURLButton from "../../components/OpenURLButton"
+import TrixHtmlView from "../../components/Webview/trixHtmlView"
 
 const PageNewsDetails = ({ route }) => {
   const { item } = route.params
 
   return (
-    <ScrollView style={styles.screen}>
+    <View style={styles.screen}>
       <Image
         source={require("../../../assets/header.png")}
         style={styles.header}
       ></Image>
       <View style={styles.wrapper}>
-        <View style={styles.wrapperTop}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.date}>{parseDate(item.date)}</Text>
+        <View>
+          <View style={styles.wrapperTop}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.date}>{parseDate(item.date)}</Text>
+          </View>
+          {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
+          <View style={{
+            height: 1000,
+            overflow: "hidden" 
+          }}>
+            <TrixHtmlView html={item.description} queryKey={`eventhtml${item.id}`} />
+          </View>
         </View>
-        {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-        <Text style={styles.description}>{item.description}</Text>
       </View>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -59,7 +67,6 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   wrapperTop: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

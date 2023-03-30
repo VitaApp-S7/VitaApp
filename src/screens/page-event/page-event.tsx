@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useEffect, useState } from "react"
-import { Card, Paragraph, Subheading, Title } from "react-native-paper"
+import React, { useCallback, useContext, useState } from "react"
+import { Card, Subheading, Title } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import {
   RefreshControl,
@@ -94,7 +94,6 @@ const PageEvent = ({ navigation }) => {
       (
         <Subheading style={styles.date}>
           {parseDate(item.date)}
-          {<Text> </Text>}
         </Subheading>
       ),
     []
@@ -123,45 +122,6 @@ const PageEvent = ({ navigation }) => {
         <Text style={styles.moodtitle}>Signed Up</Text>
         {isSuccess && joinedEvents.length > 0 ? (
           joinedEvents.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <TouchableOpacity
-                onPress={() => handleOnPress(item)}
-                style={{ width: "100%" }}
-              >
-                <View style={styles.wrapperTop}>
-                  <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.date}>{parseDate(item.date)}</Text>
-                </View>
-                <Text style={styles.description}>{item.description}</Text>
-              </TouchableOpacity>
-
-              <View style={styles.wrapperBottom}>
-                <View style={styles.joined}>
-                  <Text style={styles.description}>
-                    {item.userIds.length}/20
-                  </Text>
-                  <Ionicons
-                    style={styles.icon}
-                    name="people"
-                    size={24}
-                    color="#031D29"
-                  />
-                </View>
-                <TertiaryBtn
-                  text={"LEAVE"}
-                  onPress={async () => await leaveEventOnPress(item.id)}
-                ></TertiaryBtn>
-              </View>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.text}>
-            Haven&apos;t signed up for events yet.
-          </Text>
-        )}
-        <Text style={styles.moodtitle}>Available</Text>
-        {isSuccess && notJoinedEvents.length > 0 ? (
-          notJoinedEvents.map((item, index) => (
             // <View key={index} style={styles.card}>
             //   <TouchableOpacity
             //     onPress={() => handleOnPress(item)}
@@ -171,12 +131,13 @@ const PageEvent = ({ navigation }) => {
             //       <Text style={styles.title}>{item.title}</Text>
             //       <Text style={styles.date}>{parseDate(item.date)}</Text>
             //     </View>
-            //     <Text style={styles.description}>{item.description}</Text>
             //   </TouchableOpacity>
-
+            //
             //   <View style={styles.wrapperBottom}>
             //     <View style={styles.joined}>
-            //       <Text style={styles.description}>{item.userIds.length}/20</Text>
+            //       <Text style={styles.description}>
+            //         {item.userIds.length}/20
+            //       </Text>
             //       <Ionicons
             //         style={styles.icon}
             //         name="people"
@@ -184,13 +145,12 @@ const PageEvent = ({ navigation }) => {
             //         color="#031D29"
             //       />
             //     </View>
-            //     <PrimaryBtn
-            //       text="JOIN"
-            //       onPress={() => joinEventOnPress(item.id)}
-            //     ></PrimaryBtn>
+            //     <TertiaryBtn
+            //       text={"LEAVE"}
+            //       onPress={async () => await leaveEventOnPress(item.id)}
+            //     ></TertiaryBtn>
             //   </View>
             // </View>
-
             <Card
               style={styles.surface}
               mode="outlined"
@@ -207,11 +167,50 @@ const PageEvent = ({ navigation }) => {
                   right={RightCardTitle(item)}
                   titleNumberOfLines={3}
                 />
-                <Card.Content>
-                  <Paragraph numberOfLines={10} style={styles.description}>
-                    {item.description}
-                  </Paragraph>
-                </Card.Content>
+              </TouchableOpacity>
+              <Card.Actions style={styles.buttons}>
+                <View style={styles.joined}>
+                  <Text style={styles.description}>
+                    {item.userIds.length}/20
+                  </Text>
+                  <Ionicons
+                    style={styles.icon}
+                    name="people"
+                    size={24}
+                    color="#031D29"
+                  />
+                </View>
+                <TertiaryBtn
+                  text="LEAVE"
+                  onPress={async () => await leaveEventOnPress(item.id)}
+                ></TertiaryBtn>
+              </Card.Actions>
+            </Card>
+          ))
+        ) : (
+          <Text style={styles.text}>
+            Haven&apos;t signed up for events yet.
+          </Text>
+        )}
+        <Text style={styles.moodtitle}>Available</Text>
+        {isSuccess && notJoinedEvents.length > 0 ? (
+          notJoinedEvents.map((item, index) => (
+            <Card
+              style={styles.surface}
+              mode="outlined"
+              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+              key={index}
+            >
+              <TouchableOpacity
+                onPress={() => handleOnPress(item)}
+                style={{ width: "100%" }}
+              >
+                <Card.Title
+                  style={styles.title}
+                  title={<Title style={styles.title}>{item.title}</Title>}
+                  right={RightCardTitle(item)}
+                  titleNumberOfLines={3}
+                />
               </TouchableOpacity>
               <Card.Actions style={styles.buttons}>
                 <View style={styles.joined}>
@@ -291,6 +290,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins700Bold",
     margin: 0,
     padding: 0,
+    paddingRight: 10,
     fontSize: 12,
     color: "#031D29"
   },
@@ -298,22 +298,6 @@ const styles = StyleSheet.create({
   wave: {
     position: "absolute",
     backgroundColor: "white"
-  },
-  wrapperTop: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 4
-  },
-  wrapperBottom: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 4
   },
   moodtitle: {
     fontFamily: "Poppins600SemiBold",

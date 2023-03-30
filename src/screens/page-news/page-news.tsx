@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   RefreshControl,
   ScrollView,
@@ -15,9 +15,12 @@ import {
 import { getNews } from "../../services/newsService"
 import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
-import NativeWebView from "../../components/Webview/nativeWebView"
 import { useQuery } from "@tanstack/react-query"
 import NewsType from "../../types/NewsType"
+import { Card, Subheading, Title } from "react-native-paper"
+import Ionicons from "@expo/vector-icons/Ionicons"
+import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import parseDate from "../../services/dataParser"
 
 const PageNews = ({ navigation }) => {
   const { accessToken } = useContext(AppContext)
@@ -35,6 +38,16 @@ const PageNews = ({ navigation }) => {
     Poppins600SemiBold,
     Poppins400Regular
   })
+
+  const RightCardTitle = useCallback(
+    (item) => (props) =>
+      (
+        <Subheading style={styles.date}>
+          {parseDate(item.date)}
+        </Subheading>
+      ),
+    []
+  )
 
   if (!fontsLoaded) {
     return null
@@ -67,17 +80,24 @@ const PageNews = ({ navigation }) => {
 
         {isSuccess ? (
           data.map((item, index) => (
-            <View key={index} style={styles.card}>
+            <Card
+              style={styles.surface}
+              mode="outlined"
+              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+              key={index}
+            >
               <TouchableOpacity
                 onPress={() => handleOnPress(item)}
                 style={{ width: "100%" }}
               >
-                <View style={styles.wrapperTop}>
-                  <Text style={styles.title}>{item.title}</Text>
-                </View>
-                <NativeWebView />
+                <Card.Title
+                  style={styles.title}
+                  title={<Title style={styles.title}>{item.title}</Title>}
+                  right={RightCardTitle(item)}
+                  titleNumberOfLines={3}
+                />
               </TouchableOpacity>
-            </View>
+            </Card>
           ))
         ) : (
           <Text style={styles.description}>No news found</Text>
@@ -105,6 +125,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "white"
   },
+  surface: {
+    marginHorizontal: 8,
+    marginVertical: 4,
+    padding: 0,
+    fontFamily: "Poppins600SemiBold",
+    backgroundColor: "#FFFFFF"
+  },
   title: {
     fontFamily: "Poppins600SemiBold",
     margin: 0,
@@ -124,6 +151,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins700Bold",
     margin: 0,
     padding: 0,
+    paddingRight: 10,
     fontSize: 12,
     color: "#031D29"
   },
