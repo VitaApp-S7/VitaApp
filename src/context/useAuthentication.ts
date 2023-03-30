@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import UserType from "../types/UserType";
-import { checkUser, getUser, SetExpo } from "../services/userService";
+import { useEffect, useMemo, useState } from "react"
+import UserType from "../types/UserType"
+import { checkUser, getUser, SetExpo } from "../services/userService"
 import {
+  makeRedirectUri,
   ResponseType,
   useAuthRequest,
-  useAutoDiscovery,
-} from "expo-auth-session";
-import { Platform } from "react-native";
-import * as SecureStore from "expo-secure-store";
-import Toast from "react-native-toast-message";
+  useAutoDiscovery
+} from "expo-auth-session"
+import { Platform } from "react-native"
+import * as SecureStore from "expo-secure-store"
+import Toast from "react-native-toast-message"
 
 let initialized = false
 
@@ -18,6 +19,8 @@ interface useAuthenticationType {
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
+
+const isIosAndDev = Platform.OS === "ios" && __DEV__
 
 const useAuthentication = (expoToken) => {
   const [ user, setUser ] = useState<UserType>(null)
@@ -45,7 +48,9 @@ const useAuthentication = (expoToken) => {
   const [ request, response, promptAsync ] = useAuthRequest(
     {
       responseType: ResponseType.Token,
-      clientId: "215b09e4-54cb-49aa-837b-546f73fc29f6",
+      clientId: isIosAndDev
+        ? "50f18b4e-1a58-4004-b6b8-5a15e3a2e863"
+        : "215b09e4-54cb-49aa-837b-546f73fc29f6",
       scopes: [
         "openid",
         "profile",
@@ -53,7 +58,12 @@ const useAuthentication = (expoToken) => {
         "offline_access",
         "api://215b09e4-54cb-49aa-837b-546f73fc29f6/User.All"
       ],
-      redirectUri: redirectUri
+      redirectUri: isIosAndDev
+        ? makeRedirectUri({
+          useProxy: true,
+          projectNameForProxy: "@vitaapp/stuff"
+        })
+        : redirectUri
     },
     discovery
   )
