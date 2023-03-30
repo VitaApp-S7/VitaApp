@@ -15,6 +15,9 @@ const PageMoodboosterDetails = () => {
   const moodbooster = route.params?.mb
   const [ userMoodbooster, setUserMoodbooster ] =
     useState<UserMoodboosterType | null>(route.params?.userMb)
+  const [ canStart, setCanStart ] = useState<boolean>(
+    userMoodbooster ? false : true
+  )
 
   const { moodPoints, setMoodPoints } = useContext(AppContext)
   const {
@@ -45,6 +48,10 @@ const PageMoodboosterDetails = () => {
   }
 
   const handleToStart = async () => {
+    if (!canStart) {
+      return
+    }
+    setCanStart(false)
     const userMb: UserMoodboosterType = await startMoodboosterMutation(
       moodbooster.id
     )
@@ -53,9 +60,10 @@ const PageMoodboosterDetails = () => {
     removeMoodboosterFromAllMoodboosters(moodbooster.id)
   }
   const handleToComplete = async () => {
-    if (!userMoodbooster) {
+    if (!userMoodbooster || canStart) {
       return
     }
+    setCanStart(true)
     await completeMoodboosterMutation(userMoodbooster.id)
     updateMoodboostersQuery(moodbooster)
     removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
@@ -65,9 +73,10 @@ const PageMoodboosterDetails = () => {
     setUserMoodbooster(null)
   }
   const handleToCancel = async () => {
-    if (!userMoodbooster) {
+    if (!userMoodbooster || canStart) {
       return
     }
+    setCanStart(true)
     await cancelMoodboosterMutation(userMoodbooster.id)
     updateMoodboostersQuery(moodbooster)
     removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
@@ -91,23 +100,24 @@ const PageMoodboosterDetails = () => {
           {userMoodbooster ? (
             <>
               <InviteFriends
-                disabled={false}
+                disabled={canStart}
                 moodboosterId={userMoodbooster.id}
               />
               <SecondaryBtn
                 text={"CANCEL"}
+                disabled={canStart}
                 onPress={() => handleToCancel()}
               ></SecondaryBtn>
               <PrimaryBtn
                 text={"COMPLETE"}
-                disabled={false}
+                disabled={canStart}
                 onPress={() => handleToComplete()}
               ></PrimaryBtn>
             </>
           ) : (
             <PrimaryBtn
               text={"START"}
-              disabled={!!userMoodbooster}
+              disabled={!canStart}
               onPress={() => handleToStart()}
             ></PrimaryBtn>
           )}
