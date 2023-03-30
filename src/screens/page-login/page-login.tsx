@@ -1,22 +1,26 @@
 import React, { useContext } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import {
-  makeRedirectUri,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native"
+import {
+  ResponseType,
   useAuthRequest,
-  useAutoDiscovery,
-  ResponseType
+  useAutoDiscovery
 } from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
-import { checkUser, getUser, SetExpo } from "../../services/userService"
+import { checkUser, getUser } from "../../services/userService"
 // import * as Linking from "expo-linking"
 import Intrologo from "../../../assets/intrologo.svg"
 import {
-  useFonts,
   Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
-  Poppins_600SemiBold as Poppins600SemiBold
+  useFonts
 } from "@expo-google-fonts/poppins"
-import * as Notifications from "expo-notifications"
 import { AppContext } from "../../context/AppContext"
 import Constants from "expo-constants"
 
