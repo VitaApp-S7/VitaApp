@@ -42,14 +42,20 @@ const useMoodboosterMutations = () => {
   const updateMoodboostersQuery = (newMoodbooster: MoodboosterType) => {
     queryClient.setQueryData(
       [ "moodboosters" ],
-      (prevData: MoodboosterType[]) => [ ...prevData, newMoodbooster ]
+      (prevData: MoodboosterType[]) =>
+        [ ...prevData, newMoodbooster ].filter(
+          (mb, i, a) => a.findIndex((mb2) => mb.id === mb2.id) === i
+        ) // removes duplicates
     )
   }
 
   const updateUserMoodboostersQuery = (newItem: UserMoodboosterType) => {
     queryClient.setQueryData(
       [ "userMoodboosters" ],
-      (prevData: UserMoodboosterType[]) => [ ...prevData, newItem ]
+      (prevData: UserMoodboosterType[]) =>
+        [ ...prevData, newItem ].filter(
+          (mb, i, a) => a.findIndex((mb2) => mb.id === mb2.id) === i
+        ) // removes duplicates
     )
   }
 

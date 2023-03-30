@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { View, StyleSheet } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
 import {
@@ -26,6 +26,7 @@ interface Moodbooster {
 
 const Moodbooster = (props: Moodbooster) => {
   const { moodPoints, setMoodPoints } = useContext(AppContext)
+  const [ canStart, setCanStart ] = useState<boolean>(props.userMb ? false : true)
   const navigation = useNavigation()
   const {
     moodbooster: {
@@ -66,6 +67,10 @@ const Moodbooster = (props: Moodbooster) => {
   }
 
   const handleToStart = async () => {
+    if (props.userMb || !canStart) {
+      return
+    }
+    setCanStart(false)
     const userMoodbooster: UserMoodboosterType = await startMoodboosterMutation(
       props.mb.id
     )
@@ -73,9 +78,10 @@ const Moodbooster = (props: Moodbooster) => {
     removeMoodboosterFromAllMoodboosters(props.mb.id)
   }
   const handleToComplete = async () => {
-    if (!props.userMb) {
+    if (!props.userMb || canStart) {
       return
     }
+    setCanStart(true)
     await completeMoodboosterMutation(props.userMb.id)
     updateMoodboostersQuery(props.mb)
     removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
@@ -84,9 +90,10 @@ const Moodbooster = (props: Moodbooster) => {
     setMoodPoints(moodPoints + props.mb.points)
   }
   const handleToCancel = async () => {
-    if (!props.userMb) {
+    if (!props.userMb || canStart) {
       return
     }
+    setCanStart(true)
     await cancelMoodboosterMutation(props.userMb.id)
     updateMoodboostersQuery(props.mb)
     removeMoodboosterFromUserMoodboosterQuery(props.userMb.id)
@@ -113,27 +120,25 @@ const Moodbooster = (props: Moodbooster) => {
       >
         <Card.Content>
           <Paragraph style={styles.title}>{props.mb.title}</Paragraph>
-          <Paragraph style={styles.description}>
-            {props.mb.description}
+          <Paragraph style={styles.catagory}>
+            {props.mb.category.name}
           </Paragraph>
         </Card.Content>
         <Card.Actions style={styles.buttons}>
           {!props.userMb ? (
             <PrimaryBtn
               text={"START"}
-              disabled={!!props.userMb}
               onPress={() => handleToStart()}
             ></PrimaryBtn>
           ) : (
             <>
-              <InviteFriends disabled={false} moodboosterId={props.userMb.id} />
+              <InviteFriends moodboosterId={props.userMb.id} />
               <SecondaryBtn
                 text={"CANCEL"}
                 onPress={() => handleToCancel()}
               ></SecondaryBtn>
               <PrimaryBtn
                 text={"COMPLETE"}
-                disabled={false}
                 onPress={() => handleToComplete()}
               ></PrimaryBtn>
             </>
@@ -150,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10
   },
-  description: {
+  catagory: {
     fontFamily: "Poppins500Medium",
     fontSize: 16,
     color: "#031D29"
