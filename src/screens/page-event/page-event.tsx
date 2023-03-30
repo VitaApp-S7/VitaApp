@@ -1,9 +1,8 @@
-import React, { useCallback, useContext, useState } from "react"
+import React, { useContext, useState } from "react"
 import { Card, Subheading, Title } from "react-native-paper"
-import Ionicons from "@expo/vector-icons/Ionicons"
 import {
   RefreshControl,
-  ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -24,35 +23,52 @@ import { AppContext } from "../../context/AppContext"
 import { useQuery } from "@tanstack/react-query"
 import EventType from "../../types/EventType"
 import ButtonTertiary from "../../components/buttons/ButtonTertiary"
+import Ionicons from "@expo/vector-icons/Ionicons"
 
 const PageEvent = ({ navigation }) => {
   const { accessToken, user } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const { data, isSuccess, refetch } = useQuery<EventType[]>(
-    [ "events" ],
-    async () => {
-      const response = await getEvents(accessToken)
-      return response.data
-    },
-    {
-      onSuccess: (data) => {
-        setJoinedEvents(
-          data.filter((event) => event.userIds.includes(user.id))
-        )
-        setNotJoinedEvents(
-          data.filter((event) => !event.userIds.includes(user.id))
-        )
+  const setSortedListData = (data) => {
+    setListData(
+      createData(
+        sortData(data.filter((evt) => evt.userIds.includes(user.id))),
+        sortData(data.filter((evt) => !evt.userIds.includes(user.id)))
+      )
+    )
+  }
+
+  const sortData = (data) =>
+    data.sort((evt, other) => -evt.date.localeCompare(other.date))
+
+  const createData = (joined, notJoined) => {
+    return [
+      {
+        key: "joined",
+        title: "Signed Up",
+        data: sortData(joined),
+        emptyText: "Haven't signed up for any events"
+      },
+      {
+        key: "not-joined",
+        title: "Available",
+        data: sortData(notJoined),
+        emptyText: "No events available anymore"
       }
-    }
+    ]
+  }
+
+  const { data, refetch } = useQuery<EventType[]>(
+    [ "events" ],
+    async () => (await getEvents(accessToken)).data,
+    { onSuccess: setSortedListData }
   )
 
-  const [ joinedEvents, setJoinedEvents ] = useState<EventType[]>(
-    (data ? data : []).filter((event) => event.userIds.includes(user.id))
-  )
-
-  const [ notJoinedEvents, setNotJoinedEvents ] = useState<EventType[]>(
-    (data ? data : []).filter((event) => !event.userIds.includes(user.id))
+  const [ listData, setListData ] = useState(
+    createData(
+      (data ? data : []).filter((evt) => evt.userIds.includes(user.id)),
+      (data ? data : []).filter((evt) => !evt.userIds.includes(user.id))
+    )
   )
 
   const handleOnPress = (item: any) => {
@@ -62,11 +78,14 @@ const PageEvent = ({ navigation }) => {
   const joinEventOnPress = async (id) => {
     const response = await joinEvent(accessToken, id)
     if (response.status === 200) {
-      setJoinedEvents([
-        ...joinedEvents,
-        ...notJoinedEvents.filter((event) => event.id === id)
-      ])
-      setNotJoinedEvents(notJoinedEvents.filter((event) => event.id !== id))
+      setSortedListData(
+        data.map((evt) => {
+          if (evt.id !== id) return evt
+
+          evt.userIds.push(user.id)
+          return evt
+        })
+      )
       await refetch()
     }
   }
@@ -74,39 +93,93 @@ const PageEvent = ({ navigation }) => {
   const leaveEventOnPress = async (id) => {
     const response = await leaveEvent(accessToken, id)
     if (response.status === 200) {
-      setNotJoinedEvents([
-        ...notJoinedEvents,
-        ...joinedEvents.filter((event) => event.id === id)
-      ])
-      setJoinedEvents(joinedEvents.filter((event) => event.id !== id))
+      setSortedListData(
+        data.map((evt) => {
+          if (evt.id !== id) return evt
+
+          evt.userIds = evt.userIds.filter((userId) => userId !== user.id)
+          return evt
+        })
+      )
       await refetch()
     }
   }
 
   // fonts
-  const [ fontsLoaded ] = useFonts({
+  useFonts({
     Poppins600SemiBold,
     Poppins400Regular
   })
 
-  const RightCardTitle = useCallback(
-    (item) => (props) =>
-      (
-        <Subheading style={styles.date}>
-          {parseDate(item.date)}
-        </Subheading>
-      ),
-    []
-  )
-
-  if (!fontsLoaded) {
-    return null
-  }
-
   return (
-    <>
-      <ScrollView
-        style={styles.screen}
+    <View style={styles.screen}>
+      <Bg style={styles.wave} />
+
+      <SectionList
+        sections={listData}
+        keyExtractor={(item) => item.id}
+        renderItem={(props) => (
+          <Card
+            style={styles.surface}
+            mode="outlined"
+            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+            key={props.item.id}
+          >
+            <TouchableOpacity
+              onPress={() => handleOnPress(props.item)}
+              style={{ width: "100%" }}
+            >
+              <Card.Title
+                style={styles.title}
+                title={<Title style={styles.title}>{props.item.title}</Title>}
+                right={() => (
+                  <Subheading style={styles.date}>
+                    {parseDate(props.item.date)}
+                  </Subheading>
+                )}
+                titleNumberOfLines={3}
+              />
+            </TouchableOpacity>
+            <Card.Actions style={styles.buttons}>
+              <View style={styles.joined}>
+                <Text style={styles.description}>
+                  {props.item.userIds.length}/20
+                </Text>
+                <Ionicons
+                  style={styles.icon}
+                  name="people"
+                  size={24}
+                  color="#031D29"
+                />
+              </View>
+              {props.section.key === "joined" ? (
+                <TertiaryBtn
+                  text="LEAVE"
+                  onPress={async () => await leaveEventOnPress(props.item.id)}
+                ></TertiaryBtn>
+              ) : (
+                <PrimaryBtn
+                  text="JOIN"
+                  onPress={async () => await joinEventOnPress(props.item.id)}
+                ></PrimaryBtn>
+              )}
+            </Card.Actions>
+          </Card>
+        )}
+        renderSectionHeader={(props) => {
+          if (props.section.data.length === 0)
+            return (
+              <>
+                <Text style={styles.moodtitle}>{props.section.title}</Text>
+                <Text style={styles.text}>{props.section.emptyText}</Text>
+              </>
+            )
+          return (
+            <>
+              <Text style={styles.moodtitle}>{props.section.title}</Text>
+            </>
+          )
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -117,125 +190,8 @@ const PageEvent = ({ navigation }) => {
             }}
           />
         }
-      >
-        <Bg style={styles.wave} />
-        <Text style={styles.moodtitle}>Signed Up</Text>
-        {isSuccess && joinedEvents.length > 0 ? (
-          joinedEvents.map((item, index) => (
-            // <View key={index} style={styles.card}>
-            //   <TouchableOpacity
-            //     onPress={() => handleOnPress(item)}
-            //     style={{ width: "100%" }}
-            //   >
-            //     <View style={styles.wrapperTop}>
-            //       <Text style={styles.title}>{item.title}</Text>
-            //       <Text style={styles.date}>{parseDate(item.date)}</Text>
-            //     </View>
-            //   </TouchableOpacity>
-            //
-            //   <View style={styles.wrapperBottom}>
-            //     <View style={styles.joined}>
-            //       <Text style={styles.description}>
-            //         {item.userIds.length}/20
-            //       </Text>
-            //       <Ionicons
-            //         style={styles.icon}
-            //         name="people"
-            //         size={24}
-            //         color="#031D29"
-            //       />
-            //     </View>
-            //     <TertiaryBtn
-            //       text={"LEAVE"}
-            //       onPress={async () => await leaveEventOnPress(item.id)}
-            //     ></TertiaryBtn>
-            //   </View>
-            // </View>
-            <Card
-              style={styles.surface}
-              mode="outlined"
-              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-              key={index}
-            >
-              <TouchableOpacity
-                onPress={() => handleOnPress(item)}
-                style={{ width: "100%" }}
-              >
-                <Card.Title
-                  style={styles.title}
-                  title={<Title style={styles.title}>{item.title}</Title>}
-                  right={RightCardTitle(item)}
-                  titleNumberOfLines={3}
-                />
-              </TouchableOpacity>
-              <Card.Actions style={styles.buttons}>
-                <View style={styles.joined}>
-                  <Text style={styles.description}>
-                    {item.userIds.length}/20
-                  </Text>
-                  <Ionicons
-                    style={styles.icon}
-                    name="people"
-                    size={24}
-                    color="#031D29"
-                  />
-                </View>
-                <ButtonTertiary
-                  text="LEAVE"
-                  onPress={async () => await leaveEventOnPress(item.id)}
-                ></ButtonTertiary>
-              </Card.Actions>
-            </Card>
-          ))
-        ) : (
-          <Text style={styles.text}>
-            Haven&apos;t signed up for events yet.
-          </Text>
-        )}
-        <Text style={styles.moodtitle}>Available</Text>
-        {isSuccess && notJoinedEvents.length > 0 ? (
-          notJoinedEvents.map((item, index) => (
-            <Card
-              style={styles.surface}
-              mode="outlined"
-              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-              key={index}
-            >
-              <TouchableOpacity
-                onPress={() => handleOnPress(item)}
-                style={{ width: "100%" }}
-              >
-                <Card.Title
-                  style={styles.title}
-                  title={<Title style={styles.title}>{item.title}</Title>}
-                  right={RightCardTitle(item)}
-                  titleNumberOfLines={3}
-                />
-              </TouchableOpacity>
-              <Card.Actions style={styles.buttons}>
-                <View style={styles.joined}>
-                  <Text style={styles.description}>
-                    {item.userIds.length}/20
-                  </Text>
-                  <Ionicons
-                    style={styles.icon}
-                    name="people"
-                    size={24}
-                    color="#031D29"
-                  />
-                </View>
-                <ButtonPrimary
-                  text="JOIN"
-                  onPress={async () => await joinEventOnPress(item.id)}
-                ></ButtonPrimary>
-              </Card.Actions>
-            </Card>
-          ))
-        ) : (
-          <Text>No events to join!</Text>
-        )}
-      </ScrollView>
-    </>
+      />
+    </View>
   )
 }
 
@@ -257,18 +213,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "#ffffff"
-  },
-  card: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 8,
-    marginVertical: 4,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 8,
-    backgroundColor: "white"
   },
   joined: { flexDirection: "row" },
   title: {
@@ -313,6 +257,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#052D40",
     paddingVertical: 4,
-    paddingLeft: 16
+    paddingLeft: 20
   }
 })
