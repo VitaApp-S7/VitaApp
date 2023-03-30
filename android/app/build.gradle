@@ -118,9 +118,9 @@ android {
         applicationId 'nl.gac.vitaapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "3.0.4"
-        manifestPlaceholders = [appAuthRedirectScheme: 'gacprjscheme']
+        versionCode 13
+        versionName "3.0.5"
+        manifestPlaceholders = [appAuthRedirectScheme: 'msauth']
     }
 
     splits {
@@ -144,8 +144,6 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

@@ -16,12 +16,12 @@ const Stack = createNativeStackNavigator<AppNavStackParamList>()
 const screenOptions = { headerShown: false }
 
 const AppNav = () => {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, user } = useContext(AppContext)
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {accessToken !== null ? (
+        {accessToken !== null && user !== null ? (
           <Stack.Screen
             name="App"
             component={InAppTabNav}

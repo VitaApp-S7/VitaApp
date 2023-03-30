@@ -5,14 +5,14 @@ import {
   TouchableOpacity,
   View
 } from "react-native"
-import StartupMood from "../PopUps/StartupMood"
+import StartupMoodModal from "./StartupMoodModal"
 import Modal from "react-native-modal"
 import { Text } from "react-native-paper"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import TertiaryBtn from "../buttons/TertiaryBtn"
+import ButtonTertiary from "./ButtonTertiary"
 import React, { useContext, useState } from "react"
-import { updateUserMood } from "../../services/userService"
-import { AppContext } from "../../context/AppContext"
+import { updateUserMood } from "../services/userService"
+import { AppContext } from "../context/AppContext"
 
 interface ChangePicProps {
   moodPoints: number;
@@ -23,23 +23,25 @@ const ChangePic = ({ moodPoints }: ChangePicProps) => {
   const limitOfSadness = 4
 
   let source
-  if(moodPoints > limitOfHappiness){
-    source = require("../../../assets/Hairy.png")
+  if (moodPoints > limitOfHappiness) {
+    source = require("../../assets/Hairy.png")
   }
-  if(moodPoints <= limitOfHappiness && moodPoints >= limitOfSadness){
-    source = require("../../../assets/Hairy.png")
+  if (moodPoints <= limitOfHappiness && moodPoints >= limitOfSadness) {
+    source = require("../../assets/Hairy.png")
   }
-  if(moodPoints < limitOfSadness){
-    source = require("../../../assets/Hairy.png")
+  if (moodPoints < limitOfSadness) {
+    source = require("../../assets/Hairy.png")
   }
 
-  return <Image
-    source={source}
-    style={{
-      width: 180,
-      height: 180
-    }}
-  />
+  return (
+    <Image
+      source={source}
+      style={{
+        width: 180,
+        height: 180
+      }}
+    />
+  )
 }
 
 const ResponsiveHeader = () => {
@@ -53,10 +55,10 @@ const ResponsiveHeader = () => {
 
   return (
     <View style={styles.screen}>
-      <StartupMood changeMood={moodPoints} />
+      <StartupMoodModal changeMood={moodPoints} />
       <View>
         <ImageBackground
-          source={require("../../../assets/wave.png")}
+          source={require("../../assets/wave.png")}
           style={styles.wave}
         >
           <View style={styles.homeTop}>
@@ -66,7 +68,7 @@ const ResponsiveHeader = () => {
               <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <Image
                   style={styles.moodbg}
-                  source={require("../../../assets/moodbg2.png")}
+                  source={require("../../assets/moodbg2.png")}
                 />
                 <Text style={styles.moodnmbr}>{moodPoints}</Text>
               </TouchableOpacity>
@@ -99,7 +101,7 @@ const ResponsiveHeader = () => {
                       />
                     </TouchableOpacity>
                   </View>
-                  <TertiaryBtn
+                  <ButtonTertiary
                     text="DONE"
                     onPress={async () => await UpdateUserMood()}
                   />

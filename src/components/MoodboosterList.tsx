@@ -7,27 +7,28 @@ import React, {
 } from "react"
 import { View } from "react-native"
 import {
-  getAllActivities,
-  getAllActiveActivities
-} from "../../services/moodboosterService"
+  getAllActiveActivities,
+  getAllActivities
+} from "../services/moodboosterService"
 
 import {
-  useFonts,
-  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_400Regular as Poppins400Regular,
-  Poppins_500Medium as Poppins500Medium
+  Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
+  useFonts
 } from "@expo-google-fonts/poppins"
 import ContentLoader, { Rect } from "react-content-loader/native"
 import {
-  UserMoodboosterType,
-  MoodboosterType
-} from "../../types/MoodboosterTypes"
-import { AppContext } from "../../context/AppContext"
-import Moodbooster from "./moodbooster"
+  MoodboosterType,
+  UserMoodboosterType
+} from "../types/MoodboosterTypes"
+import { AppContext } from "../context/AppContext"
+import Moodbooster from "./Moodbooster"
 import { useQuery } from "@tanstack/react-query"
+
 interface MoodboosterList {
-  refresh: boolean
-  setRefreshing: Dispatch<SetStateAction<boolean>>
+  refresh: boolean;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 const MoodboosterList = (props: MoodboosterList) => {

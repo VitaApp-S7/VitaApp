@@ -5,7 +5,7 @@ interface TopBarButtonProps extends PropsWithChildren {
   onClick: () => void;
 }
 
-export const TopBarNavigationButton = (props: TopBarButtonProps) => {
+export const ButtonTopBarNavigation = (props: TopBarButtonProps) => {
   return (
     <View
       style={{

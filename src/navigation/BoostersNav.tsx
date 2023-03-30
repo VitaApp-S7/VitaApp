@@ -10,28 +10,31 @@ import React from "react"
 import PageHistory from "../screens/page-history/page-history"
 import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
 import { useNavigation } from "@react-navigation/native"
-import { TopBarNavigationButton } from "../components/buttons/TopBarNavigationButton"
-import { MoodboosterType, UserMoodboosterType } from "../types/MoodboosterTypes"
+import { ButtonTopBarNavigation } from "../components/ButtonTopBarNavigation"
+import {
+  MoodboosterType,
+  UserMoodboosterType
+} from "../types/MoodboosterTypes"
 
 type BoostersNavStackParamList = {
-  Home: undefined
-  Account: undefined
-  History: undefined
-  "Moodbooster Details": { mb: MoodboosterType; userMb?: UserMoodboosterType }
-}
+  Home: undefined;
+  Account: undefined;
+  History: undefined;
+  "Moodbooster Details": { mb: MoodboosterType; userMb?: UserMoodboosterType };
+};
 
 const Stack = createNativeStackNavigator<BoostersNavStackParamList>()
-type StackProps = NativeStackScreenProps<BoostersNavStackParamList>
+type StackProps = NativeStackScreenProps<BoostersNavStackParamList>;
 export type BoostersNavProps<T extends keyof BoostersNavStackParamList> =
-  NativeStackScreenProps<BoostersNavStackParamList, T>
+  NativeStackScreenProps<BoostersNavStackParamList, T>;
 
 const HeaderRight = () => {
   const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
-    <TopBarNavigationButton onClick={() => navigation.navigate("Account")}>
+    <ButtonTopBarNavigation onClick={() => navigation.navigate("Account")}>
       <Ionicons name="person-circle" size={32} color="#052D40" />
-    </TopBarNavigationButton>
+    </ButtonTopBarNavigation>
   )
 }
 
@@ -39,9 +42,9 @@ const HeaderLeft = () => {
   const navigation = useNavigation<StackProps["navigation"]>()
 
   return (
-    <TopBarNavigationButton onClick={() => navigation.navigate("History")}>
+    <ButtonTopBarNavigation onClick={() => navigation.navigate("History")}>
       <Ionicons name="time" size={32} color="#052D40" />
-    </TopBarNavigationButton>
+    </ButtonTopBarNavigation>
   )
 }
 

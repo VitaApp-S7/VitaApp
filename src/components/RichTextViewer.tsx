@@ -1,19 +1,18 @@
-import React, { useMemo, useRef } from "react"
+import React, { useMemo } from "react"
 import { WebView } from "react-native-webview"
 import { Linking, Platform } from "react-native"
-import { useQuery } from "@tanstack/react-query"
 
 interface TrixHtmlViewProps {
-  html: string,
-  queryKey: string
+  html: string;
+  queryKey: string;
 }
 
-const scalesPageToFit = Platform.OS === "android"
-
-const htmlTemplate = `
+const RichTextViewer = (props: TrixHtmlViewProps) => {
+  const html = useMemo(
+    () => `
 <html lang="en">
 <head >
-<meta content='width=device-width, initial-scale=0.45, maximum-scale=0.45, user-scalable=0' name='viewport' />
+<meta content="width=device-width, initial-scale=0.45, maximum-scale=0.45, user-scalable=0" name="viewport" />
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,400;1,600&display=swap');
 html{
@@ -39,20 +38,17 @@ strong {
 </style>
 </head>
 <body>
-$CONTENT
+${props.html}
 </body>
 </html>
-`
-
-const TrixHtmlView = (props: TrixHtmlViewProps) => {
-  const html = useQuery([ props.queryKey, props.html ],() => htmlTemplate.replace("$CONTENT", props.html),[ props.html ])
-
-  if(!html.isSuccess) return <></>
+  `,
+    [ props.html ]
+  )
 
   return (
     <WebView
       originWhitelist={[ "*" ]}
-      source={{ html: html.data }}
+      source={{ html: html }}
       style={{
         height: 1000,
         flex: 0
@@ -67,7 +63,7 @@ const TrixHtmlView = (props: TrixHtmlViewProps) => {
       scrollEnabled={false}
       pullToRefreshEnabled={false}
       textInteractionEnabled={false}
-      scalesPageToFit={scalesPageToFit}
+      scalesPageToFit={Platform.OS === "android"}
       bounces={false}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
@@ -80,4 +76,5 @@ const TrixHtmlView = (props: TrixHtmlViewProps) => {
   )
 }
 
-export default TrixHtmlView
+const richTextViewer = RichTextViewer
+export default richTextViewer

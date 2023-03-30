@@ -1,15 +1,15 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native"
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import Modal from "react-native-modal"
-import TertiaryBtn from "../buttons/TertiaryBtn"
+import ButtonTertiary from "./ButtonTertiary"
 import { IconButton } from "react-native-paper"
-import { inviteMoodbooster } from "../../services/moodboosterService"
-import { getFriends } from "../../services/friendsService"
-import PrimaryBtn from "../buttons/PrimaryBtn"
+import { inviteMoodbooster } from "../services/moodboosterService"
+import { getFriends } from "../services/friendsService"
+import ButtonPrimary from "./ButtonPrimary"
 import Toast from "react-native-toast-message"
-import { AppContext } from "../../context/AppContext"
+import { AppContext } from "../context/AppContext"
 
-const inviteFriends = (props) => {
+const moodboosterInvites = (props) => {
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AppContext)
   // const [dataState, setDataState] = useState(false);
@@ -58,15 +58,15 @@ const inviteFriends = (props) => {
             <View style={styles.joined}>
               <Image
                 style={styles.pfp}
-                source={require("../../../assets/pfp.png")}
+                source={require("../../assets/pfp.png")}
               ></Image>
               <Text style={styles.title}>{item.name}</Text>
             </View>
 
-            <PrimaryBtn
+            <ButtonPrimary
               text={"INVITE"}
               onPress={() => handleToInvite(item)}
-            ></PrimaryBtn>
+            ></ButtonPrimary>
           </View>
         </View>
       ))}
@@ -91,14 +91,14 @@ const inviteFriends = (props) => {
               <Text style={styles.modalempty}>No friends added</Text>
             )}
           </View>
-          <TertiaryBtn text="DONE" onPress={toggleModalOff} />
+          <ButtonTertiary text="DONE" onPress={toggleModalOff} />
         </View>
       </Modal>
     </View>
   )
 }
 
-export default inviteFriends
+export default moodboosterInvites
 
 const styles = StyleSheet.create({
   modal: {

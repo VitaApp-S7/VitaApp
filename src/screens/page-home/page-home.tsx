@@ -8,9 +8,9 @@ import {
   Poppins_700Bold as Poppins700Bold,
   Poppins_600SemiBold as Poppins600SemiBold
 } from "@expo-google-fonts/poppins"
-import ChallengeFriends from "../../components/challengeFriends/challengeFriends"
-import ResponsiveHeader from "../../components/responsiveHeader/responsiveHeader"
-import MoodboosterList from "../../components/moodbooster/moodboosterList"
+import ChallengeFriends from "../../components/MoodboosterInviteRequests"
+import ResponsiveHeader from "../../components/ResponsiveHeader"
+import MoodboosterList from "../../components/MoodboosterList"
 
 // eslint-disable-next-line no-unused-vars
 const PageHome = () => {

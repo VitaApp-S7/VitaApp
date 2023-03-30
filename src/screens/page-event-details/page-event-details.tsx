@@ -1,27 +1,34 @@
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
+import { View, Text, StyleSheet, Image } from "react-native"
 import parseDate from "../../services/dataParser"
 import React from "react"
 import OpenURLButton from "../../components/OpenURLButton"
-import TrixHtmlView from "../../components/Webview/trixHtmlView"
+import RichTextViewer from "../../components/RichTextViewer"
 
 const PageEventDetails = ({ route }) => {
   const { item } = route.params
 
   return (
-    <ScrollView style={styles.screen}>
+    <View style={styles.screen}>
       <Image
         source={require("../../../assets/header.png")}
         style={styles.header}
       ></Image>
       <View style={styles.wrapper}>
-        <View style={styles.wrapperTop}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.date}>{parseDate(item.date)}</Text>
+        <View>
+          <View style={styles.wrapperTop}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.date}>{parseDate(item.date)}</Text>
+          </View>
+          {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
+          <View style={{
+            height: 1000,
+            overflow: "hidden"
+          }}>
+            <RichTextViewer html={item.description} queryKey={`eventhtml${item.id}`} />
+          </View>
         </View>
-        {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-        <TrixHtmlView html={item.description} queryKey={`eventhtml${item.id}`} />
       </View>
-    </ScrollView>
+    </View>
   )
 }
 

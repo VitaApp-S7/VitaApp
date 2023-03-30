@@ -2,13 +2,13 @@ import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
 import React, { useContext, useState } from "react"
 import Toast from "react-native-toast-message"
 import { useRoute } from "@react-navigation/native"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
+import ButtonPrimary from "../../components/ButtonPrimary"
 import { UserMoodboosterType } from "../../types/MoodboosterTypes"
-import SecondaryBtn from "../../components/buttons/SecondaryBtn"
+import ButtonSecondary from "../../components/ButtonSecondary"
 import { AppContext } from "../../context/AppContext"
 import { BoostersNavProps } from "../../navigation/BoostersNav"
 import useMoodboosterMutations from "../../services/useMoodboosterMutations"
-import InviteFriends from "../../components/challengeFriends/inviteFriends"
+import InviteFriends from "../../components/MoodboosterInvites"
 
 const PageMoodboosterDetails = () => {
   const route = useRoute<BoostersNavProps<"Moodbooster Details">["route"]>()
@@ -103,23 +103,23 @@ const PageMoodboosterDetails = () => {
                 disabled={canStart}
                 moodboosterId={userMoodbooster.id}
               />
-              <SecondaryBtn
+              <ButtonSecondary
                 text={"CANCEL"}
                 disabled={canStart}
                 onPress={() => handleToCancel()}
-              ></SecondaryBtn>
-              <PrimaryBtn
+              ></ButtonSecondary>
+              <ButtonPrimary
                 text={"COMPLETE"}
                 disabled={canStart}
                 onPress={() => handleToComplete()}
-              ></PrimaryBtn>
+              ></ButtonPrimary>
             </>
           ) : (
-            <PrimaryBtn
+            <ButtonPrimary
               text={"START"}
               disabled={!canStart}
               onPress={() => handleToStart()}
-            ></PrimaryBtn>
+            ></ButtonPrimary>
           )}
         </View>
       </View>

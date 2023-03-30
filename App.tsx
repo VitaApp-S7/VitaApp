@@ -2,7 +2,6 @@ import AppNav from "./src/navigation/AppNav/AppNav"
 import React from "react"
 // import * as Linking from "expo-linking"
 import Toast from "react-native-toast-message"
-import Notification from "./src/components/Notifications/Notification"
 import "react-native-url-polyfill/auto"
 import { QueryClient } from "@tanstack/react-query"
 import { AppProvider } from "./src/context/AppContext"
@@ -47,7 +46,6 @@ export default function App() {
     >
       <AppProvider>
         <AppNav />
-        <Notification />
         <Toast />
         <StatusBar style={"dark"}></StatusBar>
       </AppProvider>
