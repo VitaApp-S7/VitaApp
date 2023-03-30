@@ -1,22 +1,26 @@
 import React, { useContext } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import {
-  makeRedirectUri,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native"
+import {
+  ResponseType,
   useAuthRequest,
-  useAutoDiscovery,
-  ResponseType
+  useAutoDiscovery
 } from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
-import { checkUser, getUser, SetExpo } from "../../services/userService"
+import { checkUser, getUser } from "../../services/userService"
 // import * as Linking from "expo-linking"
 import Intrologo from "../../../assets/intrologo.svg"
 import {
-  useFonts,
   Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
-  Poppins_600SemiBold as Poppins600SemiBold
+  useFonts
 } from "@expo-google-fonts/poppins"
-import * as Notifications from "expo-notifications"
 import { AppContext } from "../../context/AppContext"
 import Constants from "expo-constants"
 
@@ -29,12 +33,27 @@ const PageLogin = () => {
 
   // const url = Linking.useURL()
 
+  let redirectUri = ""
+
+  switch (Platform.OS) {
+  case "android":
+    if(__DEV__){
+      redirectUri = "msauth://nl.gac.vitaapp/Xo8WBi6jzSxKDVR4drqm84yr9iU="
+    } else {
+      redirectUri = "msauth://nl.gac.vitaapp/pOfkb4mKTCKio00pJyNy6QjAp1k="
+    }
+    break
+  case "ios":
+    redirectUri = "msauth.nl.gac.vitaapp://auth"
+    break
+  }
+
   // Authentication Request
   // eslint-disable-next-line no-unused-vars
   const [ request, response, promptAsync ] = useAuthRequest(
     {
       responseType: ResponseType.Token,
-      clientId: "50f18b4e-1a58-4004-b6b8-5a15e3a2e863",
+      clientId: "215b09e4-54cb-49aa-837b-546f73fc29f6",
       scopes: [
         "openid",
         "profile",
@@ -42,15 +61,7 @@ const PageLogin = () => {
         "offline_access",
         "api://215b09e4-54cb-49aa-837b-546f73fc29f6/User.All"
       ],
-      redirectUri: makeRedirectUri({
-        scheme:
-          process.env.NODE_ENV === "production"
-            ? "gacprjscheme"
-            : "",
-        useProxy: true,
-        projectNameForProxy: "@vitaapp/stuff"
-        //scheme: url,
-      })
+      redirectUri: redirectUri
     },
     discovery
   )
@@ -111,7 +122,7 @@ const PageLogin = () => {
           style={styles.loginbutton}
           onPress={async () => {
             console.log(request)
-            await promptAsync({ useProxy: true })
+            await promptAsync()
           }}
         >
           <Text style={styles.buttontext}>LOGIN</Text>
