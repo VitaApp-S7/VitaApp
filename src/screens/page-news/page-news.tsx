@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import {
+  FlatList,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,8 +18,6 @@ import Bg from "../../../assets/wave.svg"
 import { useQuery } from "@tanstack/react-query"
 import NewsType from "../../types/NewsType"
 import { Card, Subheading, Title } from "react-native-paper"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import PrimaryBtn from "../../components/buttons/PrimaryBtn"
 import parseDate from "../../services/dataParser"
 
 const PageNews = ({ navigation }) => {
@@ -39,16 +37,6 @@ const PageNews = ({ navigation }) => {
     Poppins400Regular
   })
 
-  const RightCardTitle = useCallback(
-    (item) => (props) =>
-      (
-        <Subheading style={styles.date}>
-          {parseDate(item.date)}
-        </Subheading>
-      ),
-    []
-  )
-
   if (!fontsLoaded) {
     return null
   }
@@ -61,49 +49,49 @@ const PageNews = ({ navigation }) => {
   }
 
   return (
-    <ScrollView
-      style={styles.screen}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={async () => {
-            setRefreshing(true)
-            await refetch()
-            setRefreshing(false)
-          }}
-        />
-      }
-    >
+    <View style={styles.screen}>
       <View style={{ minHeight: 300 }}>
         <Bg style={styles.wave} />
         <Text style={styles.moodtitle}>Latest news</Text>
 
-        {isSuccess ? (
-          data.map((item, index) => (
+        <FlatList
+          data={data}
+          renderItem={(props) => (
             <Card
               style={styles.surface}
               mode="outlined"
               theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-              key={index}
+              key={props.item.id}
             >
               <TouchableOpacity
-                onPress={() => handleOnPress(item)}
+                onPress={() => handleOnPress(props.item)}
                 style={{ width: "100%" }}
               >
                 <Card.Title
                   style={styles.title}
-                  title={<Title style={styles.title}>{item.title}</Title>}
-                  right={RightCardTitle(item)}
-                  titleNumberOfLines={3}
+                  title={<Title style={styles.title}>{props.item.title}</Title>}
+                  right={() => (
+                    <Subheading style={styles.date}>
+                      {parseDate(props.item.date)}
+                    </Subheading>
+                  )}
                 />
               </TouchableOpacity>
             </Card>
-          ))
-        ) : (
-          <Text style={styles.description}>No news found</Text>
-        )}
+          )}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={async () => {
+                setRefreshing(true)
+                await refetch()
+                setRefreshing(false)
+              }}
+            />
+          }
+        />
       </View>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -113,17 +101,6 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: "white",
     height: 1000
-  },
-  card: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 8,
-    marginVertical: 4,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 8,
-    backgroundColor: "white"
   },
   surface: {
     marginHorizontal: 8,
@@ -138,14 +115,6 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 20,
     color: "#031D29"
-  },
-  description: {
-    fontFamily: "Poppins500Medium",
-    margin: 0,
-    padding: 0,
-    fontSize: 12,
-    color: "#052D40",
-    paddingVertical: 4
   },
   date: {
     fontFamily: "Poppins700Bold",
@@ -164,14 +133,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: -1
-  },
-  wrapperTop: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 4
   },
   moodtitle: {
     fontFamily: "Poppins600SemiBold",
