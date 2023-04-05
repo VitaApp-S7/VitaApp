@@ -47,8 +47,6 @@ const moodboosterInvites = (props) => {
       console.log(err)
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  useEffect(() => {}, [])
 
   const FriendsList = () => (
     <ScrollView>

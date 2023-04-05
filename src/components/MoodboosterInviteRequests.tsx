@@ -1,12 +1,13 @@
 import {
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import Modal from "react-native-modal"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import ButtonTertiary from "./ButtonTertiary"
@@ -20,13 +21,22 @@ import ButtonPrimary from "./ButtonPrimary"
 import ButtonSecondary from "./ButtonSecondary"
 import { Card, Paragraph } from "react-native-paper"
 import Toast from "react-native-toast-message"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { MoodboosterInviteType } from "../types/MoodboosterTypes"
 
-const moodboosterInviteRequests = () => {
+const MoodboosterInviteRequests = () => {
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AppContext)
   // const [dataState, setDataState] = useState(false);
   const [ friends, setFriends ] = useState([])
   // const [moodboosterRequests, setMoodboosterRequests] = useState(0);
+
+  const requestsQuery = useQuery<MoodboosterInviteType[]>(
+    [ "moodBoosterRequests" ],
+    async () => await getAllMoodboosterRequests(accessToken),
+    { onError: (err) => console.log(err) }
+  )
+
   const cancelledToast = (toastData) => {
     Toast.show({
       type: "error",
@@ -40,92 +50,108 @@ const moodboosterInviteRequests = () => {
     })
   }
 
-  useEffect(() => {
-    handleActivities()
-    return () => {
-      return
-    }
-  }, [])
-
-  const toggleModalOn = () => {
+  const toggleModalOn = async () => {
+    await queryClient.invalidateQueries([ "moodBoosterRequests" ])
     setModalVisible(!isModalVisible)
-    handleActivities()
   }
   const toggleModalOff = () => {
     setModalVisible(!isModalVisible)
   }
-  const handleActivities = async () => {
-    const fetchedMoodboosterRequests = await fetchMoodboosterRequests()
-    // console.log(fetchedMoodboosterRequests);
-    setFriends(fetchedMoodboosterRequests)
-  }
   const handleToDecline = async (user) => {
-    await declineMoodboosterRequest(user.inviteId, accessToken)
+    try {
+      await declineMoodboosterRequest(user.inviteId, accessToken)
+      queryClient.setQueryData(
+        [ "moodBoosterRequests" ],
+        requestsQuery.data.filter((item) => item.inviteId !== user.inviteId)
+      )
+    } catch (err) {
+      console.log("request couldn't be declined", err)
+    }
     cancelledToast(user.inviterName)
-    handleActivities()
   }
   const handleToAccept = async (user) => {
-    await acceptMoodboosterRequest(user.inviteId, accessToken)
-    acceptedToast(user.inviterName)
-    handleActivities()
-  }
-  const fetchMoodboosterRequests = async () => {
     try {
-      const res = await getAllMoodboosterRequests(accessToken)
-
-      return res
+      await acceptMoodboosterRequest(user.inviteId, accessToken)
+      queryClient.setQueryData(
+        [ "moodBoosterRequests" ],
+        requestsQuery.data.filter((item) => item.inviteId !== user.inviteId)
+      )
+      await queryClient.invalidateQueries([ "moodboosters" ])
+      await queryClient.invalidateQueries([ "userMoodboosters" ])
     } catch (err) {
-      console.log(err)
+      console.log("request couldn't be accepted", err)
     }
+    acceptedToast(user.inviterName)
   }
+
+  const [ refreshing, setRefreshing ] = useState(false)
+
+  const queryClient = useQueryClient()
 
   const FriendsList = () => (
-    <ScrollView>
-      {friends.map((item, index) => (
-        <Card
-          style={styles.surface}
-          mode="outlined"
-          theme={{ colors: { outline: "rgba(0, 0, 0, 0)" }}}
-          key={index}
-        >
-          <Card.Content style={styles.cardcontent}>
-            <Image
-              style={styles.pfp}
-              source={require("../../assets/pfp.png")}
-            ></Image>
-            <View style={styles.textcontent}>
-              <Paragraph style={styles.title}>{item.inviterName}</Paragraph>
-              <Text style={styles.description}>
-                {item.moodboosterDescription}
-              </Text>
-            </View>
-          </Card.Content>
-          <Card.Actions style={styles.buttons}>
-            <ButtonSecondary
-              text={"DECLINE"}
-              onPress={() => handleToDecline(item)}
-            ></ButtonSecondary>
-            <ButtonPrimary
-              text={"ACCEPT"}
-              onPress={() => handleToAccept(item)}
-            ></ButtonPrimary>
-          </Card.Actions>
-        </Card>
-      ))}
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={async () => {
+            setRefreshing(true)
+            await queryClient.invalidateQueries([ "moodBoosterRequests" ])
+            setRefreshing(false)
+          }}
+        />
+      }
+    >
+      {requestsQuery.isSuccess && requestsQuery.data.length > 0 ? (
+        requestsQuery.data.map((item, index) => (
+          <Card
+            style={styles.surface}
+            mode="outlined"
+            theme={{ colors: { outline: "rgba(0, 0, 0, 0)" }}}
+            key={index}
+          >
+            <Card.Content style={styles.cardcontent}>
+              <Image
+                style={styles.pfp}
+                source={require("../../assets/pfp.png")}
+              ></Image>
+              <View style={styles.textcontent}>
+                <Paragraph style={styles.title}>{item.inviterName}</Paragraph>
+                <Text style={styles.description}>
+                  {item.moodboosterDescription}
+                </Text>
+              </View>
+            </Card.Content>
+            <Card.Actions style={styles.buttons}>
+              <ButtonSecondary
+                text={"DECLINE"}
+                onPress={() => handleToDecline(item)}
+              ></ButtonSecondary>
+              <ButtonPrimary
+                text={"ACCEPT"}
+                onPress={() => handleToAccept(item)}
+              ></ButtonPrimary>
+            </Card.Actions>
+          </Card>
+        ))
+      ) : (
+        <Text style={styles.modalempty}>No invitations</Text>
+      )}
     </ScrollView>
   )
 
   return (
     <View>
       <TouchableOpacity onPress={toggleModalOn} style={styles.friendsbtn}>
-        <Text style={styles.buttontext}>{friends?.length ?? 0}</Text>
+        <Text style={styles.buttontext}>
+          {requestsQuery?.data?.length ?? 0}
+        </Text>
         <Ionicons style={styles.icon} name="people" size={24} color="#052D40" />
       </TouchableOpacity>
       <Modal isVisible={isModalVisible} style={styles.modal}>
         <View style={styles.friendsModal}>
           <Text style={styles.friendstitle}>Moodbooster invitations</Text>
           <View style={styles.friendslist}>
-            {friends.length ? (
+            {requestsQuery?.data?.length ? (
               <FriendsList />
             ) : (
               <Text style={styles.modalempty}>No invitations</Text>
@@ -138,7 +164,7 @@ const moodboosterInviteRequests = () => {
   )
 }
 
-export default moodboosterInviteRequests
+export default MoodboosterInviteRequests
 
 const styles = StyleSheet.create({
   buttontext: {

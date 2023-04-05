@@ -28,6 +28,11 @@ const useNotificationUpdater = () => {
         queryClient.invalidateQueries([ "invites" ])
       }
     }
+    if(title.includes("Moodbooster") || title.includes("moodbooster")){
+      queryClient.invalidateQueries([ "moodBoosterRequests" ])
+      queryClient.invalidateQueries([ "moodboosters" ])
+      queryClient.invalidateQueries([ "userMoodboosters" ])
+    }
   }, [ notification ])
 
   return {
