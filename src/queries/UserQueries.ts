@@ -21,8 +21,8 @@ function getOtherPeopleIds(
 ) {
   return _.difference(
     userData.map((usr) => usr.id),
-    friends.data.map((friend) => friend.userId),
-    invites.data.map((invite) => invite.friendId),
+    (friends.data ? friends.data : []).map((friend) => friend.userId),
+    (invites.data ? invites.data : []).map((invite) => invite.friendId),
     [ user.id ]
   )
 }

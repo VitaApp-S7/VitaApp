@@ -56,6 +56,8 @@ const PageRequests = () => {
           [ "friendRequests" ],
           requestsQuery.data.filter((item) => item.id !== id)
         )
+        await queryClient.invalidateQueries([ "friends" ])
+        await queryClient.invalidateQueries([ "publicUsers" ])
       }
     } catch (err) {
       console.log("request couldn't be accepted", err)
