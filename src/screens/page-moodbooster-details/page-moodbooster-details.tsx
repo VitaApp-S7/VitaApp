@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useState } from "react"
 import Toast from "react-native-toast-message"
 import { useRoute } from "@react-navigation/native"

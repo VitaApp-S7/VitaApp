@@ -14,28 +14,20 @@ import ButtonTertiary from "./ButtonTertiary"
 import { AppContext } from "../context/AppContext"
 import {
   acceptMoodboosterRequest,
-  declineMoodboosterRequest,
-  getAllMoodboosterRequests
+  declineMoodboosterRequest
 } from "../services/moodboosterService"
 import ButtonPrimary from "./ButtonPrimary"
 import ButtonSecondary from "./ButtonSecondary"
 import { Card, Paragraph } from "react-native-paper"
 import Toast from "react-native-toast-message"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { MoodboosterInviteType } from "../types/MoodboosterTypes"
+import { useQueryClient } from "@tanstack/react-query"
+import { useMoodboosterRequestsQuery } from "../queries/MoodboosterQueries"
 
 const MoodboosterInviteRequests = () => {
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AppContext)
-  // const [dataState, setDataState] = useState(false);
-  const [ friends, setFriends ] = useState([])
-  // const [moodboosterRequests, setMoodboosterRequests] = useState(0);
 
-  const requestsQuery = useQuery<MoodboosterInviteType[]>(
-    [ "moodBoosterRequests" ],
-    async () => await getAllMoodboosterRequests(accessToken),
-    { onError: (err) => console.log(err) }
-  )
+  const requestsQuery = useMoodboosterRequestsQuery()
 
   const cancelledToast = (toastData) => {
     Toast.show({
@@ -51,7 +43,7 @@ const MoodboosterInviteRequests = () => {
   }
 
   const toggleModalOn = async () => {
-    await queryClient.invalidateQueries([ "moodBoosterRequests" ])
+    await queryClient.invalidateQueries([ "moodboosterRequests" ])
     setModalVisible(!isModalVisible)
   }
   const toggleModalOff = () => {
@@ -61,7 +53,7 @@ const MoodboosterInviteRequests = () => {
     try {
       await declineMoodboosterRequest(user.inviteId, accessToken)
       queryClient.setQueryData(
-        [ "moodBoosterRequests" ],
+        [ "moodboosterRequests" ],
         requestsQuery.data.filter((item) => item.inviteId !== user.inviteId)
       )
     } catch (err) {
@@ -73,11 +65,11 @@ const MoodboosterInviteRequests = () => {
     try {
       await acceptMoodboosterRequest(user.inviteId, accessToken)
       queryClient.setQueryData(
-        [ "moodBoosterRequests" ],
+        [ "moodboosterRequests" ],
         requestsQuery.data.filter((item) => item.inviteId !== user.inviteId)
       )
       await queryClient.invalidateQueries([ "moodboosters" ])
-      await queryClient.invalidateQueries([ "userMoodboosters" ])
+      await queryClient.invalidateQueries([ "moodboostersActive" ])
     } catch (err) {
       console.log("request couldn't be accepted", err)
     }
@@ -95,7 +87,7 @@ const MoodboosterInviteRequests = () => {
           refreshing={refreshing}
           onRefresh={async () => {
             setRefreshing(true)
-            await queryClient.invalidateQueries([ "moodBoosterRequests" ])
+            await queryClient.invalidateQueries([ "moodboosterRequests" ])
             setRefreshing(false)
           }}
         />

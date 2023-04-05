@@ -1,19 +1,17 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import Modal from "react-native-modal"
 import ButtonTertiary from "./ButtonTertiary"
 import { IconButton } from "react-native-paper"
 import { inviteMoodbooster } from "../services/moodboosterService"
-import { getFriends } from "../services/friendsService"
 import ButtonPrimary from "./ButtonPrimary"
 import Toast from "react-native-toast-message"
 import { AppContext } from "../context/AppContext"
+import { useFriendsQuery } from "../queries/FriendQueries"
 
-const moodboosterInvites = (props) => {
+const MoodboosterInvites = (props) => {
   const [ isModalVisible, setModalVisible ] = useState(false)
   const { accessToken } = useContext(AppContext)
-  // const [dataState, setDataState] = useState(false);
-  const [ friends, setFriends ] = useState([])
 
   const InfoToast = (toastData) => {
     Toast.show({
@@ -22,54 +20,19 @@ const moodboosterInvites = (props) => {
     })
   }
 
+  const friendsQuery = useFriendsQuery()
+
   const toggleModalOn = () => {
-    handleActivities()
+    //handleActivities()
     setModalVisible(!isModalVisible)
   }
   const toggleModalOff = () => {
     setModalVisible(!isModalVisible)
   }
-  const handleActivities = async () => {
-    const fetchedUsers = await fetchFriends()
-    // console.log(fetchedUsers)
-    setFriends(fetchedUsers)
-  }
   const handleToInvite = async (user) => {
     await inviteMoodbooster(accessToken, props.moodboosterId, user.userId)
     InfoToast(user.name)
   }
-  const fetchFriends = async () => {
-    try {
-      const res = await getFriends(accessToken)
-
-      return res
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  const FriendsList = () => (
-    <ScrollView>
-      {friends.map((item, index) => (
-        <View style={styles.card} key={index}>
-          <View style={styles.wrapperTop}>
-            <View style={styles.joined}>
-              <Image
-                style={styles.pfp}
-                source={require("../../assets/pfp.png")}
-              ></Image>
-              <Text style={styles.title}>{item.name}</Text>
-            </View>
-
-            <ButtonPrimary
-              text={"INVITE"}
-              onPress={() => handleToInvite(item)}
-            ></ButtonPrimary>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
-  )
 
   return (
     <View>
@@ -82,13 +45,30 @@ const moodboosterInvites = (props) => {
       <Modal isVisible={isModalVisible} style={styles.modal}>
         <View style={styles.friendsModal}>
           <Text style={styles.friendstitle}>Invite friends</Text>
-          <View style={styles.friendslist}>
-            {friends.length ? (
-              <FriendsList />
+          <ScrollView style={styles.friendslist}>
+            {friendsQuery.isSuccess && friendsQuery.data.length > 0 ? (
+              friendsQuery.data.map((item, index) => (
+                <View style={styles.card} key={item.id}>
+                  <View style={styles.wrapperTop}>
+                    <View style={styles.joined}>
+                      <Image
+                        style={styles.pfp}
+                        source={require("../../assets/pfp.png")}
+                      ></Image>
+                      <Text style={styles.title}>{item.name}</Text>
+                    </View>
+
+                    <ButtonPrimary
+                      text={"INVITE"}
+                      onPress={() => handleToInvite(item)}
+                    ></ButtonPrimary>
+                  </View>
+                </View>
+              ))
             ) : (
               <Text style={styles.modalempty}>No friends added</Text>
             )}
-          </View>
+          </ScrollView>
           <ButtonTertiary text="DONE" onPress={toggleModalOff} />
         </View>
       </Modal>
@@ -96,7 +76,7 @@ const moodboosterInvites = (props) => {
   )
 }
 
-export default moodboosterInvites
+export default MoodboosterInvites
 
 const styles = StyleSheet.create({
   modal: {

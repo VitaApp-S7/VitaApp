@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import {
   FlatList,
   RefreshControl,
@@ -12,26 +12,15 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import { getNews } from "../../services/newsService"
-import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
-import { useQuery } from "@tanstack/react-query"
-import NewsType from "../../types/NewsType"
 import { Card, Subheading, Title } from "react-native-paper"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import ButtonPrimary from "../../components/ButtonPrimary"
-import parseDate from "../../services/dataParser"
+import parseDate from "../../utility/DataParser"
+import { useNewsQuery } from "../../queries/FeedQueries"
 
 const PageNews = ({ navigation }) => {
-  const { accessToken } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const { refetch, data } = useQuery<NewsType[]>([ "news" ], async () => {
-    const response = await getNews(accessToken)
-    return response.data.sort(
-      (news, other) => -news.date.localeCompare(other.date)
-    )
-  })
+  const news = useNewsQuery()
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -52,7 +41,7 @@ const PageNews = ({ navigation }) => {
       <Text style={styles.moodtitle}>Latest news</Text>
 
       <FlatList
-        data={data}
+        data={news.data}
         renderItem={(props) => (
           <Card
             style={styles.surface}
@@ -81,7 +70,7 @@ const PageNews = ({ navigation }) => {
             refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
-              await refetch()
+              await news.refetch()
               setRefreshing(false)
             }}
           />

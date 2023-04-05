@@ -1,44 +1,44 @@
-import { useContext, useEffect, useState } from "react"
-import React from "react"
-import { Text, StyleSheet, ScrollView } from "react-native"
-import { getAllCompletedActivities } from "../../services/moodboosterService"
-import { AppContext } from "../../context/AppContext"
+import React, { useState } from "react"
+import { FlatList, RefreshControl, StyleSheet, Text } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
+import { useActivitiesCompletedQuery } from "../../queries/MoodboosterQueries"
 
 const PageHistory = () => {
-  const [ completedData, setCompletedData ] = useState([])
+  const completedActivities = useActivitiesCompletedQuery()
 
-  const handleActivities = async () => {
-    const completedActivities = await getAllCompletedActivities(accessToken)
-    // console.log(completedActivities)
-    setCompletedData(await completedActivities.reverse())
-  }
-
-  useEffect(() => {
-    handleActivities()
-  }, [])
-  const { accessToken } = useContext(AppContext)
+  const [ refreshing, setRefreshing ] = useState(false)
 
   return (
-    <ScrollView>
-      {completedData.map((item, index) => (
+    <FlatList
+      data={completedActivities.data}
+      renderItem={(props) => (
         <Card
           style={styles.surface}
           mode="outlined"
           theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-          key={index}
+          key={props.item.id}
         >
           <Card.Content>
             <Paragraph style={styles.title}>
-              {new Date(item.completionDate).toDateString()}
+              {new Date(props.item.completionDate).toDateString()}
             </Paragraph>
             <Text style={styles.description}>
-              {item.moodbooster.description}
+              {props.item.moodbooster.description}
             </Text>
           </Card.Content>
         </Card>
-      ))}
-    </ScrollView>
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={async () => {
+            setRefreshing(true)
+            await completedActivities.refetch()
+            setRefreshing(false)
+          }}
+        />
+      }
+    />
   )
 }
 

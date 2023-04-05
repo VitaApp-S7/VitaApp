@@ -3,7 +3,10 @@ import { useContext } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { protectedResources } from "../../authConfig"
 import { AppContext } from "../context/AppContext"
-import { MoodboosterType, UserMoodboosterType } from "../types/MoodboosterTypes"
+import {
+  MoodboosterType,
+  UserMoodboosterType
+} from "../types/MoodboosterTypes"
 
 const useMoodboosterMutations = () => {
   const url = protectedResources.apiActivity.endpoint
@@ -51,7 +54,7 @@ const useMoodboosterMutations = () => {
 
   const updateUserMoodboostersQuery = (newItem: UserMoodboosterType) => {
     queryClient.setQueryData(
-      [ "userMoodboosters" ],
+      [ "moodboostersActive" ],
       (prevData: UserMoodboosterType[]) =>
         [ ...prevData, newItem ].filter(
           (mb, i, a) => a.findIndex((mb2) => mb.id === mb2.id) === i
@@ -67,7 +70,7 @@ const useMoodboosterMutations = () => {
 
   const removeMoodboosterFromUserMoodboosterQuery = (MoodboosterId: string) => {
     queryClient.setQueryData(
-      [ "userMoodboosters" ],
+      [ "moodboostersActive" ],
       (prevData: UserMoodboosterType[]) =>
         prevData.filter((item) => item.id !== MoodboosterId)
     )

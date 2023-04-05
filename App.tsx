@@ -9,14 +9,20 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Reactotron from "reactotron-react-native"
-import { QueryClientManager, reactotronReactQuery } from "reactotron-react-query"
+import {
+  QueryClientManager,
+  reactotronReactQuery
+} from "reactotron-react-query"
 import { StatusBar } from "expo-status-bar"
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: 24 * 60 * (60 * 1000),
-      staleTime: 2 * (60 * 1000)
+      staleTime: 2 * (60 * 1000),
+      onError: (error) => {
+        console.log(error)
+      }
     }
   }
 })
@@ -24,12 +30,11 @@ const queryClient = new QueryClient({
 // @ts-ignore
 const queryClientManager = new QueryClientManager({ queryClient })
 
-if(__DEV__){
-  Reactotron
-    .use(reactotronReactQuery(queryClientManager))
-    .setAsyncStorageHandler(AsyncStorage) // AsyncStorage would either come from `react-native` or `@react-native-community/async-storage` depending on where you get it from
-    .configure() // controls connection & communication settings
-    .useReactNative() // add all built-in react native plugins
+if (__DEV__) {
+  Reactotron.use(reactotronReactQuery(queryClientManager))
+    .setAsyncStorageHandler(AsyncStorage)
+    .configure()
+    .useReactNative()
     .connect()
 }
 

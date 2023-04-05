@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from "react"
+import React, { PropsWithChildren, useEffect, useMemo, useState } from "react"
 import UserType from "../types/UserType"
 import * as Notifications from "expo-notifications"
 import useAuthentication from "./useAuthentication"
@@ -39,20 +39,20 @@ export const AppProvider = (props: PropsWithChildren) => {
     }
   }, [ user ])
 
+  const state = useMemo(() => {
+    return {
+      user,
+      accessToken,
+      moodPoints,
+      setMoodPoints,
+      login,
+      logout,
+      expoToken,
+      notification
+    }
+  }, [ user, accessToken, moodPoints, expoToken, notification ])
+
   return (
-    <AppContext.Provider
-      value={{
-        user,
-        accessToken,
-        moodPoints,
-        setMoodPoints,
-        login,
-        logout,
-        expoToken,
-        notification
-      }}
-    >
-      {props.children}
-    </AppContext.Provider>
+    <AppContext.Provider value={state}>{props.children}</AppContext.Provider>
   )
 }

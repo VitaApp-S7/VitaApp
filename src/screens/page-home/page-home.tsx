@@ -1,20 +1,22 @@
-import { View, StyleSheet, RefreshControl, ScrollView } from "react-native"
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native"
 import React, { useState } from "react"
 import { Text } from "react-native-paper"
 
 import {
-  useFonts,
   Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
-  Poppins_600SemiBold as Poppins600SemiBold
+  useFonts
 } from "@expo-google-fonts/poppins"
 import ChallengeFriends from "../../components/MoodboosterInviteRequests"
 import ResponsiveHeader from "../../components/ResponsiveHeader"
 import MoodboosterList from "../../components/MoodboosterList"
+import { useQueryClient } from "@tanstack/react-query"
 
 // eslint-disable-next-line no-unused-vars
 const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
+  const queryClient = useQueryClient()
 
   const [ fontsLoaded ] = useFonts({
     Poppins500Medium,
@@ -31,7 +33,11 @@ const PageHome = () => {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => setRefreshing(true)}
+          onRefresh={async () => {
+            setRefreshing(true)
+            await queryClient.invalidateQueries([ "moodboosterRequests" ])
+            setRefreshing(false)
+          }}
         />
       }
     >

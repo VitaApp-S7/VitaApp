@@ -3,11 +3,6 @@ import { protectedResources } from "../../authConfig"
 
 const url = `${protectedResources.apiUser.endpoint}friends`
 
-export async function getFriends(token) {
-  var response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }})
-  return response.data
-}
-
 export async function addFriend(token, id) {
   const res = await fetch(`${url}/add/${id}`, {
     method: "POST",
@@ -17,17 +12,13 @@ export async function addFriend(token, id) {
       Authorization: `Bearer ${token}`
     }
   })
+
   return res
 }
 
 export async function removeFriend(token, id) {
   var response = await axios.delete(`${url}/remove/${id}`, { headers: { Authorization: `Bearer ${token}` }})
   return response
-}
-
-export async function getFrRequests(token) {
-  var response = await axios.get(`${url}/requests`, { headers: { Authorization: `Bearer ${token}` }})
-  return response.data
 }
 
 export async function acceptFrRequest(token, friendReqId) {
@@ -45,9 +36,4 @@ export async function acceptFrRequest(token, friendReqId) {
 export async function cancelFrRequest(token, reqId) {
   var response = await axios.delete(`${url}/requests/cancel/${reqId}`, { headers: { Authorization: `Bearer ${token}` }})
   return response
-}
-
-export async function getSendedRequests(token) {
-  var response = await axios.get(`${url}/sendedrequests`, { headers: { Authorization: `Bearer ${token}` }})
-  return response.data
 }

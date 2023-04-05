@@ -14,31 +14,16 @@ import {
   useFonts
 } from "@expo-google-fonts/poppins"
 import React, { useContext, useState } from "react"
-import {
-  addFriend,
-  cancelFrRequest,
-  getFriends,
-  getSendedRequests,
-  removeFriend
-} from "../../services/friendsService"
-import { getAllUsers } from "../../services/userService"
+import { addFriend, cancelFrRequest, removeFriend } from "../../services/friendsService"
 import { AppContext } from "../../context/AppContext"
 // import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import ButtonSecondary from "../../components/ButtonSecondary"
 import ButtonPrimary from "../../components/ButtonPrimary"
 import Bg from "../../../assets/wave.svg"
-import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient
-} from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import ButtonTertiary from "../../components/ButtonTertiary"
-import FriendType from "../../types/FriendType"
-import SendedFriendType from "../../types/SendedFriendType"
-import PublicUserType from "../../types/PublicUserType"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const _ = require("lodash")
+import { useFriendInvitesQuery, useFriendsQuery } from "../../queries/FriendQueries"
+import { useOtherPeopleQuery } from "../../queries/UserQueries"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pfp: ImageSourcePropType = require("../../../assets/pfp.png")
 
@@ -47,65 +32,15 @@ const PageFriends = () => {
 
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const appContext = useContext(AppContext)
-
   const queryClient = useQueryClient()
 
-  const friends = useQuery<FriendType[]>(
-    [ "friends" ],
-    () => getFriends(accessToken),
-    {
-      onError: (error) => {
-        console.log("friends get req error", error)
-      }
-    }
-  )
+  const friends = useFriendsQuery()
 
-  const invites = useQuery<SendedFriendType[]>(
-    [ "invites" ],
-    () => getSendedRequests(accessToken),
-    {
-      onError: (error) => {
-        console.log("invites request error", error)
-      }
-    }
-  )
+  const invites = useFriendInvitesQuery()
 
-  // fetching the users from db and setting other people array onSuccess
-  // to set the array of other people we remove friends array and invites array from users.
-  const users = useQuery<PublicUserType[]>(
-    [ "publicUsers" ],
-    () => getAllUsers(accessToken),
-    {
-      enabled: !!appContext.user?.id && !!friends.data && !!invites.data,
-      onSuccess: (users) => {
-        const otherPeopleIds = _.difference(
-          users.map((user) => user.id),
-          friends.data.map((friend) => friend.userId),
-          invites.data.map((invite) => invite.friendId),
-          [ appContext.user.id ]
-        )
-        setOtherPeople(
-          users.filter((user) => otherPeopleIds.includes(user.id))
-        )
-      },
-      onError: (error) => {
-        console.log("error", error)
-      },
-      staleTime: 30 * 60 * 1000,
-      cacheTime: 3 * 24 * 60 * 60 * 1000
-    }
-  )
-
-  const [ otherPeople, setOtherPeople ] = useState(
-    (users.data ? users.data : []).filter((user) =>
-      _.difference(
-        users.data.map((user) => user.id),
-        friends.data.map((friend) => friend.userId),
-        invites.data.map((invite) => invite.friendId),
-        [ appContext.user.id ]
-      ).includes(user.id)
-    )
+  const { users, otherPeople, setOtherPeople } = useOtherPeopleQuery(
+    friends,
+    invites
   )
 
   // we use react query mutation to change values in front end
@@ -118,84 +53,30 @@ const PageFriends = () => {
   )
 
   const sendInvite = async (id) => {
-    try {
-      const oldInvited = [ ...invites.data ]
-      const oldOtherPeople = [ ...otherPeople ]
-      const newOtherPeople = otherPeople.filter((user) => user.id !== id)
-      const newInvited = await getSendedRequests(accessToken)
-
-      queryClient.setQueryData([ "invites" ], newInvited)
-      setOtherPeople(newOtherPeople)
-
-      mutationAddFriend.mutate(id, {
-        onError: (error) => {
-          console.log("error", error)
-          queryClient.setQueryData([ "invites" ], oldInvited)
-          queryClient.setQueryData([ "invites" ], oldInvited)
-          setOtherPeople(oldOtherPeople)
-        },
-        onSuccess: () => queryClient.invalidateQueries([ "invites" ])
-      })
-    } catch (err) {
-      console.log("Adding friend failed", err)
-    }
+    mutationAddFriend.mutate(id, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([ "invites" ])
+        await queryClient.invalidateQueries([ "publicUsers" ])
+      }
+    })
   }
 
   const deleteFriend = async (friend) => {
-    try {
-      const oldFriends = [ ...friends.data ]
-      const oldOtherPeople = [ ...otherPeople ]
-      const newOtherPeople = [
-        ...oldOtherPeople,
-        users.data.find((user) => user.id === friend.userId)
-      ]
-      const newFriends = oldFriends.filter((user) => user.id !== friend.id)
-
-      setOtherPeople(newOtherPeople)
-      queryClient.setQueryData([ "friends" ], newFriends)
-
-      mutationDeleteFriend.mutate(friend.id, {
-        onError: (error) => {
-          console.log("error", error)
-          queryClient.setQueryData([ "friends" ], oldFriends)
-          setOtherPeople(oldOtherPeople)
-        }
-      })
-    } catch (err) {
-      console.log("can't remove friend", err)
-    }
+    mutationDeleteFriend.mutate(friend.id, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([ "friends" ])
+        await queryClient.invalidateQueries([ "publicUsers" ])
+      }
+    })
   }
 
   const cancelInvite = async (userInvite) => {
-    try {
-      const oldInvited = [ ...invites.data ]
-      const oldOtherPeople = [ ...otherPeople ]
-
-      const userUsers = users.data.find(
-        (user) => user.id === userInvite.friendId
-      )
-      const newOtherPeople = [ ...otherPeople, userUsers ]
-
-      let newInvited = []
-
-      newInvited = oldInvited.filter(
-        (user) => user.friendId !== userInvite.friendId
-      )
-
-      queryClient.setQueryData([ "invites" ], newInvited)
-      setOtherPeople(newOtherPeople)
-
-      mutationCancelInvites.mutate(userInvite.id, {
-        onError: (error) => {
-          console.log("error", error)
-          queryClient.setQueryData([ "invites" ], oldInvited)
-          queryClient.setQueryData([ "invites" ], oldInvited)
-          setOtherPeople(oldOtherPeople)
-        }
-      })
-    } catch (err) {
-      console.log("Cancel friend invite failed", err)
-    }
+    mutationCancelInvites.mutate(userInvite.id, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([ "invites" ])
+        await queryClient.invalidateQueries([ "publicUsers" ])
+      }
+    })
   }
 
   const [ fontsLoaded ] = useFonts({

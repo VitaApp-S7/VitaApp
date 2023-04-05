@@ -1,18 +1,12 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native"
-// import { useMoodPoints, useMoodPointsUpdate } from "./MoodPointsContext"
 import {
   Poppins_500Medium as Poppins500Medium,
   Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import {
-  GetDate,
-  SetDate,
-  SetModalVisable,
-  updateUserMood
-} from "../services/userService"
+import { GetDate, SetDate, updateUserMood } from "../services/userService"
 import Frowney from "../../assets/modalFrowney.svg"
 import Neutral from "../../assets/modalNeutral.svg"
 import Happy from "../../assets/modalHappy.svg"
@@ -37,7 +31,6 @@ const StartupMoodModal = ({ changeMood }) => {
 
   const updateMoodPopUp = async (points) => {
     setModalVisible(false)
-    await SetModalVisable(accessToken, false)
     await updateUserMood(accessToken, points)
     await SetDate(accessToken, new Date().toDateString())
     setMoodPoints(points)

@@ -14,62 +14,21 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import { getEvents, joinEvent, leaveEvent } from "../../services/eventService"
+import { joinEvent, leaveEvent } from "../../services/eventService"
 import Bg from "../../../assets/wave.svg"
 import ButtonPrimary from "../../components/ButtonPrimary"
 
-import parseDate from "../../services/dataParser"
+import parseDate from "../../utility/DataParser"
 import { AppContext } from "../../context/AppContext"
-import { useQuery } from "@tanstack/react-query"
-import EventType from "../../types/EventType"
 import ButtonTertiary from "../../components/ButtonTertiary"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { useEventsQuery } from "../../queries/EventQueries"
 
 const PageEvent = ({ navigation }) => {
-  const { accessToken, user } = useContext(AppContext)
+  const { accessToken } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const setSortedListData = (data) => {
-    setListData(
-      createData(
-        sortData(data.filter((evt) => evt.userIds.includes(user.id))),
-        sortData(data.filter((evt) => !evt.userIds.includes(user.id)))
-      )
-    )
-  }
-
-  const sortData = (data) =>
-    data.sort((evt, other) => -evt.date.localeCompare(other.date))
-
-  const createData = (joined, notJoined) => {
-    return [
-      {
-        key: "joined",
-        title: "Signed Up",
-        data: sortData(joined),
-        emptyText: "Haven't signed up for any events"
-      },
-      {
-        key: "not-joined",
-        title: "Available",
-        data: sortData(notJoined),
-        emptyText: "No events available anymore"
-      }
-    ]
-  }
-
-  const { data, refetch } = useQuery<EventType[]>(
-    [ "events" ],
-    async () => (await getEvents(accessToken)).data,
-    { onSuccess: setSortedListData }
-  )
-
-  const [ listData, setListData ] = useState(
-    createData(
-      (data ? data : []).filter((evt) => evt.userIds.includes(user.id)),
-      (data ? data : []).filter((evt) => !evt.userIds.includes(user.id))
-    )
-  )
+  const { events, listData } = useEventsQuery()
 
   const handleOnPress = (item: any) => {
     navigation.navigate("Event Details", { item })
@@ -78,30 +37,14 @@ const PageEvent = ({ navigation }) => {
   const joinEventOnPress = async (id) => {
     const response = await joinEvent(accessToken, id)
     if (response.status === 200) {
-      setSortedListData(
-        data.map((evt) => {
-          if (evt.id !== id) return evt
-
-          evt.userIds.push(user.id)
-          return evt
-        })
-      )
-      await refetch()
+      await events.refetch()
     }
   }
 
   const leaveEventOnPress = async (id) => {
     const response = await leaveEvent(accessToken, id)
     if (response.status === 200) {
-      setSortedListData(
-        data.map((evt) => {
-          if (evt.id !== id) return evt
-
-          evt.userIds = evt.userIds.filter((userId) => userId !== user.id)
-          return evt
-        })
-      )
-      await refetch()
+      await events.refetch()
     }
   }
 
@@ -185,7 +128,7 @@ const PageEvent = ({ navigation }) => {
             refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
-              await refetch()
+              await events.refetch()
               setRefreshing(false)
             }}
           />

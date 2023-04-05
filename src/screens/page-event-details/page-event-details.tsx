@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image } from "react-native"
-import parseDate from "../../services/dataParser"
+import { Image, StyleSheet, Text, View } from "react-native"
+import parseDate from "../../utility/DataParser"
 import React from "react"
 import OpenURLButton from "../../components/OpenURLButton"
 import RichTextViewer from "../../components/RichTextViewer"
@@ -20,11 +20,16 @@ const PageEventDetails = ({ route }) => {
             <Text style={styles.date}>{parseDate(item.date)}</Text>
           </View>
           {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-          <View style={{
-            height: 1000,
-            overflow: "hidden"
-          }}>
-            <RichTextViewer html={item.description} queryKey={`eventhtml${item.id}`} />
+          <View
+            style={{
+              height: 1000,
+              overflow: "hidden"
+            }}
+          >
+            <RichTextViewer
+              html={item.description}
+              queryKey={`eventhtml${item.id}`}
+            />
           </View>
         </View>
       </View>

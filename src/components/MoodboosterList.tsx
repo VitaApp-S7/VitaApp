@@ -1,15 +1,5 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect
-} from "react"
+import React, { Dispatch, SetStateAction, useCallback, useEffect } from "react"
 import { View } from "react-native"
-import {
-  getAllActiveActivities,
-  getAllActivities
-} from "../services/moodboosterService"
 
 import {
   Poppins_400Regular as Poppins400Regular,
@@ -18,40 +8,20 @@ import {
   useFonts
 } from "@expo-google-fonts/poppins"
 import ContentLoader, { Rect } from "react-content-loader/native"
-import {
-  MoodboosterType,
-  UserMoodboosterType
-} from "../types/MoodboosterTypes"
-import { AppContext } from "../context/AppContext"
 import Moodbooster from "./Moodbooster"
-import { useQuery } from "@tanstack/react-query"
+import {
+  useActivitiesActiveQuery,
+  useActivitiesQuery
+} from "../queries/MoodboosterQueries"
 
-interface MoodboosterList {
+interface MoodboosterListProps {
   refresh: boolean;
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
-const MoodboosterList = (props: MoodboosterList) => {
-  const { accessToken } = useContext(AppContext)
-
-  const moodboosters = useQuery<MoodboosterType[]>(
-    [ "moodboosters" ],
-    () => getAllActivities(accessToken),
-    {
-      onError: (error) => {
-        console.log("moodboosters get req error", error)
-      }
-    }
-  )
-  const userMoodboosters = useQuery<UserMoodboosterType[]>(
-    [ "userMoodboosters" ],
-    () => getAllActiveActivities(accessToken),
-    {
-      onError: (error) => {
-        console.log("user moodboosters get req error", error)
-      }
-    }
-  )
+const MoodboosterList = (props: MoodboosterListProps) => {
+  const moodboosters = useActivitiesQuery()
+  const userMoodboosters = useActivitiesActiveQuery()
 
   const nonUserMoodboosters = useCallback(() => {
     return moodboosters.data
@@ -62,7 +32,7 @@ const MoodboosterList = (props: MoodboosterList) => {
           )
       )
       .sort((mb, other) => mb.id.localeCompare(other.id))
-  }, [ moodboosters, userMoodboosters ])
+  }, [ moodboosters.data, userMoodboosters.data ])
 
   useEffect(() => {
     if (props.refresh === true) {
@@ -84,7 +54,7 @@ const MoodboosterList = (props: MoodboosterList) => {
 
   return (
     <View>
-      {!moodboosters.isLoading || !userMoodboosters.isLoading ? (
+      {moodboosters.isSuccess && userMoodboosters.isSuccess ? (
         <View>
           {userMoodboosters.data?.map((item) => (
             <Moodbooster mb={item.moodbooster} userMb={item} key={item.id} />
