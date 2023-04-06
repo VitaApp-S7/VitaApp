@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 import { Card, Subheading, Title } from "react-native-paper"
 import {
   RefreshControl,
@@ -25,60 +25,7 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { useEventsQuery } from "../../queries/EventQueries"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
-import Animated, { Easing, Keyframe, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
-
-function sleep(milliseconds) {
-  const date = Date.now()
-  let currentDate = null
-  do {
-    currentDate = Date.now()
-  } while (currentDate - date < milliseconds)
-}
-
-const FadeInAnimation = (props: PropsWithChildren) => {
-  const entering = useSharedValue(false)
-  const exiting = useSharedValue(false)
-
-  useEffect(() => {
-    entering.value = true
-    return () => {
-      exiting.value = true
-      //This is pretty cursed, it doesn't even animate the height because the thread is blocked :).
-      sleep(300)
-    }
-  }, [])
-
-  const opacity = useAnimatedStyle(() => ({
-    opacity: withTiming(entering.value && !exiting.value ? 1 : 0, {
-      duration: 300,
-      easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
-    }) 
-  }))
-  const height = useAnimatedStyle(() => ({
-    height: withTiming(entering.value && !exiting.value ? 156 : 1, {
-      duration: 300,
-      easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
-    }) 
-  }))
-  const transform = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: withTiming(entering.value && !exiting.value ? 0 : -1000, {
-          duration: 300,
-          easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
-        }) 
-      }
-    ]
-  }))
-
-  return (
-    <Animated.View
-      style={[ opacity, height, transform ]}
-    >
-      {props.children}
-    </Animated.View>
-  )
-}
+import { ListItemAnimation } from "../../animations/ListItemAnimation"
 
 const EventCard = ({ item, section }) => {
   const navigation = useNavigation()
@@ -86,7 +33,7 @@ const EventCard = ({ item, section }) => {
   const queryClient = useQueryClient()
 
   return (
-    <FadeInAnimation>
+    <ListItemAnimation>
       <Card
         style={styles.surface}
         mode="outlined"
@@ -103,7 +50,9 @@ const EventCard = ({ item, section }) => {
             style={styles.title}
             title={<Title style={styles.title}>{item.title}</Title>}
             right={() => (
-              <Subheading style={styles.date}>{parseDate(item.date)}</Subheading>
+              <Subheading style={styles.date}>
+                {parseDate(item.date)}
+              </Subheading>
             )}
             titleNumberOfLines={3}
           />
@@ -141,7 +90,7 @@ const EventCard = ({ item, section }) => {
           )}
         </Card.Actions>
       </Card>
-    </FadeInAnimation>
+    </ListItemAnimation>
   )
 }
 
