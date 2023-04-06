@@ -21,8 +21,8 @@ function getOtherPeopleIds(
 ) {
   return _.difference(
     userData.map((usr) => usr.id),
-    (friends.data ? friends.data : []).map((friend) => friend.userId),
-    (invites.data ? invites.data : []).map((invite) => invite.friendId),
+    (friends.isSuccess ? friends.data : []).map((friend) => friend.userId),
+    (invites.isSuccess ? invites.data : []).map((invite) => invite.friendId),
     [ user.id ]
   )
 }
@@ -57,7 +57,7 @@ export function useOtherPeopleQuery(friends, invites) {
 
   const [ otherPeople, setOtherPeople ] = useState<PublicUserType[]>(() => {
     const otherPeopleIds = getOtherPeopleIds(
-      users.data,
+      (users.data ? users.data : []),
       friends,
       invites,
       user

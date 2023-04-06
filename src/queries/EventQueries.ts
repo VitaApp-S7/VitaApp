@@ -33,8 +33,8 @@ export function useEventsQuery() {
   const setSortedListData = (data) => {
     setListData(
       createData(
-        sortData(data.filter((evt) => evt.userIds.includes(user.id))),
-        sortData(data.filter((evt) => !evt.userIds.includes(user.id)))
+        data.filter((evt) => evt.userIds.includes(user.id)),
+        data.filter((evt) => !evt.userIds.includes(user.id))
       )
     )
   }

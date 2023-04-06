@@ -30,6 +30,7 @@ const PageHome = () => {
 
   return (
     <ScrollView
+      overScrollMode={"never"}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

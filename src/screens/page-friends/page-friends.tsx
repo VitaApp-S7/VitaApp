@@ -93,6 +93,7 @@ const PageFriends = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        overScrollMode={"never"}
         contentContainerStyle={styles.screen}
         refreshControl={
           <RefreshControl
@@ -119,7 +120,7 @@ const PageFriends = () => {
             <Bg style={styles.wave} />
             <>
               <Text style={styles.title}>Friends</Text>
-              {!friends.isLoading && friends.data.length > 0 ? (
+              {friends.isSuccess && friends.data.length > 0 ? (
                 friends.data.map((item, index) => (
                   <View style={styles.card} key={index}>
                     <View style={styles.wrapperTop}>
@@ -142,7 +143,7 @@ const PageFriends = () => {
 
             <>
               <Text style={styles.title}>Invited</Text>
-              {invites.status === "success" && invites.data.length > 0 ? (
+              {invites.isSuccess && invites.data.length > 0 ? (
                 invites.data.map((item, index) => (
                   <View style={styles.card} key={index}>
                     <View style={styles.wrapperTop}>
