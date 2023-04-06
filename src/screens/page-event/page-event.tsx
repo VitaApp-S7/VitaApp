@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { PropsWithChildren, useContext, useEffect, useState } from "react"
 import { Card, Subheading, Title } from "react-native-paper"
 import {
   RefreshControl,
@@ -23,30 +23,132 @@ import { AppContext } from "../../context/AppContext"
 import ButtonTertiary from "../../components/ButtonTertiary"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { useEventsQuery } from "../../queries/EventQueries"
+import { useNavigation } from "@react-navigation/native"
+import { useQueryClient } from "@tanstack/react-query"
+import Animated, { Easing, Keyframe, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
 
-const PageEvent = ({ navigation }) => {
+function sleep(milliseconds) {
+  const date = Date.now()
+  let currentDate = null
+  do {
+    currentDate = Date.now()
+  } while (currentDate - date < milliseconds)
+}
+
+const FadeInAnimation = (props: PropsWithChildren) => {
+  const entering = useSharedValue(false)
+  const exiting = useSharedValue(false)
+
+  useEffect(() => {
+    entering.value = true
+    return () => {
+      exiting.value = true
+      //This is pretty cursed, it doesn't even animate the height because the thread is blocked :).
+      sleep(300)
+    }
+  }, [])
+
+  const opacity = useAnimatedStyle(() => ({
+    opacity: withTiming(entering.value && !exiting.value ? 1 : 0, {
+      duration: 300,
+      easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
+    }) 
+  }))
+  const height = useAnimatedStyle(() => ({
+    height: withTiming(entering.value && !exiting.value ? 156 : 1, {
+      duration: 300,
+      easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
+    }) 
+  }))
+  const transform = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withTiming(entering.value && !exiting.value ? 0 : -1000, {
+          duration: 300,
+          easing: entering.value && !exiting.value ? Easing.bezierFn(0, 0.55, 0.45, 1) : Easing.bezierFn(0.55, 0, 1, 0.45)
+        }) 
+      }
+    ]
+  }))
+
+  return (
+    <Animated.View
+      style={[ opacity, height, transform ]}
+    >
+      {props.children}
+    </Animated.View>
+  )
+}
+
+const EventCard = ({ item, section }) => {
+  const navigation = useNavigation()
   const { accessToken } = useContext(AppContext)
+  const queryClient = useQueryClient()
+
+  return (
+    <FadeInAnimation>
+      <Card
+        style={styles.surface}
+        mode="outlined"
+        theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+        key={item.id}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Event Details", { item })
+          }}
+          style={{ width: "100%" }}
+        >
+          <Card.Title
+            style={styles.title}
+            title={<Title style={styles.title}>{item.title}</Title>}
+            right={() => (
+              <Subheading style={styles.date}>{parseDate(item.date)}</Subheading>
+            )}
+            titleNumberOfLines={3}
+          />
+        </TouchableOpacity>
+        <Card.Actions style={styles.buttons}>
+          <View style={styles.joined}>
+            <Text style={styles.description}>{item.userIds.length}/20</Text>
+            <Ionicons
+              style={styles.icon}
+              name="people"
+              size={24}
+              color="#031D29"
+            />
+          </View>
+          {section.key === "joined" ? (
+            <ButtonTertiary
+              text="LEAVE"
+              onPress={async () => {
+                const response = await leaveEvent(accessToken, item.id)
+                if (response.status === 200) {
+                  await queryClient.invalidateQueries([ "events" ])
+                }
+              }}
+            ></ButtonTertiary>
+          ) : (
+            <ButtonPrimary
+              text="JOIN"
+              onPress={async () => {
+                const response = await joinEvent(accessToken, item.id)
+                if (response.status === 200) {
+                  await queryClient.invalidateQueries([ "events" ])
+                }
+              }}
+            ></ButtonPrimary>
+          )}
+        </Card.Actions>
+      </Card>
+    </FadeInAnimation>
+  )
+}
+
+const PageEvent = () => {
   const [ refreshing, setRefreshing ] = useState(false)
 
   const { events, listData } = useEventsQuery()
-
-  const handleOnPress = (item: any) => {
-    navigation.navigate("Event Details", { item })
-  }
-
-  const joinEventOnPress = async (id) => {
-    const response = await joinEvent(accessToken, id)
-    if (response.status === 200) {
-      await events.refetch()
-    }
-  }
-
-  const leaveEventOnPress = async (id) => {
-    const response = await leaveEvent(accessToken, id)
-    if (response.status === 200) {
-      await events.refetch()
-    }
-  }
 
   // fonts
   useFonts({
@@ -62,52 +164,7 @@ const PageEvent = ({ navigation }) => {
         sections={listData}
         keyExtractor={(item) => item.id}
         renderItem={(props) => (
-          <Card
-            style={styles.surface}
-            mode="outlined"
-            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-            key={props.item.id}
-          >
-            <TouchableOpacity
-              onPress={() => handleOnPress(props.item)}
-              style={{ width: "100%" }}
-            >
-              <Card.Title
-                style={styles.title}
-                title={<Title style={styles.title}>{props.item.title}</Title>}
-                right={() => (
-                  <Subheading style={styles.date}>
-                    {parseDate(props.item.date)}
-                  </Subheading>
-                )}
-                titleNumberOfLines={3}
-              />
-            </TouchableOpacity>
-            <Card.Actions style={styles.buttons}>
-              <View style={styles.joined}>
-                <Text style={styles.description}>
-                  {props.item.userIds.length}/20
-                </Text>
-                <Ionicons
-                  style={styles.icon}
-                  name="people"
-                  size={24}
-                  color="#031D29"
-                />
-              </View>
-              {props.section.key === "joined" ? (
-                <ButtonTertiary
-                  text="LEAVE"
-                  onPress={async () => await leaveEventOnPress(props.item.id)}
-                ></ButtonTertiary>
-              ) : (
-                <ButtonPrimary
-                  text="JOIN"
-                  onPress={async () => await joinEventOnPress(props.item.id)}
-                ></ButtonPrimary>
-              )}
-            </Card.Actions>
-          </Card>
+          <EventCard item={props.item} section={props.section} />
         )}
         renderSectionHeader={(props) => {
           if (props.section.data.length === 0)
@@ -142,7 +199,6 @@ export default PageEvent
 
 const styles = StyleSheet.create({
   buttons: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 10
