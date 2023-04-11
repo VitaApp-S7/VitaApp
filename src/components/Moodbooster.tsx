@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native"
 import { useMoodboosterStartMutation } from "../mutations/MoodboosterMutations"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
+import { sleep } from "../utility/Sleep"
 
 interface Moodbooster {
   mb: MoodboosterType;
@@ -23,12 +24,13 @@ const Moodbooster = (props: Moodbooster) => {
 
   const handleToStart = async () => {
     if (startMutation.isIdle && !isExiting) {
-      if(!startMutation.isIdle || isExiting) return
+      if (!startMutation.isIdle || isExiting) return
 
       await startMutation.mutateAsync()
       setIsExiting(true)
       await queryClient.invalidateQueries([ "moodboostersActive" ])
       await queryClient.invalidateQueries([ "moodboosters" ])
+      sleep(500)
     }
   }
 

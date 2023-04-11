@@ -20,6 +20,7 @@ import {
 } from "../mutations/MoodboosterMutations"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
+import { sleep } from "../utility/Sleep"
 
 interface Moodbooster {
   userMb: UserMoodboosterType;
@@ -62,7 +63,7 @@ const UserMoodbooster = (props: Moodbooster) => {
   })
 
   const handleToComplete = async () => {
-    if(!completeMoodboosterMutation.isIdle || isExiting) return
+    if (!completeMoodboosterMutation.isIdle || isExiting) return
 
     await completeMoodboosterMutation.mutateAsync()
     setIsExiting(true)
@@ -70,15 +71,17 @@ const UserMoodbooster = (props: Moodbooster) => {
     await queryClient.invalidateQueries([ "moodboosters" ])
     completedToast()
     setMoodPoints(moodPoints + props.userMb.moodbooster.points)
+    sleep(500)
   }
   const handleToCancel = async () => {
-    if(!cancelMoodboosterMutation.isIdle || isExiting) return
+    if (!cancelMoodboosterMutation.isIdle || isExiting) return
 
     await cancelMoodboosterMutation.mutateAsync()
     setIsExiting(true)
     await queryClient.invalidateQueries([ "moodboostersActive" ])
     await queryClient.invalidateQueries([ "moodboosters" ])
     cancelledToast()
+    sleep(500)
   }
 
   const handleOnPress = () => {

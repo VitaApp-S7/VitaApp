@@ -26,6 +26,7 @@ import { useEventsQuery } from "../../queries/EventQueries"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
 import { ListItemAnimation } from "../../animations/ListItemAnimation"
+import { sleep } from "../../utility/Sleep"
 
 const EventCard = ({ item, section }) => {
   const navigation = useNavigation()
@@ -76,6 +77,7 @@ const EventCard = ({ item, section }) => {
                 if (response.status === 200) {
                   setIsExiting(true)
                   await queryClient.invalidateQueries([ "events" ])
+                  sleep(500)
                 }
               }}
             ></ButtonTertiary>
@@ -87,6 +89,7 @@ const EventCard = ({ item, section }) => {
                 if (response.status === 200) {
                   setIsExiting(true)
                   await queryClient.invalidateQueries([ "events" ])
+                  sleep(500)
                 }
               }}
             ></ButtonPrimary>

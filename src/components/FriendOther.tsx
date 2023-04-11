@@ -1,9 +1,4 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View
-} from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { addFriend } from "../services/friendsService"
@@ -11,6 +6,7 @@ import { AppContext } from "../context/AppContext"
 import PublicUserType from "../types/PublicUserType"
 import ButtonPrimary from "./ButtonPrimary"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
+import { sleep } from "../utility/Sleep"
 
 const FriendOther = ({ other }: { other: PublicUserType }) => {
   const { accessToken } = useContext(AppContext)
@@ -29,6 +25,7 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
         ])
       }
     })
+    sleep(500)
   }
 
   return (
@@ -36,7 +33,10 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={require("../../assets/pfp.png")}></Image>
+            <Image
+              style={styles.pfp}
+              source={require("../../assets/pfp.png")}
+            ></Image>
             <Text style={styles.title}>{other.name}</Text>
           </View>
 

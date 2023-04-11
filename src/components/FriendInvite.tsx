@@ -1,9 +1,4 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View
-} from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useState } from "react"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -11,6 +6,7 @@ import { cancelFrRequest } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
 import ButtonSecondary from "./ButtonSecondary"
 import SendedFriendType from "../types/SendedFriendType"
+import { sleep } from "../utility/Sleep"
 
 const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
   const { accessToken } = useContext(AppContext)
@@ -32,17 +28,18 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
         ])
       }
     })
+    sleep(500)
   }
 
   return (
-    <ListItemAnimation
-      elementHeight={100}
-      isExiting={isExiting}
-    >
+    <ListItemAnimation elementHeight={100} isExiting={isExiting}>
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={require("../../assets/pfp.png")} />
+            <Image
+              style={styles.pfp}
+              source={require("../../assets/pfp.png")}
+            />
             <Text style={styles.title}>{invite.name}</Text>
           </View>
 

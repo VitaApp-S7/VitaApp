@@ -4,4 +4,3 @@ export default interface NewsType {
   description: string;
   date: string;
 }
-

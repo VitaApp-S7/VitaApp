@@ -56,7 +56,7 @@ export function useOtherPeopleQuery(friends, invites) {
 
   const [ otherPeople, setOtherPeople ] = useState<PublicUserType[]>(() => {
     const otherPeopleIds = getOtherPeopleIds(
-      (users.data ? users.data : []),
+      users.data ? users.data : [],
       friends,
       invites,
       user

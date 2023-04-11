@@ -6,6 +6,7 @@ import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { removeFriend } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
+import { sleep } from "../utility/Sleep"
 
 const Friend = ({ friend }: { friend: FriendType }) => {
   const { accessToken } = useContext(AppContext)
@@ -27,17 +28,18 @@ const Friend = ({ friend }: { friend: FriendType }) => {
         ])
       }
     })
+    sleep(500)
   }
 
   return (
-    <ListItemAnimation
-      elementHeight={100}
-      isExiting={isExiting}
-    >
+    <ListItemAnimation elementHeight={100} isExiting={isExiting}>
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={require("../../assets/pfp.png")} />
+            <Image
+              style={styles.pfp}
+              source={require("../../assets/pfp.png")}
+            />
             <Text style={styles.title}>{friend.name}</Text>
           </View>
 
@@ -94,6 +96,5 @@ const styles = StyleSheet.create({
     margin: 8
   }
 })
-
 
 export default Friend

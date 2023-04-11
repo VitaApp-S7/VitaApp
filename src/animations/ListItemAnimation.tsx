@@ -33,15 +33,6 @@ export const ListItemAnimation = ({
           : Easing.bezierFn(0.55, 0, 1, 0.45)
     })
   }))
-  const height = useAnimatedStyle(() => ({
-    height: withTiming(entering.value && !isExiting ? elementHeight : 1, {
-      duration: animationLength,
-      easing:
-        entering.value && !isExiting
-          ? Easing.bezierFn(0, 0.55, 0.45, 1)
-          : Easing.bezierFn(0.55, 0, 1, 0.45)
-    })
-  }))
   const transform = useAnimatedStyle(() => ({
     transform: [
       {
@@ -56,9 +47,5 @@ export const ListItemAnimation = ({
     ]
   }))
 
-  return (
-    <Animated.View style={[ opacity, height, transform ]}>
-      {children}
-    </Animated.View>
-  )
+  return <Animated.View style={[ opacity, transform ]}>{children}</Animated.View>
 }

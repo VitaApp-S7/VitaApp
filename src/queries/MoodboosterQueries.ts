@@ -171,13 +171,17 @@ export function useAllActivitiesQuery() {
           data: MoodboosterType[];
         }
     )[]
-      >(createData((activitiesQuery.data ? activitiesQuery.data : []).filter(
-        (act) =>
-          !(activeActivitiesQuery.data ? activeActivitiesQuery.data : []).some(
-            (act2) => act.id === act2.moodbooster.id
-          )
-      ), activeActivitiesQuery.data ? activeActivitiesQuery.data : []
-      ))
+      >(
+      createData(
+        (activitiesQuery.data ? activitiesQuery.data : []).filter(
+          (act) =>
+            !(activeActivitiesQuery.data ? activeActivitiesQuery.data : []).some(
+              (act2) => act.id === act2.moodbooster.id
+            )
+        ),
+        activeActivitiesQuery.data ? activeActivitiesQuery.data : []
+      )
+      )
 
   return {
     sectionList,
