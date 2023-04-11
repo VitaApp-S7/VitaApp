@@ -1,6 +1,5 @@
 import {
   Image,
-  ImageSourcePropType,
   StyleSheet,
   Text,
   View
@@ -12,8 +11,6 @@ import { AppContext } from "../context/AppContext"
 import PublicUserType from "../types/PublicUserType"
 import ButtonPrimary from "./ButtonPrimary"
 import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
-
-const pfp: ImageSourcePropType = require("../../assets/pfp.png")
 
 const FriendOther = ({ other }: { other: PublicUserType }) => {
   const { accessToken } = useContext(AppContext)
@@ -39,7 +36,7 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={pfp}></Image>
+            <Image style={styles.pfp} source={require("../../assets/pfp.png")}></Image>
             <Text style={styles.title}>{other.name}</Text>
           </View>
 

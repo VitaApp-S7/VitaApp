@@ -46,17 +46,21 @@ const PageMoodboosterDetails = () => {
   }
 
   const handleToStart = async () => {
-    if (startMutation.isIdle) {
-      await startMutation.mutateAsync()
-    }
+    if (!startMutation.isIdle) return
+
+    setUserMoodbooster(await startMutation.mutateAsync())
   }
   const handleToComplete = async () => {
+    if (!completeMoodboosterMutation.isIdle) return
+
     await completeMoodboosterMutation.mutateAsync()
     completedToast()
     setUserMoodbooster(null)
     setMoodPoints(moodPoints + moodbooster.points)
   }
   const handleToCancel = async () => {
+    if (!cancelMoodboosterMutation.isIdle) return
+
     await cancelMoodboosterMutation.mutateAsync()
     cancelledToast()
     setUserMoodbooster(null)
@@ -78,7 +82,11 @@ const PageMoodboosterDetails = () => {
           {userMoodbooster ? (
             <>
               <InviteFriends
-                disabled={!cancelMoodboosterMutation.isIdle || !completeMoodboosterMutation.isIdle || !startMutation.isIdle}
+                disabled={
+                  !cancelMoodboosterMutation.isIdle ||
+                  !completeMoodboosterMutation.isIdle ||
+                  !startMutation.isIdle
+                }
                 moodboosterId={userMoodbooster.id}
               />
               <ButtonSecondary

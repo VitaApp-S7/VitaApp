@@ -4,8 +4,6 @@ import * as Notifications from "expo-notifications"
 import useAuthentication from "./useAuthentication"
 import useNotifications from "./useNotifications"
 
-const initialized = false
-
 interface AppContextType {
   user: UserType;
   accessToken: string;

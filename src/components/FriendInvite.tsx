@@ -1,6 +1,5 @@
 import {
   Image,
-  ImageSourcePropType,
   StyleSheet,
   Text,
   View
@@ -12,8 +11,6 @@ import { cancelFrRequest } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
 import ButtonSecondary from "./ButtonSecondary"
 import SendedFriendType from "../types/SendedFriendType"
-
-const pfp: ImageSourcePropType = require("../../assets/pfp.png")
 
 const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
   const { accessToken } = useContext(AppContext)
@@ -45,7 +42,7 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={pfp} />
+            <Image style={styles.pfp} source={require("../../assets/pfp.png")} />
             <Text style={styles.title}>{invite.name}</Text>
           </View>
 

@@ -162,7 +162,7 @@ export function useAllActivitiesQuery() {
     }
   )
 
-    const [ sectionList, setSectionList ] = useState<
+  const [ sectionList, setSectionList ] = useState<
     (
       | { key: string; title: string; data: UserMoodboosterType[] }
       | {
@@ -172,12 +172,12 @@ export function useAllActivitiesQuery() {
         }
     )[]
       >(createData((activitiesQuery.data ? activitiesQuery.data : []).filter(
-          (act) =>
-            !(activeActivitiesQuery.data ? activeActivitiesQuery.data : []).some(
-              (act2) => act.id === act2.moodbooster.id
-            )
-        ), activeActivitiesQuery.data ? activeActivitiesQuery.data : []
-))
+        (act) =>
+          !(activeActivitiesQuery.data ? activeActivitiesQuery.data : []).some(
+            (act2) => act.id === act2.moodbooster.id
+          )
+      ), activeActivitiesQuery.data ? activeActivitiesQuery.data : []
+      ))
 
   return {
     sectionList,

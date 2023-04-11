@@ -1,13 +1,11 @@
 import FriendType from "../types/FriendType"
-import { Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import ButtonTertiary from "./ButtonTertiary"
 import React, { useContext, useState } from "react"
 import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { removeFriend } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
-
-const pfp: ImageSourcePropType = require("../../assets/pfp.png")
 
 const Friend = ({ friend }: { friend: FriendType }) => {
   const { accessToken } = useContext(AppContext)
@@ -39,7 +37,7 @@ const Friend = ({ friend }: { friend: FriendType }) => {
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
-            <Image style={styles.pfp} source={pfp} />
+            <Image style={styles.pfp} source={require("../../assets/pfp.png")} />
             <Text style={styles.title}>{friend.name}</Text>
           </View>
 

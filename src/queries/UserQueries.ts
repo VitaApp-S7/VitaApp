@@ -8,8 +8,7 @@ import UserType from "../types/UserType"
 import FriendType from "../types/FriendType"
 import { UseQueryResult } from "react-query"
 import SendedFriendType from "../types/SendedFriendType"
-
-const _ = require("lodash")
+import _ from "lodash"
 
 const userBaseUrl = `${baseUrl}/user`
 

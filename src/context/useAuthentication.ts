@@ -55,7 +55,7 @@ const useAuthentication = (expoToken) => {
     }
   }, [])
 
-  const [ request, response, promptAsync ] = useAuthRequest(
+  const [ , response, promptAsync ] = useAuthRequest(
     {
       responseType: ResponseType.Token,
       clientId: isExpo

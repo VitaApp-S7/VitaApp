@@ -36,7 +36,7 @@ const MoodboosterInvitesModal = ({
         <Text style={styles.friendstitle}>Invite friends</Text>
         <ScrollView style={styles.friendslist}>
           {friendsQuery.isSuccess && friendsQuery.data.length > 0 ? (
-            friendsQuery.data.map((item, index) => (
+            friendsQuery.data.map(item => (
               <View style={styles.card} key={item.id}>
                 <View style={styles.wrapperTop}>
                   <View style={styles.joined}>

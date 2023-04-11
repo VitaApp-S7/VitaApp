@@ -1,6 +1,5 @@
 import AppNav from "./src/navigation/AppNav/AppNav"
 import React from "react"
-// import * as Linking from "expo-linking"
 import Toast from "react-native-toast-message"
 import "react-native-url-polyfill/auto"
 import { QueryClient } from "@tanstack/react-query"
@@ -14,12 +13,17 @@ import {
   reactotronReactQuery
 } from "reactotron-react-query"
 import { StatusBar } from "expo-status-bar"
+import * as poppins from "@expo-google-fonts/poppins"
+
+const Minute = 1000 * 60
+const Hour = Minute * 60
+const Day = Hour * 24
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: 24 * 60 * (60 * 1000),
-      staleTime: 2 * (60 * 1000),
+      cacheTime: 2 * Day,
+      staleTime: 1 * Minute,
       onError: (error) => {
         console.log(error)
       }
@@ -27,7 +31,7 @@ const queryClient = new QueryClient({
   }
 })
 
-// @ts-ignore
+//@ts-ignore
 const queryClientManager = new QueryClientManager({ queryClient })
 
 if (__DEV__) {
@@ -44,6 +48,15 @@ const asyncStoragePersister = createAsyncStoragePersister({
 })
 
 export default function App() {
+  poppins.useFonts({
+    Poppins700Bold: poppins.Poppins_700Bold,
+    Poppins600SemiBold: poppins.Poppins_600SemiBold,
+    Poppins400Regular: poppins.Poppins_400Regular,
+    Poppins500Medium: poppins.Poppins_500Medium,
+    Poppins300Light: poppins.Poppins_300Light,
+    Poppins800ExtraBold: poppins.Poppins_800ExtraBold
+  })
+
   return (
     <PersistQueryClientProvider
       client={queryClient}

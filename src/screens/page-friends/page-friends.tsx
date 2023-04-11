@@ -1,5 +1,4 @@
 import {
-  ImageSourcePropType,
   RefreshControl,
   SafeAreaView,
   ScrollView,
@@ -11,11 +10,8 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import React, { useContext, useState } from "react"
-import { AppContext } from "../../context/AppContext"
-// import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
+import React, { useState } from "react"
 import Bg from "../../../assets/wave.svg"
-import { useQueryClient } from "@tanstack/react-query"
 import {
   useFriendInvitesQuery,
   useFriendsQuery
@@ -24,8 +20,6 @@ import { useOtherPeopleQuery } from "../../queries/UserQueries"
 import Friend from "../../components/Friend"
 import FriendInvite from "../../components/FriendInvite"
 import FriendOther from "../../components/FriendOther"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pfp: ImageSourcePropType = require("../../../assets/pfp.png")
 
 const PageFriends = () => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -36,14 +30,10 @@ const PageFriends = () => {
 
   const { users, otherPeople } = useOtherPeopleQuery(friends, invites)
 
-  const [ fontsLoaded ] = useFonts({
+  useFonts({
     Poppins600SemiBold,
     Poppins400Regular
   })
-
-  if (!fontsLoaded) {
-    return null
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -119,32 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white"
   },
-  pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 999,
-    backgroundColor: "white"
-  },
   screen: { backgroundColor: "white" },
-  card: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 8,
-    marginVertical: 4,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 8,
-    backgroundColor: "white"
-  },
-  joined: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center"
-  },
   title: {
     fontFamily: "Poppins600SemiBold",
     fontSize: 16,
@@ -164,13 +129,5 @@ const styles = StyleSheet.create({
   wave: {
     width: "100%",
     position: "absolute"
-  },
-  wrapperTop: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    margin: 8
   }
 })

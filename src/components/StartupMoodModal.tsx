@@ -12,11 +12,8 @@ import Neutral from "../../assets/modalNeutral.svg"
 import Happy from "../../assets/modalHappy.svg"
 import { AppContext } from "../context/AppContext"
 
-const StartupMoodModal = ({ changeMood }) => {
+const StartupMoodModal = () => {
   const [ modalVisible, setModalVisible ] = useState(false)
-  // const mood = useMoodPoints()
-  // const updateMood = useMoodPointsUpdate()
-
   const { setMoodPoints, accessToken } = useContext(AppContext)
 
   const date = new Date()
@@ -64,21 +61,18 @@ const StartupMoodModal = ({ changeMood }) => {
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(1)}
             >
-              {/* <Image source={require("../../../assets/modal_frowney.svg")} style={styles.emoji}/> */}
               <Frowney />
             </Pressable>
             <Pressable
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(5)}
             >
-              {/* <Image source={require("../../../assets/modal_neutral.svg")} style={styles.emoji}/> */}
               <Neutral />
             </Pressable>
             <Pressable
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(10)}
             >
-              {/* <Image source={require("../../../assets/modal_happy.svg")} style={styles.emoji}/> */}
               <Happy />
             </Pressable>
           </View>
