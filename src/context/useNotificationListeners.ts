@@ -6,10 +6,13 @@ const useNotificationUpdater = () => {
   const [ notification, setNotification ] =
     useState<Notifications.Notification>(null)
 
+  const [ lastNotificationDate, setLastNotificationDate ] = useState<number>(0)
+
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (notification === null) return
+    if (notification === null || lastNotificationDate === notification.date) return
+    setLastNotificationDate(notification.date)
 
     const title = notification.request.content.title
 

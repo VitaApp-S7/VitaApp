@@ -23,11 +23,11 @@ import Toast from "react-native-toast-message"
 import { useQueryClient } from "@tanstack/react-query"
 import { useMoodboosterRequestsQuery } from "../queries/MoodboosterQueries"
 
-const MoodboosterInviteRequests = () => {
-  const [ isModalVisible, setModalVisible ] = useState(false)
+const FriendsList = () => {
+  const [ refreshing, setRefreshing ] = useState(false)
   const { accessToken } = useContext(AppContext)
-
   const requestsQuery = useMoodboosterRequestsQuery()
+  const queryClient = useQueryClient()
 
   const cancelledToast = (toastData) => {
     Toast.show({
@@ -42,13 +42,6 @@ const MoodboosterInviteRequests = () => {
     })
   }
 
-  const toggleModalOn = async () => {
-    await queryClient.invalidateQueries([ "moodboosterRequests" ])
-    setModalVisible(!isModalVisible)
-  }
-  const toggleModalOff = () => {
-    setModalVisible(!isModalVisible)
-  }
   const handleToDecline = async (user) => {
     try {
       await declineMoodboosterRequest(user.inviteId, accessToken)
@@ -76,11 +69,7 @@ const MoodboosterInviteRequests = () => {
     acceptedToast(user.inviterName)
   }
 
-  const [ refreshing, setRefreshing ] = useState(false)
-
-  const queryClient = useQueryClient()
-
-  const FriendsList = () => (
+  return (
     <ScrollView
       refreshControl={
         <RefreshControl
@@ -130,6 +119,22 @@ const MoodboosterInviteRequests = () => {
       )}
     </ScrollView>
   )
+}
+
+const MoodboosterInviteRequests = () => {
+  const [ isModalVisible, setModalVisible ] = useState(false)
+
+  const requestsQuery = useMoodboosterRequestsQuery()
+
+  const queryClient = useQueryClient()
+
+  const toggleModalOn = async () => {
+    await queryClient.invalidateQueries([ "moodboosterRequests" ])
+    setModalVisible(!isModalVisible)
+  }
+  const toggleModalOff = () => {
+    setModalVisible(!isModalVisible)
+  }
 
   return (
     <View>
@@ -139,19 +144,23 @@ const MoodboosterInviteRequests = () => {
         </Text>
         <Ionicons style={styles.icon} name="people" size={24} color="#052D40" />
       </TouchableOpacity>
-      <Modal isVisible={isModalVisible} style={styles.modal}>
-        <View style={styles.friendsModal}>
-          <Text style={styles.friendstitle}>Moodbooster invitations</Text>
-          <View style={styles.friendslist}>
-            {requestsQuery?.data?.length ? (
-              <FriendsList />
-            ) : (
-              <Text style={styles.modalempty}>No invitations</Text>
-            )}
+      {isModalVisible ? (
+        <Modal isVisible={isModalVisible} style={styles.modal}>
+          <View style={styles.friendsModal}>
+            <Text style={styles.friendstitle}>Moodbooster invitations</Text>
+            <View style={styles.friendslist}>
+              {requestsQuery?.data?.length ? (
+                <FriendsList />
+              ) : (
+                <Text style={styles.modalempty}>No invitations</Text>
+              )}
+            </View>
+            <ButtonTertiary text="DONE" onPress={toggleModalOff} />
           </View>
-          <ButtonTertiary text="DONE" onPress={toggleModalOff} />
-        </View>
-      </Modal>
+        </Modal>
+      ) : (
+        <></>
+      )}
     </View>
   )
 }

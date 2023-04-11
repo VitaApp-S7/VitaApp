@@ -7,30 +7,28 @@ import { UserMoodboosterType } from "../../types/MoodboosterTypes"
 import ButtonSecondary from "../../components/ButtonSecondary"
 import { AppContext } from "../../context/AppContext"
 import { BoostersNavProps } from "../../navigation/BoostersNav"
-import useMoodboosterMutations from "../../services/useMoodboosterMutations"
 import InviteFriends from "../../components/MoodboosterInvites"
+import {
+  useMoodboosterCancelMutation,
+  useMoodboosterCompleteMutation,
+  useMoodboosterStartMutation
+} from "../../mutations/MoodboosterMutations"
 
 const PageMoodboosterDetails = () => {
   const route = useRoute<BoostersNavProps<"Moodbooster Details">["route"]>()
   const moodbooster = route.params?.mb
   const [ userMoodbooster, setUserMoodbooster ] =
     useState<UserMoodboosterType | null>(route.params?.userMb)
-  const [ canStart, setCanStart ] = useState<boolean>(
-    userMoodbooster ? false : true
-  )
 
   const { moodPoints, setMoodPoints } = useContext(AppContext)
-  const {
-    moodbooster: {
-      startMoodboosterMutation,
-      updateMoodboostersQuery,
-      removeMoodboosterFromAllMoodboosters,
-      updateUserMoodboostersQuery,
-      completeMoodboosterMutation,
-      removeMoodboosterFromUserMoodboosterQuery,
-      cancelMoodboosterMutation
-    }
-  } = useMoodboosterMutations()
+
+  const completeMoodboosterMutation = useMoodboosterCompleteMutation(
+    userMoodbooster.id
+  )
+  const cancelMoodboosterMutation = useMoodboosterCancelMutation(
+    userMoodbooster.id
+  )
+  const startMutation = useMoodboosterStartMutation(moodbooster.id)
 
   const completedToast = () => {
     Toast.show({
@@ -48,38 +46,18 @@ const PageMoodboosterDetails = () => {
   }
 
   const handleToStart = async () => {
-    if (!canStart) {
-      return
+    if (startMutation.isIdle) {
+      await startMutation.mutateAsync()
     }
-    setCanStart(false)
-    const userMb: UserMoodboosterType = await startMoodboosterMutation(
-      moodbooster.id
-    )
-    setUserMoodbooster(userMb)
-    updateUserMoodboostersQuery(userMb)
-    removeMoodboosterFromAllMoodboosters(moodbooster.id)
   }
   const handleToComplete = async () => {
-    if (!userMoodbooster || canStart) {
-      return
-    }
-    setCanStart(true)
-    await completeMoodboosterMutation(userMoodbooster.id)
-    updateMoodboostersQuery(moodbooster)
-    removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
-
+    await completeMoodboosterMutation.mutateAsync()
     completedToast()
-    setMoodPoints(moodPoints + moodbooster.points)
     setUserMoodbooster(null)
+    setMoodPoints(moodPoints + moodbooster.points)
   }
   const handleToCancel = async () => {
-    if (!userMoodbooster || canStart) {
-      return
-    }
-    setCanStart(true)
-    await cancelMoodboosterMutation(userMoodbooster.id)
-    updateMoodboostersQuery(moodbooster)
-    removeMoodboosterFromUserMoodboosterQuery(userMoodbooster.id)
+    await cancelMoodboosterMutation.mutateAsync()
     cancelledToast()
     setUserMoodbooster(null)
   }
@@ -100,24 +78,24 @@ const PageMoodboosterDetails = () => {
           {userMoodbooster ? (
             <>
               <InviteFriends
-                disabled={canStart}
+                disabled={!cancelMoodboosterMutation.isIdle || !completeMoodboosterMutation.isIdle || !startMutation.isIdle}
                 moodboosterId={userMoodbooster.id}
               />
               <ButtonSecondary
                 text={"CANCEL"}
-                disabled={canStart}
+                disabled={!cancelMoodboosterMutation.isIdle}
                 onPress={() => handleToCancel()}
               ></ButtonSecondary>
               <ButtonPrimary
                 text={"COMPLETE"}
-                disabled={canStart}
+                disabled={!completeMoodboosterMutation.isIdle}
                 onPress={() => handleToComplete()}
               ></ButtonPrimary>
             </>
           ) : (
             <ButtonPrimary
               text={"START"}
-              disabled={!canStart}
+              disabled={!startMutation.isIdle}
               onPress={() => handleToStart()}
             ></ButtonPrimary>
           )}

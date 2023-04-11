@@ -16,6 +16,7 @@ import Bg from "../../../assets/wave.svg"
 import { Card, Subheading, Title } from "react-native-paper"
 import parseDate from "../../utility/DataParser"
 import { useNewsQuery } from "../../queries/FeedQueries"
+import { BetterListItemAnimation } from "../../animations/BetterListItemAnimation"
 
 const PageNews = ({ navigation }) => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -43,27 +44,29 @@ const PageNews = ({ navigation }) => {
       <FlatList
         data={news.data}
         renderItem={(props) => (
-          <Card
-            style={styles.surface}
-            mode="outlined"
-            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-            key={props.item.id}
-          >
-            <TouchableOpacity
-              onPress={() => handleOnPress(props.item)}
-              style={{ width: "100%" }}
+          <BetterListItemAnimation elementHeight={79} isExiting={false}>
+            <Card
+              style={styles.surface}
+              mode="outlined"
+              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+              key={props.item.id}
             >
-              <Card.Title
-                style={styles.title}
-                title={<Title style={styles.title}>{props.item.title}</Title>}
-                right={() => (
-                  <Subheading style={styles.date}>
-                    {parseDate(props.item.date)}
-                  </Subheading>
-                )}
-              />
-            </TouchableOpacity>
-          </Card>
+              <TouchableOpacity
+                onPress={() => handleOnPress(props.item)}
+                style={{ width: "100%" }}
+              >
+                <Card.Title
+                  style={styles.title}
+                  title={<Title style={styles.title}>{props.item.title}</Title>}
+                  right={() => (
+                    <Subheading style={styles.date}>
+                      {parseDate(props.item.date)}
+                    </Subheading>
+                  )}
+                />
+              </TouchableOpacity>
+            </Card>
+          </BetterListItemAnimation>
         )}
         refreshControl={
           <RefreshControl

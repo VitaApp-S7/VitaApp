@@ -25,15 +25,16 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { useEventsQuery } from "../../queries/EventQueries"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
-import { ListItemAnimation } from "../../animations/ListItemAnimation"
+import { BetterListItemAnimation } from "../../animations/BetterListItemAnimation"
 
 const EventCard = ({ item, section }) => {
   const navigation = useNavigation()
   const { accessToken } = useContext(AppContext)
   const queryClient = useQueryClient()
+  const [ isExiting, setIsExiting ] = useState(false)
 
   return (
-    <ListItemAnimation>
+    <BetterListItemAnimation elementHeight={156} isExiting={isExiting}>
       <Card
         style={styles.surface}
         mode="outlined"
@@ -73,6 +74,7 @@ const EventCard = ({ item, section }) => {
               onPress={async () => {
                 const response = await leaveEvent(accessToken, item.id)
                 if (response.status === 200) {
+                  setIsExiting(true)
                   await queryClient.invalidateQueries([ "events" ])
                 }
               }}
@@ -83,6 +85,7 @@ const EventCard = ({ item, section }) => {
               onPress={async () => {
                 const response = await joinEvent(accessToken, item.id)
                 if (response.status === 200) {
+                  setIsExiting(true)
                   await queryClient.invalidateQueries([ "events" ])
                 }
               }}
@@ -90,7 +93,7 @@ const EventCard = ({ item, section }) => {
           )}
         </Card.Actions>
       </Card>
-    </ListItemAnimation>
+    </BetterListItemAnimation>
   )
 }
 
