@@ -1,12 +1,6 @@
-import axios from "axios"
 import { protectedResources } from "../../authConfig"
 
 const url = protectedResources.apiEvent.endpoint
-
-export async function getEvents(token) {
-  var response = await axios.get(`${url}all`, { headers: { Authorization: `Bearer ${token}` }})
-  return response
-}
 
 export async function joinEvent(token, id) {
   const res = await fetch(`${url}join/${id}`, {

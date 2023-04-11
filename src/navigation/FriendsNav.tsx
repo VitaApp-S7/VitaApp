@@ -24,7 +24,7 @@ const screenOptions: MaterialTopTabNavigationOptions = {
 
 const FriendsNav = () => {
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator screenOptions={screenOptions} overScrollMode={"never"}>
       <Tab.Screen name="People" component={PageFriends} />
       <Tab.Screen name="Requests" component={PageRequests} />
     </Tab.Navigator>

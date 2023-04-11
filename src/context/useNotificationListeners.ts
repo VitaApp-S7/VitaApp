@@ -6,10 +6,13 @@ const useNotificationUpdater = () => {
   const [ notification, setNotification ] =
     useState<Notifications.Notification>(null)
 
+  const [ lastNotificationDate, setLastNotificationDate ] = useState<number>(0)
+
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (notification === null) return
+    if (notification === null || lastNotificationDate === notification.date) return
+    setLastNotificationDate(notification.date)
 
     const title = notification.request.content.title
 
@@ -27,6 +30,11 @@ const useNotificationUpdater = () => {
       if (title.includes("accepted") || title.includes("Accepted")) {
         queryClient.invalidateQueries([ "invites" ])
       }
+    }
+    if (title.includes("Moodbooster") || title.includes("moodbooster")) {
+      queryClient.invalidateQueries([ "moodboosterRequests" ])
+      queryClient.invalidateQueries([ "moodboosters" ])
+      queryClient.invalidateQueries([ "moodboostersActive" ])
     }
   }, [ notification ])
 

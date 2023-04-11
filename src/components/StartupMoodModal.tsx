@@ -1,28 +1,19 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native"
-// import { useMoodPoints, useMoodPointsUpdate } from "./MoodPointsContext"
 import {
   Poppins_500Medium as Poppins500Medium,
   Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import {
-  GetDate,
-  SetDate,
-  SetModalVisable,
-  updateUserMood
-} from "../services/userService"
+import { GetDate, SetDate, updateUserMood } from "../services/userService"
 import Frowney from "../../assets/modalFrowney.svg"
 import Neutral from "../../assets/modalNeutral.svg"
 import Happy from "../../assets/modalHappy.svg"
 import { AppContext } from "../context/AppContext"
 
-const StartupMoodModal = ({ changeMood }) => {
+const StartupMoodModal = () => {
   const [ modalVisible, setModalVisible ] = useState(false)
-  // const mood = useMoodPoints()
-  // const updateMood = useMoodPointsUpdate()
-
   const { setMoodPoints, accessToken } = useContext(AppContext)
 
   const date = new Date()
@@ -37,7 +28,6 @@ const StartupMoodModal = ({ changeMood }) => {
 
   const updateMoodPopUp = async (points) => {
     setModalVisible(false)
-    await SetModalVisable(accessToken, false)
     await updateUserMood(accessToken, points)
     await SetDate(accessToken, new Date().toDateString())
     setMoodPoints(points)
@@ -71,21 +61,18 @@ const StartupMoodModal = ({ changeMood }) => {
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(1)}
             >
-              {/* <Image source={require("../../../assets/modal_frowney.svg")} style={styles.emoji}/> */}
               <Frowney />
             </Pressable>
             <Pressable
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(5)}
             >
-              {/* <Image source={require("../../../assets/modal_neutral.svg")} style={styles.emoji}/> */}
               <Neutral />
             </Pressable>
             <Pressable
               style={styles.btn}
               onPress={async () => await updateMoodPopUp(10)}
             >
-              {/* <Image source={require("../../../assets/modal_happy.svg")} style={styles.emoji}/> */}
               <Happy />
             </Pressable>
           </View>

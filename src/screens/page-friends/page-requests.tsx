@@ -15,42 +15,33 @@ import {
   useFonts
 } from "@expo-google-fonts/poppins"
 import { AppContext } from "../../context/AppContext"
-// import { __handlePersistedRegistrationInfoAsync } from "expo-notifications/build/DevicePushTokenAutoRegistration.fx"
 import {
   acceptFrRequest,
-  cancelFrRequest,
-  getFrRequests
+  cancelFrRequest
 } from "../../services/friendsService"
 import Bg from "../../../assets/wave.svg"
 import ButtonPrimary from "../../components/ButtonPrimary"
 import ButtonSecondary from "../../components/ButtonSecondary"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import FriendType from "../../types/FriendType"
-// const wait = (timeout) => {
-//   return new Promise((resolve) => setTimeout(resolve, timeout))
-// }
+import { useQueryClient } from "@tanstack/react-query"
+import { useFriendRequestsQuery } from "../../queries/FriendQueries"
 
 const PageRequests = () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  // const wave = require("../../../assets/wave.png")
-
   const { accessToken } = useContext(AppContext)
 
   const [ refreshing, setRefreshing ] = useState(false)
-  
+
   const queryClient = useQueryClient()
 
-  const requestsQuery = useQuery<FriendType[]>(
-    [ "friendRequests" ],
-    async () => await getFrRequests(accessToken),
-    { onError: (err) => console.log(err) }
-  )
+  const requestsQuery = useFriendRequestsQuery()
 
   const handleCancelRequest = async (id) => {
     try {
       const res = await cancelFrRequest(accessToken, id)
       if (res.status === 200) {
-        queryClient.setQueryData([ "friendRequests" ], requestsQuery.data.filter((item) => item.id !== id))
+        queryClient.setQueryData(
+          [ "friendRequests" ],
+          requestsQuery.data.filter((item) => item.id !== id)
+        )
       }
     } catch (err) {
       console.log("request couldn't be cancelled", err)
@@ -61,7 +52,12 @@ const PageRequests = () => {
     try {
       const res = await acceptFrRequest(accessToken, id)
       if (res.status === 200) {
-        queryClient.setQueryData([ "friendRequests" ], requestsQuery.data.filter((item) => item.id !== id))
+        queryClient.setQueryData(
+          [ "friendRequests" ],
+          requestsQuery.data.filter((item) => item.id !== id)
+        )
+        await queryClient.invalidateQueries([ "friends" ])
+        await queryClient.invalidateQueries([ "publicUsers" ])
       }
     } catch (err) {
       console.log("request couldn't be accepted", err)
@@ -82,17 +78,20 @@ const PageRequests = () => {
       <ScrollView
         contentContainerStyle={styles.screen}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={async () => {
-            setRefreshing(true)
-            await queryClient.invalidateQueries([ "friendRequests" ])
-            setRefreshing(false)
-          }} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await queryClient.invalidateQueries([ "friendRequests" ])
+              setRefreshing(false)
+            }}
+          />
         }
       >
         <Bg style={styles.wave} />
         <View>
           {requestsQuery.isSuccess && requestsQuery.data.length > 0 ? (
-            requestsQuery.data.map(item => (
+            requestsQuery.data.map((item) => (
               <Card
                 style={styles.surface}
                 mode="outlined"

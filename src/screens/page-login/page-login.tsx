@@ -1,18 +1,5 @@
 import React, { useContext } from "react"
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native"
-import {
-  ResponseType,
-  useAuthRequest,
-  useAutoDiscovery
-} from "expo-auth-session"
-import * as SecureStore from "expo-secure-store"
-import { checkUser, getUser } from "../../services/userService"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 // import * as Linking from "expo-linking"
 import Intrologo from "../../../assets/intrologo.svg"
 import {
@@ -22,7 +9,6 @@ import {
   useFonts
 } from "@expo-google-fonts/poppins"
 import { AppContext } from "../../context/AppContext"
-import Constants from "expo-constants"
 
 const PageLogin = () => {
   const { login } = useContext(AppContext)

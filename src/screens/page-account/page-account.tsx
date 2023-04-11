@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { AppContext } from "../../context/AppContext"
 
 const PageAccount = () => {

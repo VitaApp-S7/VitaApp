@@ -41,6 +41,7 @@ const FeedTab = () => {
     <Tab.Navigator
       // eslint-disable-next-line no-unused-vars
       screenOptions={screenOptions}
+      overScrollMode={"never"}
     >
       <Tab.Screen name="Event" component={PageEvent} />
       <Tab.Screen name="News" component={PageNews} />

@@ -14,96 +14,93 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import { getEvents, joinEvent, leaveEvent } from "../../services/eventService"
+import { joinEvent, leaveEvent } from "../../services/eventService"
 import Bg from "../../../assets/wave.svg"
 import ButtonPrimary from "../../components/ButtonPrimary"
 
-import parseDate from "../../services/dataParser"
+import parseDate from "../../utility/DataParser"
 import { AppContext } from "../../context/AppContext"
-import { useQuery } from "@tanstack/react-query"
-import EventType from "../../types/EventType"
 import ButtonTertiary from "../../components/ButtonTertiary"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { useEventsQuery } from "../../queries/EventQueries"
+import { useNavigation } from "@react-navigation/native"
+import { useQueryClient } from "@tanstack/react-query"
+import { ListItemAnimation } from "../../animations/ListItemAnimation"
 
-const PageEvent = ({ navigation }) => {
-  const { accessToken, user } = useContext(AppContext)
+const EventCard = ({ item, section }) => {
+  const navigation = useNavigation()
+  const { accessToken } = useContext(AppContext)
+  const queryClient = useQueryClient()
+  const [ isExiting, setIsExiting ] = useState(false)
+
+  return (
+    <ListItemAnimation elementHeight={156} isExiting={isExiting}>
+      <Card
+        style={styles.surface}
+        mode="outlined"
+        theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+        key={item.id}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Event Details", { item })
+          }}
+          style={{ width: "100%" }}
+        >
+          <Card.Title
+            style={styles.title}
+            title={<Title style={styles.title}>{item.title}</Title>}
+            right={() => (
+              <Subheading style={styles.date}>
+                {parseDate(item.date)}
+              </Subheading>
+            )}
+            titleNumberOfLines={3}
+          />
+        </TouchableOpacity>
+        <Card.Actions style={styles.buttons}>
+          <View style={styles.joined}>
+            <Text style={styles.description}>{item.userIds.length}/20</Text>
+            <Ionicons
+              style={styles.icon}
+              name="people"
+              size={24}
+              color="#031D29"
+            />
+          </View>
+          {section.key === "joined" ? (
+            <ButtonTertiary
+              text="LEAVE"
+              onPress={async () => {
+                const response = await leaveEvent(accessToken, item.id)
+                if (response.status === 200) {
+                  setIsExiting(true)
+                  await queryClient.invalidateQueries([ "events" ])
+                }
+              }}
+            ></ButtonTertiary>
+          ) : (
+            <ButtonPrimary
+              text="JOIN"
+              onPress={async () => {
+                const response = await joinEvent(accessToken, item.id)
+                if (response.status === 200) {
+                  setIsExiting(true)
+                  await queryClient.invalidateQueries([ "events" ])
+                }
+              }}
+            ></ButtonPrimary>
+          )}
+        </Card.Actions>
+      </Card>
+    </ListItemAnimation>
+  )
+}
+
+const PageEvent = () => {
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const setSortedListData = (data) => {
-    setListData(
-      createData(
-        sortData(data.filter((evt) => evt.userIds.includes(user.id))),
-        sortData(data.filter((evt) => !evt.userIds.includes(user.id)))
-      )
-    )
-  }
-
-  const sortData = (data) =>
-    data.sort((evt, other) => -evt.date.localeCompare(other.date))
-
-  const createData = (joined, notJoined) => {
-    return [
-      {
-        key: "joined",
-        title: "Signed Up",
-        data: sortData(joined),
-        emptyText: "Haven't signed up for any events"
-      },
-      {
-        key: "not-joined",
-        title: "Available",
-        data: sortData(notJoined),
-        emptyText: "No events available anymore"
-      }
-    ]
-  }
-
-  const { data, refetch } = useQuery<EventType[]>(
-    [ "events" ],
-    async () => (await getEvents(accessToken)).data,
-    { onSuccess: setSortedListData }
-  )
-
-  const [ listData, setListData ] = useState(
-    createData(
-      (data ? data : []).filter((evt) => evt.userIds.includes(user.id)),
-      (data ? data : []).filter((evt) => !evt.userIds.includes(user.id))
-    )
-  )
-
-  const handleOnPress = (item: any) => {
-    navigation.navigate("Event Details", { item })
-  }
-
-  const joinEventOnPress = async (id) => {
-    const response = await joinEvent(accessToken, id)
-    if (response.status === 200) {
-      setSortedListData(
-        data.map((evt) => {
-          if (evt.id !== id) return evt
-
-          evt.userIds.push(user.id)
-          return evt
-        })
-      )
-      await refetch()
-    }
-  }
-
-  const leaveEventOnPress = async (id) => {
-    const response = await leaveEvent(accessToken, id)
-    if (response.status === 200) {
-      setSortedListData(
-        data.map((evt) => {
-          if (evt.id !== id) return evt
-
-          evt.userIds = evt.userIds.filter((userId) => userId !== user.id)
-          return evt
-        })
-      )
-      await refetch()
-    }
-  }
+  const { events, listData } = useEventsQuery()
 
   // fonts
   useFonts({
@@ -119,52 +116,7 @@ const PageEvent = ({ navigation }) => {
         sections={listData}
         keyExtractor={(item) => item.id}
         renderItem={(props) => (
-          <Card
-            style={styles.surface}
-            mode="outlined"
-            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-            key={props.item.id}
-          >
-            <TouchableOpacity
-              onPress={() => handleOnPress(props.item)}
-              style={{ width: "100%" }}
-            >
-              <Card.Title
-                style={styles.title}
-                title={<Title style={styles.title}>{props.item.title}</Title>}
-                right={() => (
-                  <Subheading style={styles.date}>
-                    {parseDate(props.item.date)}
-                  </Subheading>
-                )}
-                titleNumberOfLines={3}
-              />
-            </TouchableOpacity>
-            <Card.Actions style={styles.buttons}>
-              <View style={styles.joined}>
-                <Text style={styles.description}>
-                  {props.item.userIds.length}/20
-                </Text>
-                <Ionicons
-                  style={styles.icon}
-                  name="people"
-                  size={24}
-                  color="#031D29"
-                />
-              </View>
-              {props.section.key === "joined" ? (
-                <ButtonTertiary
-                  text="LEAVE"
-                  onPress={async () => await leaveEventOnPress(props.item.id)}
-                ></ButtonTertiary>
-              ) : (
-                <ButtonPrimary
-                  text="JOIN"
-                  onPress={async () => await joinEventOnPress(props.item.id)}
-                ></ButtonPrimary>
-              )}
-            </Card.Actions>
-          </Card>
+          <EventCard item={props.item} section={props.section} />
         )}
         renderSectionHeader={(props) => {
           if (props.section.data.length === 0)
@@ -185,7 +137,7 @@ const PageEvent = ({ navigation }) => {
             refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
-              await refetch()
+              await events.refetch()
               setRefreshing(false)
             }}
           />
@@ -199,7 +151,6 @@ export default PageEvent
 
 const styles = StyleSheet.create({
   buttons: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 10

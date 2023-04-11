@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import {
   FlatList,
   RefreshControl,
@@ -12,26 +12,16 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import { getNews } from "../../services/newsService"
-import { AppContext } from "../../context/AppContext"
 import Bg from "../../../assets/wave.svg"
-import { useQuery } from "@tanstack/react-query"
-import NewsType from "../../types/NewsType"
 import { Card, Subheading, Title } from "react-native-paper"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import ButtonPrimary from "../../components/ButtonPrimary"
-import parseDate from "../../services/dataParser"
+import parseDate from "../../utility/DataParser"
+import { useNewsQuery } from "../../queries/FeedQueries"
+import { ListItemAnimation } from "../../animations/ListItemAnimation"
 
 const PageNews = ({ navigation }) => {
-  const { accessToken } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const { refetch, data } = useQuery<NewsType[]>([ "news" ], async () => {
-    const response = await getNews(accessToken)
-    return response.data.sort(
-      (news, other) => -news.date.localeCompare(other.date)
-    )
-  })
+  const news = useNewsQuery()
 
   const [ fontsLoaded ] = useFonts({
     Poppins600SemiBold,
@@ -52,36 +42,38 @@ const PageNews = ({ navigation }) => {
       <Text style={styles.moodtitle}>Latest news</Text>
 
       <FlatList
-        data={data}
+        data={news.data}
         renderItem={(props) => (
-          <Card
-            style={styles.surface}
-            mode="outlined"
-            theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-            key={props.item.id}
-          >
-            <TouchableOpacity
-              onPress={() => handleOnPress(props.item)}
-              style={{ width: "100%" }}
+          <ListItemAnimation elementHeight={79} isExiting={false}>
+            <Card
+              style={styles.surface}
+              mode="outlined"
+              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
+              key={props.item.id}
             >
-              <Card.Title
-                style={styles.title}
-                title={<Title style={styles.title}>{props.item.title}</Title>}
-                right={() => (
-                  <Subheading style={styles.date}>
-                    {parseDate(props.item.date)}
-                  </Subheading>
-                )}
-              />
-            </TouchableOpacity>
-          </Card>
+              <TouchableOpacity
+                onPress={() => handleOnPress(props.item)}
+                style={{ width: "100%" }}
+              >
+                <Card.Title
+                  style={styles.title}
+                  title={<Title style={styles.title}>{props.item.title}</Title>}
+                  right={() => (
+                    <Subheading style={styles.date}>
+                      {parseDate(props.item.date)}
+                    </Subheading>
+                  )}
+                />
+              </TouchableOpacity>
+            </Card>
+          </ListItemAnimation>
         )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
-              await refetch()
+              await news.refetch()
               setRefreshing(false)
             }}
           />

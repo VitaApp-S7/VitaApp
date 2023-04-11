@@ -1,47 +1,70 @@
-import { View, StyleSheet, RefreshControl, ScrollView } from "react-native"
+import { RefreshControl, SectionList, StyleSheet, View } from "react-native"
 import React, { useState } from "react"
 import { Text } from "react-native-paper"
 
 import {
-  useFonts,
   Poppins_500Medium as Poppins500Medium,
+  Poppins_600SemiBold as Poppins600SemiBold,
   Poppins_700Bold as Poppins700Bold,
-  Poppins_600SemiBold as Poppins600SemiBold
+  useFonts
 } from "@expo-google-fonts/poppins"
 import ChallengeFriends from "../../components/MoodboosterInviteRequests"
 import ResponsiveHeader from "../../components/ResponsiveHeader"
-import MoodboosterList from "../../components/MoodboosterList"
+import { useQueryClient } from "@tanstack/react-query"
+import { useAllActivitiesQuery } from "../../queries/MoodboosterQueries"
+import UserMoodbooster from "../../components/UserMoodbooster"
+import Moodbooster from "../../components/Moodbooster"
 
-// eslint-disable-next-line no-unused-vars
+const UserMbOrMb = ({ item, section }) => {
+  if (section.key === "active") {
+    return <UserMoodbooster userMb={item} key={`um${item.id}`} />
+  }
+  return <Moodbooster mb={item} key={`num${item.id}`} />
+}
+
 const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
+  const { sectionList } = useAllActivitiesQuery()
 
-  const [ fontsLoaded ] = useFonts({
+  const queryClient = useQueryClient()
+
+  useFonts({
     Poppins500Medium,
     Poppins700Bold,
     Poppins600SemiBold
   })
 
-  if (!fontsLoaded) {
-    return null
-  }
-
   return (
-    <ScrollView
+    <SectionList
+      overScrollMode={"never"}
+      sections={sectionList}
+      keyExtractor={(item) => item.id}
+      renderItem={UserMbOrMb}
+      renderSectionHeader={(props) => {
+        if (props.section.key !== "active") return <></>
+        return (
+          <>
+            <ResponsiveHeader />
+            <View style={styles.moodboostertop}>
+              <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
+              <ChallengeFriends />
+            </View>
+          </>
+        )
+      }}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => setRefreshing(true)}
+          onRefresh={async () => {
+            setRefreshing(true)
+            await queryClient.invalidateQueries([ "moodboosters" ])
+            await queryClient.invalidateQueries([ "moodboosterRequests" ])
+            await queryClient.invalidateQueries([ "moodboostersActive" ])
+            setRefreshing(false)
+          }}
         />
       }
-    >
-      <ResponsiveHeader />
-      <View style={styles.moodboostertop}>
-        <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
-        <ChallengeFriends />
-      </View>
-      <MoodboosterList refresh={refreshing} setRefreshing={setRefreshing} />
-    </ScrollView>
+    />
   )
 }
 

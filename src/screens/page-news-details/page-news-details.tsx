@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 import React from "react"
-import parseDate from "../../services/dataParser"
+import parseDate from "../../utility/DataParser"
 import OpenURLButton from "../../components/OpenURLButton"
 import RichTextViewer from "../../components/RichTextViewer"
 
@@ -20,11 +20,16 @@ const PageNewsDetails = ({ route }) => {
             <Text style={styles.date}>{parseDate(item.date)}</Text>
           </View>
           {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-          <View style={{
-            height: 1000,
-            overflow: "hidden" 
-          }}>
-            <RichTextViewer html={item.description} queryKey={`eventhtml${item.id}`} />
+          <View
+            style={{
+              height: 1000,
+              overflow: "hidden"
+            }}
+          >
+            <RichTextViewer
+              html={item.description}
+              queryKey={`eventhtml${item.id}`}
+            />
           </View>
         </View>
       </View>
@@ -46,14 +51,6 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 20,
     color: "#031D29"
-  },
-  description: {
-    fontFamily: "Poppins500Medium",
-    margin: 0,
-    padding: 0,
-    fontSize: 12,
-    color: "#052D40",
-    paddingVertical: 4
   },
   date: {
     fontFamily: "Poppins700Bold",
