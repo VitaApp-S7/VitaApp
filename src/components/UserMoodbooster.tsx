@@ -18,7 +18,7 @@ import {
   useMoodboosterCancelMutation,
   useMoodboosterCompleteMutation
 } from "../mutations/MoodboosterMutations"
-import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
 
 interface Moodbooster {
@@ -91,7 +91,7 @@ const UserMoodbooster = (props: Moodbooster) => {
   }
 
   return (
-    <BetterListItemAnimation elementHeight={152} isExiting={isExiting}>
+    <ListItemAnimation elementHeight={152} isExiting={isExiting}>
       <Card
         style={styles.surface}
         mode="outlined"
@@ -119,7 +119,7 @@ const UserMoodbooster = (props: Moodbooster) => {
           ></ButtonPrimary>
         </Card.Actions>
       </Card>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 const styles = StyleSheet.create({

@@ -25,7 +25,7 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { useEventsQuery } from "../../queries/EventQueries"
 import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
-import { BetterListItemAnimation } from "../../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../../animations/ListItemAnimation"
 
 const EventCard = ({ item, section }) => {
   const navigation = useNavigation()
@@ -34,7 +34,7 @@ const EventCard = ({ item, section }) => {
   const [ isExiting, setIsExiting ] = useState(false)
 
   return (
-    <BetterListItemAnimation elementHeight={156} isExiting={isExiting}>
+    <ListItemAnimation elementHeight={156} isExiting={isExiting}>
       <Card
         style={styles.surface}
         mode="outlined"
@@ -93,7 +93,7 @@ const EventCard = ({ item, section }) => {
           )}
         </Card.Actions>
       </Card>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 

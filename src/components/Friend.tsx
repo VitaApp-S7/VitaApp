@@ -2,7 +2,7 @@ import FriendType from "../types/FriendType"
 import { Image, StyleSheet, Text, View } from "react-native"
 import ButtonTertiary from "./ButtonTertiary"
 import React, { useContext, useState } from "react"
-import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { removeFriend } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
@@ -30,7 +30,7 @@ const Friend = ({ friend }: { friend: FriendType }) => {
   }
 
   return (
-    <BetterListItemAnimation
+    <ListItemAnimation
       elementHeight={100}
       isExiting={isExiting}
     >
@@ -47,7 +47,7 @@ const Friend = ({ friend }: { friend: FriendType }) => {
           ></ButtonTertiary>
         </View>
       </View>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 

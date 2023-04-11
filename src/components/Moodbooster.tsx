@@ -1,17 +1,11 @@
 import React, { useState } from "react"
 import { StyleSheet } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
-import {
-  Poppins_400Regular as Poppins400Regular,
-  Poppins_500Medium as Poppins500Medium,
-  Poppins_600SemiBold as Poppins600SemiBold,
-  useFonts
-} from "@expo-google-fonts/poppins"
 import ButtonPrimary from "./ButtonPrimary"
 import { MoodboosterType } from "../types/MoodboosterTypes"
 import { useNavigation } from "@react-navigation/native"
 import { useMoodboosterStartMutation } from "../mutations/MoodboosterMutations"
-import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
 
 interface Moodbooster {
@@ -26,12 +20,6 @@ const Moodbooster = (props: Moodbooster) => {
   const [ isExiting, setIsExiting ] = useState(false)
 
   const queryClient = useQueryClient()
-
-  useFonts({
-    Poppins600SemiBold,
-    Poppins400Regular,
-    Poppins500Medium
-  })
 
   const handleToStart = async () => {
     if (startMutation.isIdle && !isExiting) {
@@ -54,7 +42,7 @@ const Moodbooster = (props: Moodbooster) => {
   }
 
   return (
-    <BetterListItemAnimation elementHeight={152} isExiting={isExiting}>
+    <ListItemAnimation elementHeight={152} isExiting={isExiting}>
       <Card
         style={styles.surface}
         mode="outlined"
@@ -75,7 +63,7 @@ const Moodbooster = (props: Moodbooster) => {
           ></ButtonPrimary>
         </Card.Actions>
       </Card>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 const styles = StyleSheet.create({

@@ -5,7 +5,7 @@ import {
   View
 } from "react-native"
 import React, { useContext, useState } from "react"
-import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { cancelFrRequest } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
@@ -35,7 +35,7 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
   }
 
   return (
-    <BetterListItemAnimation
+    <ListItemAnimation
       elementHeight={100}
       isExiting={isExiting}
     >
@@ -52,7 +52,7 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
           ></ButtonSecondary>
         </View>
       </View>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 

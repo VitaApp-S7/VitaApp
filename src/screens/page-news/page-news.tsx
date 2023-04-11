@@ -16,7 +16,7 @@ import Bg from "../../../assets/wave.svg"
 import { Card, Subheading, Title } from "react-native-paper"
 import parseDate from "../../utility/DataParser"
 import { useNewsQuery } from "../../queries/FeedQueries"
-import { BetterListItemAnimation } from "../../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../../animations/ListItemAnimation"
 
 const PageNews = ({ navigation }) => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -44,7 +44,7 @@ const PageNews = ({ navigation }) => {
       <FlatList
         data={news.data}
         renderItem={(props) => (
-          <BetterListItemAnimation elementHeight={79} isExiting={false}>
+          <ListItemAnimation elementHeight={79} isExiting={false}>
             <Card
               style={styles.surface}
               mode="outlined"
@@ -66,7 +66,7 @@ const PageNews = ({ navigation }) => {
                 />
               </TouchableOpacity>
             </Card>
-          </BetterListItemAnimation>
+          </ListItemAnimation>
         )}
         refreshControl={
           <RefreshControl

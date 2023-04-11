@@ -10,7 +10,7 @@ import { addFriend } from "../services/friendsService"
 import { AppContext } from "../context/AppContext"
 import PublicUserType from "../types/PublicUserType"
 import ButtonPrimary from "./ButtonPrimary"
-import { BetterListItemAnimation } from "../animations/BetterListItemAnimation"
+import { ListItemAnimation } from "../animations/ListItemAnimation"
 
 const FriendOther = ({ other }: { other: PublicUserType }) => {
   const { accessToken } = useContext(AppContext)
@@ -32,7 +32,7 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
   }
 
   return (
-    <BetterListItemAnimation elementHeight={100} isExiting={isExiting}>
+    <ListItemAnimation elementHeight={100} isExiting={isExiting}>
       <View style={styles.card}>
         <View style={styles.wrapperTop}>
           <View style={styles.joined}>
@@ -48,7 +48,7 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
           ></ButtonPrimary>
         </View>
       </View>
-    </BetterListItemAnimation>
+    </ListItemAnimation>
   )
 }
 
