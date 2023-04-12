@@ -63,6 +63,7 @@ const BoostersNav = () => {
       <Stack.Screen
         name="Moodbooster Details"
         component={PageMoodboosterDetails}
+        options={{ animation: "none" }}
       />
     </Stack.Navigator>
   )

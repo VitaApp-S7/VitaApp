@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Text, View, StyleSheet } from "react-native"
+import { View, StyleSheet } from "react-native"
 import Toast from "react-native-toast-message"
 import { AppContext } from "../context/AppContext"
 import {
@@ -54,35 +54,24 @@ export const UserMoodBoosterDetails = ({
   }
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.wrapperTop}>
-        <Text style={styles.title}>{userMoodbooster.moodbooster.title}</Text>
-      </View>
-
-      <Text style={styles.description}>
-        {userMoodbooster.moodbooster.description}
-      </Text>
-      <View style={styles.buttons}>
-        <>
-          <MoodboosterInvites
-            disabled={
-              !cancelMoodboosterMutation.isIdle ||
-              !completeMoodboosterMutation.isIdle
-            }
-            moodboosterId={userMoodbooster.id}
-          />
-          <ButtonSecondary
-            text={"CANCEL"}
-            disabled={!cancelMoodboosterMutation.isIdle}
-            onPress={() => handleToCancel()}
-          ></ButtonSecondary>
-          <ButtonPrimary
-            text={"COMPLETE"}
-            disabled={!completeMoodboosterMutation.isIdle}
-            onPress={() => handleToComplete()}
-          ></ButtonPrimary>
-        </>
-      </View>
+    <View style={styles.buttons}>
+      <MoodboosterInvites
+        disabled={
+          !cancelMoodboosterMutation.isIdle ||
+          !completeMoodboosterMutation.isIdle
+        }
+        moodboosterId={userMoodbooster.id}
+      />
+      <ButtonSecondary
+        text={"CANCEL"}
+        disabled={!cancelMoodboosterMutation.isIdle}
+        onPress={() => handleToCancel()}
+      ></ButtonSecondary>
+      <ButtonPrimary
+        text={"COMPLETE"}
+        disabled={!completeMoodboosterMutation.isIdle}
+        onPress={() => handleToComplete()}
+      ></ButtonPrimary>
     </View>
   )
 }
@@ -93,29 +82,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 10
-  },
-  wrapper: { margin: 16 },
-  title: {
-    fontFamily: "Poppins600SemiBold",
-    margin: 0,
-    padding: 0,
-    fontSize: 20,
-    color: "#031D29"
-  },
-  description: {
-    fontFamily: "Poppins500Medium",
-    margin: 0,
-    padding: 0,
-    fontSize: 12,
-    color: "#052D40",
-    paddingVertical: 4
-  },
-  wrapperTop: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 4
   }
 })

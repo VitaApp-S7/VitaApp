@@ -1,6 +1,6 @@
-import React, { useMemo } from "react"
-import { WebView } from "react-native-webview"
-import { Linking, Platform } from "react-native"
+import React, { useMemo, useState } from "react"
+import { Linking, Platform, View } from "react-native"
+import AutoHeightWebView from "react-native-autoheight-webview"
 
 interface TrixHtmlViewProps {
   html: string;
@@ -22,7 +22,6 @@ html{
 }
 body {
   font-size: 1.5rem;
-  overflow: hidden;
   padding: 0;
   margin: 0;
 }
@@ -45,34 +44,41 @@ ${props.html}
     [ props.html ]
   )
 
+  const [ height, setHeight ] = useState(0)
+
   return (
-    <WebView
-      originWhitelist={[ "*" ]}
-      source={{ html: html }}
-      style={{
-        height: 1000,
-        flex: 0
-      }}
-      containerStyle={{
-        flexGrow: 1,
-        width: "100%"
-      }}
-      androidLayerType={"none"}
-      automaticallyAdjustContentInsets={false}
-      nestedScrollEnabled={false}
-      scrollEnabled={false}
-      pullToRefreshEnabled={false}
-      textInteractionEnabled={false}
-      scalesPageToFit={Platform.OS === "android"}
-      bounces={false}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      overScrollMode={"never"}
-      onShouldStartLoadWithRequest={(event) => {
-        Linking.openURL(event.url)
-        return false
-      }}
-    />
+    <View style={{ height: height + 25 }}>
+      <AutoHeightWebView
+        originWhitelist={[ "*" ]}
+        source={{ html: html }}
+        style={{
+          width: "100%",
+          marginTop: 5
+        }}
+        containerStyle={{
+          flex: 1,
+          width: "100%"
+        }}
+        onSizeUpdated={(size) => {
+          if (size.height > height) setHeight(size.height)
+        }}
+        androidLayerType={"none"}
+        automaticallyAdjustContentInsets={false}
+        nestedScrollEnabled={false}
+        scrollEnabled={false}
+        pullToRefreshEnabled={false}
+        textInteractionEnabled={false}
+        scalesPageToFit={Platform.OS === "android"}
+        bounces={false}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        overScrollMode={"never"}
+        onShouldStartLoadWithRequest={(event) => {
+          Linking.openURL(event.url)
+          return false
+        }}
+      />
+    </View>
   )
 }
 

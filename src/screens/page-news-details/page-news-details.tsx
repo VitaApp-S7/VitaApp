@@ -20,17 +20,10 @@ const PageNewsDetails = ({ route }) => {
             <Text style={styles.date}>{parseDate(item.date)}</Text>
           </View>
           {item.url && <OpenURLButton url={item.url}>{item.url}</OpenURLButton>}
-          <View
-            style={{
-              height: 1000,
-              overflow: "hidden"
-            }}
-          >
-            <RichTextViewer
-              html={item.description}
-              queryKey={`eventhtml${item.id}`}
-            />
-          </View>
+          <RichTextViewer
+            html={item.description}
+            queryKey={`eventhtml${item.id}`}
+          />
         </View>
       </View>
     </View>
