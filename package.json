@@ -6,7 +6,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "lint": "eslint . --ext .js,.ts,.tsx,.jsx",
-    "fix": "eslint . --fix --ext .js,.ts,.tsx,.jsx && npx prettier --write ."
+    "fix": "eslint . --fix --ext .js,.ts,.tsx,.jsx",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.2.2",

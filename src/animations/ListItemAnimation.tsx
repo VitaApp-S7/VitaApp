@@ -9,13 +9,11 @@ import Animated, {
 const animationLength = 300
 
 interface ListItemAnimationProps extends PropsWithChildren {
-  elementHeight: number;
   isExiting: boolean;
 }
 
 export const ListItemAnimation = ({
   isExiting,
-  elementHeight,
   children
 }: ListItemAnimationProps) => {
   const entering = useSharedValue(false)

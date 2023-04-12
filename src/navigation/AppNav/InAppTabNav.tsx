@@ -23,14 +23,14 @@ type InAppTabNavTabParamList = {
 const Tab = createBottomTabNavigator<InAppTabNavTabParamList>()
 type TabProps = BottomTabScreenProps<InAppTabNavTabParamList>;
 
+
 const TabBarIcon = ({ focused, color, size }) => {
   const route = useRoute<TabProps["route"]>()
-
   switch (route.name) {
   case "Boosters":
     return (
       <Ionicons
-        name={focused ? "trending-up" : "trending-up-outline"}
+        name={focused ? "rocket-sharp" : "rocket-outline"}
         size={size}
         color={color}
       />
@@ -60,8 +60,9 @@ const navigatorScreenOptions = {
   tabBarInactiveTintColor: "gray",
   tabBarLabelStyle: {
     fontFamily: "Poppins600SemiBold",
-    fontSize: 11
-  }
+    fontSize: 12
+  },
+  tabBarStyle: { height: 60 }
 }
 
 const screenOptions = { headerShown: false }
@@ -71,6 +72,7 @@ export const InAppTabNav = () => {
     Poppins600SemiBold,
     Poppins400Regular
   })
+
 
   return (
     <Tab.Navigator
