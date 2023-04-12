@@ -27,7 +27,7 @@ function getOtherPeopleIds(
 }
 
 export function useOtherPeopleQuery(friends, invites) {
-  const { user, accessToken } = useContext(AppContext)
+  const { user, accessToken, login } = useContext(AppContext)
 
   const users = useQuery<PublicUserType[]>(
     [ "publicUsers" ],
@@ -38,6 +38,7 @@ export function useOtherPeopleQuery(friends, invites) {
       )
 
       if (!response.ok) {
+        if (response.status === 401) await login()
         return Promise.reject("useOtherPeopleQuery failed")
       }
 
