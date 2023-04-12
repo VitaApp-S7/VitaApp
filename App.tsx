@@ -48,7 +48,7 @@ const asyncStoragePersister = createAsyncStoragePersister({
 })
 
 export default function App() {
-  poppins.useFonts({
+  const [ fontsLoaded ] = poppins.useFonts({
     Poppins700Bold: poppins.Poppins_700Bold,
     Poppins600SemiBold: poppins.Poppins_600SemiBold,
     Poppins400Regular: poppins.Poppins_400Regular,
@@ -56,6 +56,8 @@ export default function App() {
     Poppins300Light: poppins.Poppins_300Light,
     Poppins800ExtraBold: poppins.Poppins_800ExtraBold
   })
+
+  if(!fontsLoaded) return <></>
 
   return (
     <PersistQueryClientProvider
