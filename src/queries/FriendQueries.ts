@@ -9,12 +9,13 @@ import SendedFriendType from "../types/SendedFriendType"
 const friendsBaseUrl = `${baseUrl}/user/friends`
 
 export function useFriendsQuery() {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useQuery<FriendType[]>([ "friends" ], async () => {
     const response = await fetchWithToken(friendsBaseUrl, accessToken)
 
     if (!response.ok) {
+      if (response.status === 401) await login()
       return Promise.reject("useFriendsQuery failed")
     }
 
@@ -23,7 +24,7 @@ export function useFriendsQuery() {
 }
 
 export function useFriendRequestsQuery() {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useQuery<FriendType[]>([ "friendRequests" ], async () => {
     const response = await fetchWithToken(
@@ -32,6 +33,7 @@ export function useFriendRequestsQuery() {
     )
 
     if (!response.ok) {
+      if (response.status === 401) await login()
       return Promise.reject("useFriendRequestsQuery failed")
     }
 
@@ -40,7 +42,7 @@ export function useFriendRequestsQuery() {
 }
 
 export function useFriendInvitesQuery() {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useQuery<SendedFriendType[]>([ "invites" ], async () => {
     const response = await fetchWithToken(
@@ -49,6 +51,7 @@ export function useFriendInvitesQuery() {
     )
 
     if (!response.ok) {
+      if (response.status === 401) await login()
       return Promise.reject("useFriendInvitesQuery failed")
     }
 

@@ -8,7 +8,7 @@ import { fetchWithToken } from "../utility/ApiRequestHelpers"
 const moodboosterBaseUrl = `${baseUrl}/moodbooster`
 
 export const useMoodboosterStartMutation = (moodboosterId: string) => {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useMutation<UserMoodboosterType>(
     [ "startMoodbooster", moodboosterId ],
@@ -20,6 +20,8 @@ export const useMoodboosterStartMutation = (moodboosterId: string) => {
       )
 
       if (!response.ok) {
+        if (response.status === 401) await login()
+
         return Promise.reject("useMoodboosterStartMutation failed")
       }
 
@@ -29,7 +31,7 @@ export const useMoodboosterStartMutation = (moodboosterId: string) => {
 }
 
 export const useMoodboosterCancelMutation = (moodboosterId: string) => {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useMutation<UserMoodboosterType>(
     [ "cancelMoodbooster", moodboosterId ],
@@ -41,6 +43,8 @@ export const useMoodboosterCancelMutation = (moodboosterId: string) => {
       )
 
       if (!response.ok) {
+        if (response.status === 401) await login()
+
         return Promise.reject("useMoodboosterCancelMutation failed")
       }
 
@@ -50,7 +54,7 @@ export const useMoodboosterCancelMutation = (moodboosterId: string) => {
 }
 
 export const useMoodboosterCompleteMutation = (moodboosterId: string) => {
-  const { accessToken } = useContext(AppContext)
+  const { accessToken, login } = useContext(AppContext)
 
   return useMutation<UserMoodboosterType>(
     [ "completeMoodbooster", moodboosterId ],
@@ -62,6 +66,7 @@ export const useMoodboosterCompleteMutation = (moodboosterId: string) => {
       )
 
       if (!response.ok) {
+        if (response.status === 401) await login()
         return Promise.reject("useMoodboosterCompleteMutation failed")
       }
 

@@ -8,7 +8,7 @@ import { baseUrl } from "../../authConfig"
 const eventBaseUrl = `${baseUrl}/event`
 
 export function useEventsQuery() {
-  const { accessToken, user } = useContext(AppContext)
+  const { accessToken, user, login } = useContext(AppContext)
 
   const sortData = (data) =>
     data.sort((evt, other) => -evt.date.localeCompare(other.date))
@@ -45,6 +45,7 @@ export function useEventsQuery() {
       const response = await fetchWithToken(`${eventBaseUrl}/all`, accessToken)
 
       if (!response.ok) {
+        if (response.status === 401) await login()
         return Promise.reject("useEventsQuery failed")
       }
 
