@@ -5,7 +5,10 @@ const ButtonPrimary = (props) => {
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      style={props.disabled ? styles.disabledBtn : styles.PrimaryBtn}
+      style={{
+        ...(props.disabled ? styles.disabledBtn : styles.PrimaryBtn),
+        ...props.style
+      }}
       disabled={props.disabled}
     >
       <Text style={styles.buttontext}>{props.text}</Text>
