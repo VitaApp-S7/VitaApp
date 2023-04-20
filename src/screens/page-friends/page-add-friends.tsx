@@ -33,13 +33,13 @@ const PageAddFriends = () => {
   const { users, otherPeople } = useOtherPeopleQuery(friends, invites)
 
   const filteredOtherPeople = useMemo(() => {
-    return otherPeople.filter((user) =>
+    return otherPeople?.filter((user) =>
       user.name.toLowerCase().includes(searchString.toLowerCase())
     )
   }, [ searchString, otherPeople ])
 
   const filteredInvited = useMemo(() => {
-    return invites.data.filter((user) =>
+    return invites?.data?.filter((user) =>
       user.name.toLowerCase().includes(searchString.toLowerCase())
     )
   }, [ searchString, invites ])

@@ -23,13 +23,14 @@ const HeaderRight = () => {
 
 const options: NativeStackNavigationOptions = {
   headerRight: HeaderRight,
-  headerTitleAlign: "left"
+  headerTitleAlign: "left",
+  title: "Friends"
 }
 
 const FriendsNav = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Friends" component={PageFriends} options={options} />
+      <Stack.Screen name="Friends2" component={PageFriends} options={options} />
       <Stack.Screen name="Add Friends" component={PageAddFriends} />
     </Stack.Navigator>
   )
