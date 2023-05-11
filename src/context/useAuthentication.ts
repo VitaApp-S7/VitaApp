@@ -127,7 +127,7 @@ const useAuthentication = (expoToken) => {
       login,
       logout
     }
-  }, [ user, accessToken ])
+  }, [ user, accessToken, login, logout, promptAsync ])
 }
 
 export default useAuthentication
