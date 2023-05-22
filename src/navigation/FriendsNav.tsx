@@ -1,33 +1,38 @@
 import {
-  createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions
-} from "@react-navigation/material-top-tabs"
+  createNativeStackNavigator,
+  NativeStackNavigationOptions
+} from "@react-navigation/native-stack"
+import Ionicons from "react-native-vector-icons/Ionicons"
 import React from "react"
+import { ButtonTopBarNavigation } from "../components/ButtonTopBarNavigation"
+import PageAddFriends from "../screens/page-friends/page-add-friends"
 import PageFriends from "../screens/page-friends/page-friends"
-import PageRequests from "../screens/page-friends/page-requests"
+import { useNavigation } from "@react-navigation/native"
 
-const Tab = createMaterialTopTabNavigator()
+const Stack = createNativeStackNavigator()
 
-const screenOptions: MaterialTopTabNavigationOptions = {
-  tabBarActiveTintColor: "#031D29",
-  tabBarInactiveTintColor: "#031D29",
-  tabBarLabelStyle: {
-    fontSize: 16,
-    fontFamily: "Poppins600SemiBold",
-    textTransform: "none"
-  },
-  tabBarIndicatorStyle: {
-    backgroundColor: "#FA9901",
-    height: 3
-  }
+const HeaderRight = () => {
+  const navigation = useNavigation()
+
+  return (
+    <ButtonTopBarNavigation onClick={() => navigation.navigate("Add Friends")}>
+      <Ionicons name="person-add" size={25} color="#052D40" />
+    </ButtonTopBarNavigation>
+  )
+}
+
+const options: NativeStackNavigationOptions = {
+  headerRight: HeaderRight,
+  headerTitleAlign: "left",
+  title: "Friends"
 }
 
 const FriendsNav = () => {
   return (
-    <Tab.Navigator screenOptions={screenOptions} overScrollMode={"never"}>
-      <Tab.Screen name="People" component={PageFriends} />
-      <Tab.Screen name="Requests" component={PageRequests} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="Friends2" component={PageFriends} options={options} />
+      <Stack.Screen name="Add Friends" component={PageAddFriends} />
+    </Stack.Navigator>
   )
 }
 

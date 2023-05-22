@@ -15,13 +15,13 @@ import {
 } from "@expo-google-fonts/poppins"
 
 type InAppTabNavTabParamList = {
-  Boosters: undefined;
-  Feed: undefined;
-  Friends: undefined;
-};
+  Boosters: undefined
+  Feed: undefined
+  Friends: undefined
+}
 
 const Tab = createBottomTabNavigator<InAppTabNavTabParamList>()
-type TabProps = BottomTabScreenProps<InAppTabNavTabParamList>;
+type TabProps = BottomTabScreenProps<InAppTabNavTabParamList>
 
 
 const TabBarIcon = ({ focused, color, size }) => {
@@ -85,7 +85,11 @@ export const InAppTabNav = () => {
         component={BoostersNav}
         options={screenOptions}
       />
-      <Tab.Screen name="Friends" component={FriendsNav} />
+      <Tab.Screen
+        name="Friends"
+        component={FriendsNav}
+        options={screenOptions}
+      />
     </Tab.Navigator>
   )
 }
