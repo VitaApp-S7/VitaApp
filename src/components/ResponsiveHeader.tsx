@@ -15,7 +15,7 @@ import { updateUserMood } from "../services/userService"
 import { AppContext } from "../context/AppContext"
 
 interface ChangePicProps {
-  moodPoints: number;
+  moodPoints: number
 }
 
 const ChangePic = ({ moodPoints }: ChangePicProps) => {
@@ -58,7 +58,7 @@ const ResponsiveHeader = () => {
       <StartupMoodModal changeMood={moodPoints} />
       <View>
         <ImageBackground
-          source={require("../../assets/wave.png")}
+          source={require("../../assets/bgshape.png")}
           style={styles.wave}
         >
           <View style={styles.homeTop}>

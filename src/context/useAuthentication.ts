@@ -15,10 +15,10 @@ import Constants, { ExecutionEnvironment } from "expo-constants"
 let initialized = false
 
 interface useAuthenticationType {
-  accessToken: string;
-  user: UserType;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
+  accessToken: string
+  user: UserType
+  login: () => Promise<void>
+  logout: () => Promise<void>
 }
 
 const isExpo =
@@ -127,7 +127,7 @@ const useAuthentication = (expoToken) => {
       login,
       logout
     }
-  }, [ user, accessToken ])
+  }, [ user, accessToken, login, logout, promptAsync ])
 }
 
 export default useAuthentication
