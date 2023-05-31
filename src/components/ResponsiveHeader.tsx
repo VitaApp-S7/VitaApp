@@ -46,8 +46,7 @@ const ChangePic = ({ moodPoints }: ChangePicProps) => {
 
 const ResponsiveHeader = () => {
   const [ isModalVisible, setModalVisible ] = useState<boolean>(false)
-  const { accessToken, user, moodPoints, setMoodPoints } =
-    useContext(AppContext)
+  const { accessToken, moodPoints, setMoodPoints } = useContext(AppContext)
   const UpdateUserMood = async () => {
     await updateUserMood(accessToken, moodPoints)
     setModalVisible(!isModalVisible)
@@ -57,59 +56,51 @@ const ResponsiveHeader = () => {
     <View style={styles.screen}>
       <StartupMoodModal changeMood={moodPoints} />
       <View>
-        <ImageBackground
-          source={require("../../assets/bgshape.png")}
-          style={styles.wave}
-        >
-          <View style={styles.homeTop}>
-            <Text style={styles.heading2}>{user.name}</Text>
-            <ChangePic moodPoints={moodPoints} />
-            <View style={styles.moodcontainer}>
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Image
-                  style={styles.moodbg}
-                  source={require("../../assets/moodbg2.png")}
-                />
-                <Text style={styles.moodnmbr}>{moodPoints}</Text>
-              </TouchableOpacity>
+        <View style={styles.homeTop}>
+          <ChangePic moodPoints={moodPoints} />
+          <View style={styles.moodcontainer}>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image
+                style={styles.moodbg}
+                source={require("../../assets/moodbg2.png")}
+              />
+              <Text style={styles.moodnmbr}>{moodPoints}</Text>
+            </TouchableOpacity>
 
-              <Modal isVisible={isModalVisible} style={styles.modal}>
-                <View style={styles.changeMoodModal}>
-                  <Text style={styles.changeMoodTitle}>
-                    Manually change mood
-                  </Text>
-                  <View style={styles.moodModalGroup}>
-                    <TouchableOpacity
-                      onPress={() => setMoodPoints(moodPoints - 1)}
-                    >
-                      <Ionicons
-                        style={styles.modalIcons}
-                        name="remove-circle-outline"
-                        size={40}
-                        color="#052D40"
-                      />
-                    </TouchableOpacity>
-                    <Text style={styles.moodnmbrModal}>{moodPoints}</Text>
-                    <TouchableOpacity
-                      onPress={() => setMoodPoints(moodPoints + 1)}
-                    >
-                      <Ionicons
-                        style={styles.modalIcons}
-                        name="add-circle-outline"
-                        size={40}
-                        color="#052D40"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <ButtonTertiary
-                    text="DONE"
-                    onPress={async () => await UpdateUserMood()}
-                  />
+            <Modal isVisible={isModalVisible} style={styles.modal}>
+              <View style={styles.changeMoodModal}>
+                <Text style={styles.changeMoodTitle}>Manually change mood</Text>
+                <View style={styles.moodModalGroup}>
+                  <TouchableOpacity
+                    onPress={() => setMoodPoints(moodPoints - 1)}
+                  >
+                    <Ionicons
+                      style={styles.modalIcons}
+                      name="remove-circle-outline"
+                      size={40}
+                      color="#052D40"
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.moodnmbrModal}>{moodPoints}</Text>
+                  <TouchableOpacity
+                    onPress={() => setMoodPoints(moodPoints + 1)}
+                  >
+                    <Ionicons
+                      style={styles.modalIcons}
+                      name="add-circle-outline"
+                      size={40}
+                      color="#052D40"
+                    />
+                  </TouchableOpacity>
                 </View>
-              </Modal>
-            </View>
+                <ButtonTertiary
+                  text="DONE"
+                  onPress={async () => await UpdateUserMood()}
+                />
+              </View>
+            </Modal>
           </View>
-        </ImageBackground>
+        </View>
       </View>
     </View>
   )
@@ -185,9 +176,6 @@ const styles = StyleSheet.create({
     marginTop: -16,
     marginBottom: 86
   },
-  screen: {
-    height: 420,
-    backgroundColor: "white"
-  }
+  screen: { height: 420 }
 })
 export default ResponsiveHeader
