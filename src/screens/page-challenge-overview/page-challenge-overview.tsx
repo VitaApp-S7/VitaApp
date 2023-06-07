@@ -1,15 +1,18 @@
 import { SectionList, StyleSheet, Text, View } from "react-native"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import BackgroundShape from "../../components/backgroundShape"
 import GradientRefreshControl from "../../components/gradientRefreshControl"
 import { useTeamsQuery } from "../../queries/TeamQueries"
 import ButtonPrimary from "../../components/ButtonPrimary"
 import { useTeamJoinMutation } from "../../mutations/TeamMutations"
 import PieChart from "../../components/PieChart"
+import { AppContext } from "../../context/AppContext"
 
 const TeamComponent = ({ item }) => {
   const mutation = useTeamJoinMutation(item.data.id)
   const { teamQuery } = useTeamsQuery(item.data.challengeId)
+
+  const { user } = useContext(AppContext)
 
   return (
     <View
@@ -47,13 +50,16 @@ const TeamComponent = ({ item }) => {
           <Text>{item.data.participants.length} members</Text>
         </View>
       </View>
-      <ButtonPrimary
-        text={"JOIN"}
-        onPress={async () => {
-          await mutation.mutateAsync()
-          await teamQuery.refetch()
-        }}
-      ></ButtonPrimary>
+      {!item.data.participants
+        .some(participant => user.id.endsWith(participant.userId)) ? (
+          <ButtonPrimary
+            text={"JOIN"}
+            onPress={async () => {
+              await mutation.mutateAsync()
+              await teamQuery.refetch()
+            }}
+          ></ButtonPrimary>
+        ) : null}
     </View>
   )
 }
