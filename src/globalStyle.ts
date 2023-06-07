@@ -5,7 +5,7 @@ export const globalStyle = {
     gacDarkblue: { backgroundColor: "#072C40" },
     gacLightBlue: { backgroundColor: "#BCD8F2" },
     gacOrange: { backgroundColor: "#FEA419" },
-    gacYellow: { backgroundColor: "" },
+    gacYellow: { backgroundColor: "#FFDF6A" },
     gacBlack: { backgroundColor: "#000000" }
   }),
   boxShadow: StyleSheet.create({

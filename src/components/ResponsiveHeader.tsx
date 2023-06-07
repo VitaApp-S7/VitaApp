@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Image,
   ImageBackground,
   StyleSheet,
@@ -37,8 +38,10 @@ const ChangePic = ({ moodPoints }: ChangePicProps) => {
     <Image
       source={source}
       style={{
-        width: 180,
-        height: 180
+        width: 300,
+        height: undefined,
+        aspectRatio: 1,
+        resizeMode: "contain"
       }}
     />
   )
@@ -59,14 +62,6 @@ const ResponsiveHeader = () => {
         <View style={styles.homeTop}>
           <ChangePic moodPoints={moodPoints} />
           <View style={styles.moodcontainer}>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Image
-                style={styles.moodbg}
-                source={require("../../assets/moodbg2.png")}
-              />
-              <Text style={styles.moodnmbr}>{moodPoints}</Text>
-            </TouchableOpacity>
-
             <Modal isVisible={isModalVisible} style={styles.modal}>
               <View style={styles.changeMoodModal}>
                 <Text style={styles.changeMoodTitle}>Manually change mood</Text>
@@ -106,37 +101,11 @@ const ResponsiveHeader = () => {
   )
 }
 const styles = StyleSheet.create({
-  moodnmbr: {
-    position: "absolute",
-    fontSize: 32,
-    fontFamily: "Poppins600SemiBold",
-    color: "#FFFFFF",
-    zIndex: 3,
-    textAlign: "center",
-    marginBottom: 20,
-    marginLeft: 15,
-    marginTop: 45
-  },
   moodnmbrModal: {
     fontSize: 32,
     fontFamily: "Poppins600SemiBold",
     zIndex: 3,
     textAlign: "center",
-    color: "#052D40"
-  },
-  moodbg: {
-    zIndex: 2,
-    position: "relative",
-    width: 70,
-    resizeMode: "contain",
-    marginTop: 8
-  },
-  wave: { height: 300 },
-  heading2: {
-    fontSize: 20,
-    marginTop: 18,
-    marginBottom: 8,
-    fontFamily: "Poppins600SemiBold",
     color: "#052D40"
   },
   homeTop: {

@@ -106,7 +106,6 @@ const useAuthentication = (expoToken) => {
 
   useEffect(() => {
     if (response && response.type === "success") {
-      console.log(response.params.access_token)
       checkUser(response.params.access_token)
         .then(async () => await getUser(response.params.access_token))
         .then(async (newUser) => {
