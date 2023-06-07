@@ -1,5 +1,5 @@
 import { RefreshControl, SectionList, StyleSheet, View } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Text } from "react-native-paper"
 
 import {
@@ -14,6 +14,9 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useAllActivitiesQuery } from "../../queries/MoodboosterQueries"
 import UserMoodbooster from "../../components/UserMoodbooster"
 import Moodbooster from "../../components/Moodbooster"
+import BackgroundShape from "../../components/backgroundShape"
+import { globalStyle } from "../../globalStyle"
+import GradientRefreshControl from "../../components/gradientRefreshControl"
 
 const UserMbOrMb = ({ item, section }) => {
   if (section.key === "active") {
@@ -25,7 +28,7 @@ const UserMbOrMb = ({ item, section }) => {
 const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
   const { sectionList } = useAllActivitiesQuery()
-
+  
   const queryClient = useQueryClient()
 
   useFonts({
@@ -35,36 +38,48 @@ const PageHome = () => {
   })
 
   return (
-    <SectionList
-      overScrollMode={"never"}
-      sections={sectionList}
-      keyExtractor={(item) => item.id}
-      renderItem={UserMbOrMb}
-      renderSectionHeader={(props) => {
-        if (props.section.key !== "active") return <></>
-        return (
-          <>
-            <ResponsiveHeader />
-            <View style={styles.moodboostertop}>
-              <Text style={styles.moodtitle}>Today&apos;s moodboosters</Text>
-              <ChallengeFriends />
+    <View>
+      <SectionList
+        overScrollMode={"never"}
+        sections={sectionList}
+        keyExtractor={(item) => item.id}
+        renderItem={UserMbOrMb}
+        renderSectionHeader={(props) => {
+          if (props.section.key !== "active") return <></>
+          return (
+            <View>
+              <BackgroundShape />
+              <View style={{ marginTop: 80 }}>
+                <ResponsiveHeader />
+              </View>
+              <View style={styles.moodboostertop}>
+                <Text style={styles.moodtitle} onPress={async () => {
+            
+              await queryClient.invalidateQueries([ "moodboosters" ])
+              await queryClient.invalidateQueries([ "moodboosterRequests" ])
+              await queryClient.invalidateQueries([ "moodboostersActive" ])
+              console.log("refetching moodboosters")
+            }}>Today&apos;s moodboosters</Text>
+                <ChallengeFriends />
+              </View>
             </View>
-          </>
-        )
-      }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={async () => {
-            setRefreshing(true)
-            await queryClient.invalidateQueries([ "moodboosters" ])
-            await queryClient.invalidateQueries([ "moodboosterRequests" ])
-            await queryClient.invalidateQueries([ "moodboostersActive" ])
-            setRefreshing(false)
-          }}
-        />
-      }
-    />
+          )
+        }}
+        refreshControl={
+          <GradientRefreshControl
+          style={{zIndex:1}}
+            refreshing={refreshing} 
+            onRefresh={async () => {
+              setRefreshing(true)
+              await queryClient.invalidateQueries([ "moodboosters" ])
+              await queryClient.invalidateQueries([ "moodboosterRequests" ])
+              await queryClient.invalidateQueries([ "moodboostersActive" ])
+              setRefreshing(false)
+            }}
+          />
+        }
+      />
+    </View>
   )
 }
 
@@ -83,6 +98,10 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins600SemiBold",
     fontSize: 18,
     color: "#031D29"
+  },
+  wave: {
+    height: 300,
+    width: 300
   }
 })
 

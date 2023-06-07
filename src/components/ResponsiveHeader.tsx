@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Image,
   ImageBackground,
   StyleSheet,
@@ -15,7 +16,7 @@ import { updateUserMood } from "../services/userService"
 import { AppContext } from "../context/AppContext"
 
 interface ChangePicProps {
-  moodPoints: number;
+  moodPoints: number
 }
 
 const ChangePic = ({ moodPoints }: ChangePicProps) => {
@@ -37,8 +38,10 @@ const ChangePic = ({ moodPoints }: ChangePicProps) => {
     <Image
       source={source}
       style={{
-        width: 180,
-        height: 180
+        width: 300,
+        height: undefined,
+        aspectRatio: 1,
+        resizeMode: "contain"
       }}
     />
   )
@@ -46,8 +49,7 @@ const ChangePic = ({ moodPoints }: ChangePicProps) => {
 
 const ResponsiveHeader = () => {
   const [ isModalVisible, setModalVisible ] = useState<boolean>(false)
-  const { accessToken, user, moodPoints, setMoodPoints } =
-    useContext(AppContext)
+  const { accessToken, moodPoints, setMoodPoints } = useContext(AppContext)
   const UpdateUserMood = async () => {
     await updateUserMood(accessToken, moodPoints)
     setModalVisible(!isModalVisible)
@@ -57,95 +59,53 @@ const ResponsiveHeader = () => {
     <View style={styles.screen}>
       <StartupMoodModal changeMood={moodPoints} />
       <View>
-        <ImageBackground
-          source={require("../../assets/wave.png")}
-          style={styles.wave}
-        >
-          <View style={styles.homeTop}>
-            <Text style={styles.heading2}>{user.name}</Text>
-            <ChangePic moodPoints={moodPoints} />
-            <View style={styles.moodcontainer}>
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Image
-                  style={styles.moodbg}
-                  source={require("../../assets/moodbg2.png")}
-                />
-                <Text style={styles.moodnmbr}>{moodPoints}</Text>
-              </TouchableOpacity>
-
-              <Modal isVisible={isModalVisible} style={styles.modal}>
-                <View style={styles.changeMoodModal}>
-                  <Text style={styles.changeMoodTitle}>
-                    Manually change mood
-                  </Text>
-                  <View style={styles.moodModalGroup}>
-                    <TouchableOpacity
-                      onPress={() => setMoodPoints(moodPoints - 1)}
-                    >
-                      <Ionicons
-                        style={styles.modalIcons}
-                        name="remove-circle-outline"
-                        size={40}
-                        color="#052D40"
-                      />
-                    </TouchableOpacity>
-                    <Text style={styles.moodnmbrModal}>{moodPoints}</Text>
-                    <TouchableOpacity
-                      onPress={() => setMoodPoints(moodPoints + 1)}
-                    >
-                      <Ionicons
-                        style={styles.modalIcons}
-                        name="add-circle-outline"
-                        size={40}
-                        color="#052D40"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <ButtonTertiary
-                    text="DONE"
-                    onPress={async () => await UpdateUserMood()}
-                  />
+        <View style={styles.homeTop}>
+          <ChangePic moodPoints={moodPoints} />
+          <View style={styles.moodcontainer}>
+            <Modal isVisible={isModalVisible} style={styles.modal}>
+              <View style={styles.changeMoodModal}>
+                <Text style={styles.changeMoodTitle}>Manually change mood</Text>
+                <View style={styles.moodModalGroup}>
+                  <TouchableOpacity
+                    onPress={() => setMoodPoints(moodPoints - 1)}
+                  >
+                    <Ionicons
+                      style={styles.modalIcons}
+                      name="remove-circle-outline"
+                      size={40}
+                      color="#052D40"
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.moodnmbrModal}>{moodPoints}</Text>
+                  <TouchableOpacity
+                    onPress={() => setMoodPoints(moodPoints + 1)}
+                  >
+                    <Ionicons
+                      style={styles.modalIcons}
+                      name="add-circle-outline"
+                      size={40}
+                      color="#052D40"
+                    />
+                  </TouchableOpacity>
                 </View>
-              </Modal>
-            </View>
+                <ButtonTertiary
+                  text="DONE"
+                  onPress={async () => await UpdateUserMood()}
+                />
+              </View>
+            </Modal>
           </View>
-        </ImageBackground>
+        </View>
       </View>
     </View>
   )
 }
 const styles = StyleSheet.create({
-  moodnmbr: {
-    position: "absolute",
-    fontSize: 32,
-    fontFamily: "Poppins600SemiBold",
-    color: "#FFFFFF",
-    zIndex: 3,
-    textAlign: "center",
-    marginBottom: 20,
-    marginLeft: 15,
-    marginTop: 45
-  },
   moodnmbrModal: {
     fontSize: 32,
     fontFamily: "Poppins600SemiBold",
     zIndex: 3,
     textAlign: "center",
-    color: "#052D40"
-  },
-  moodbg: {
-    zIndex: 2,
-    position: "relative",
-    width: 70,
-    resizeMode: "contain",
-    marginTop: 8
-  },
-  wave: { height: 300 },
-  heading2: {
-    fontSize: 20,
-    marginTop: 18,
-    marginBottom: 8,
-    fontFamily: "Poppins600SemiBold",
     color: "#052D40"
   },
   homeTop: {
@@ -185,9 +145,6 @@ const styles = StyleSheet.create({
     marginTop: -16,
     marginBottom: 86
   },
-  screen: {
-    height: 420,
-    backgroundColor: "white"
-  }
+  screen: { height: 420 }
 })
 export default ResponsiveHeader
