@@ -94,7 +94,7 @@ const UserMoodbooster = (props: Moodbooster) => {
   }
 
   return (
-    <ListItemAnimation elementHeight={152} isExiting={isExiting}>
+    <ListItemAnimation isExiting={isExiting}>
       <Card
         style={styles.surface}
         mode="outlined"

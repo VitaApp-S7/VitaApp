@@ -95,7 +95,6 @@ const useAuthentication = (expoToken) => {
       })
   }
   const login = async () => {
-    console.log("nu werkt het")
     await promptAsync({ useProxy: isExpo })
   }
 
