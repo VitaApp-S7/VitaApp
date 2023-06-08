@@ -95,7 +95,7 @@ const UserMoodbooster = (props: Moodbooster) => {
   }
 
   return (
-    <ListItemAnimation elementHeight={152} isExiting={isExiting}>
+    <ListItemAnimation isExiting={isExiting}>
       <Card
         style={styles.surface}
         key={props.userMb.moodbooster.id}
