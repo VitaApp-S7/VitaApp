@@ -57,7 +57,7 @@ export default function App() {
     Poppins800ExtraBold: poppins.Poppins_800ExtraBold
   })
 
-  if(!fontsLoaded) return <></>
+  if (!fontsLoaded) return <></>
 
   return (
     <PersistQueryClientProvider

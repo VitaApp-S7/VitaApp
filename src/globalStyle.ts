@@ -10,13 +10,13 @@ export const globalStyle = {
   }),
   boxShadow: StyleSheet.create({
     defaultShadow: {
-      shadowColor: "#000000",
+      shadowColor: "black",
       shadowOffset: {
         width: 0,
         height: 0
       },
       shadowOpacity: 0.25,
-      shadowRadius: 8
+      shadowRadius: 4
     }
   }),
   text: StyleSheet.create({
@@ -25,16 +25,21 @@ export const globalStyle = {
       fontSize: 19,
       color: "#000000"
     },
+    cardTitle: {
+      fontFamily: "Poppins500Medium",
+      fontSize: 17,
+      color: "#000000"
+    },
     description: {
-      fontFamily: "Poppins600SemiBold",
-      fontSize: 12,
+      fontFamily: "Poppins400Regular",
+      fontSize: 14,
       color: "#000000"
     },
     subText: {
       fontFamily: "Poppins600SemiBold",
       fontSize: 12,
       color: "#072C40",
-      opacity: 0.42,
+      opacity: 0.82,
       textTransform: "uppercase"
     }
   })

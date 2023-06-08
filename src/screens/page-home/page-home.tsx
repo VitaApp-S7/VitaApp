@@ -1,13 +1,14 @@
-import { RefreshControl, SectionList, StyleSheet, View } from "react-native"
-import React, { useEffect, useState } from "react"
-import { Text } from "react-native-paper"
-
 import {
-  Poppins_500Medium as Poppins500Medium,
-  Poppins_600SemiBold as Poppins600SemiBold,
-  Poppins_700Bold as Poppins700Bold,
-  useFonts
-} from "@expo-google-fonts/poppins"
+  LayoutAnimation,
+  Platform,
+  RefreshControl,
+  SectionList,
+  StyleSheet,
+  UIManager,
+  View
+} from "react-native"
+import React, { useMemo, useState } from "react"
+import { Text } from "react-native-paper"
 import ChallengeFriends from "../../components/MoodboosterInviteRequests"
 import ResponsiveHeader from "../../components/ResponsiveHeader"
 import { useQueryClient } from "@tanstack/react-query"
@@ -16,8 +17,18 @@ import UserMoodbooster from "../../components/UserMoodbooster"
 import Moodbooster from "../../components/Moodbooster"
 import BackgroundShape from "../../components/backgroundShape"
 import { globalStyle } from "../../globalStyle"
-import GradientRefreshControl from "../../components/gradientRefreshControl"
+import MoodBoosterFilters from "../../components/MoodBoosterFilters"
+import {
+  MoodboosterType,
+  UserMoodboosterType
+} from "../../types/MoodboosterTypes"
 
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true)
+}
 const UserMbOrMb = ({ item, section }) => {
   if (section.key === "active") {
     return <UserMoodbooster userMb={item} key={`um${item.id}`} />
@@ -28,47 +39,61 @@ const UserMbOrMb = ({ item, section }) => {
 const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
   const { sectionList } = useAllActivitiesQuery()
-  
+  const [ categoryFilter, setCategoryFilter ] = useState<null | string>(null)
+
   const queryClient = useQueryClient()
 
-  useFonts({
-    Poppins500Medium,
-    Poppins700Bold,
-    Poppins600SemiBold
-  })
+  const filteredList = useMemo(() => {
+    if (categoryFilter === null) {
+      return sectionList
+    }
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+
+    return sectionList.map((booster) => {
+      const filteredData =
+        booster.key === "active"
+          ? (booster.data as UserMoodboosterType[]).filter(
+            (mb) => mb.moodbooster.category.id === categoryFilter
+          )
+          : (booster.data as MoodboosterType[]).filter(
+            (mb) => mb.category.id === categoryFilter
+          )
+
+      return {
+        ...booster,
+        data: filteredData
+      }
+    })
+  }, [ sectionList, categoryFilter ])
+
+  const Header = useMemo(() => {
+    return (
+      <View>
+        <BackgroundShape />
+        <View style={{ marginTop: 80 }}>
+          <ResponsiveHeader />
+        </View>
+        <View style={styles.moodboostertop}>
+          <Text style={globalStyle.text.title}>Moodboosters</Text>
+          <ChallengeFriends />
+        </View>
+        <MoodBoosterFilters setFilter={setCategoryFilter} />
+      </View>
+    )
+  }, [])
 
   return (
     <View>
       <SectionList
-        overScrollMode={"never"}
-        sections={sectionList}
+        sections={filteredList}
         keyExtractor={(item) => item.id}
         renderItem={UserMbOrMb}
-        renderSectionHeader={(props) => {
-          if (props.section.key !== "active") return <></>
-          return (
-            <View>
-              <BackgroundShape />
-              <View style={{ marginTop: 80 }}>
-                <ResponsiveHeader />
-              </View>
-              <View style={styles.moodboostertop}>
-                <Text style={styles.moodtitle} onPress={async () => {
-            
-              await queryClient.invalidateQueries([ "moodboosters" ])
-              await queryClient.invalidateQueries([ "moodboosterRequests" ])
-              await queryClient.invalidateQueries([ "moodboostersActive" ])
-              console.log("refetching moodboosters")
-            }}>Today&apos;s moodboosters</Text>
-                <ChallengeFriends />
-              </View>
-            </View>
-          )
-        }}
+        overScrollMode={"never"}
+        ListHeaderComponent={Header}
         refreshControl={
-          <GradientRefreshControl
-          style={{zIndex:1}}
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={async () => {
               setRefreshing(true)
               await queryClient.invalidateQueries([ "moodboosters" ])
@@ -93,15 +118,6 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     marginBottom: 4,
     marginTop: -70
-  },
-  moodtitle: {
-    fontFamily: "Poppins600SemiBold",
-    fontSize: 18,
-    color: "#031D29"
-  },
-  wave: {
-    height: 300,
-    width: 300
   }
 })
 

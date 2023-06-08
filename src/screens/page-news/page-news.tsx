@@ -12,11 +12,12 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
-import Bg from "../../../assets/wave.svg"
 import { Card, Subheading, Title } from "react-native-paper"
 import parseDate from "../../utility/DataParser"
 import { useNewsQuery } from "../../queries/FeedQueries"
 import { ListItemAnimation } from "../../animations/ListItemAnimation"
+import BackgroundShape from "../../components/backgroundShape"
+import { globalStyle } from "../../globalStyle"
 
 const PageNews = ({ navigation }) => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -38,28 +39,31 @@ const PageNews = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-      <Bg style={styles.wave} />
-      <Text style={styles.moodtitle}>Latest news</Text>
+      <BackgroundShape />
+      <Text style={[ globalStyle.text.title, styles.moodtitle ]}>
+        Latest news
+      </Text>
 
       <FlatList
         data={news.data}
         renderItem={(props) => (
           <ListItemAnimation elementHeight={79} isExiting={false}>
-            <Card
-              style={styles.surface}
-              mode="outlined"
-              theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-              key={props.item.id}
-            >
+            <Card style={styles.surface} key={props.item.id}>
               <TouchableOpacity
                 onPress={() => handleOnPress(props.item)}
                 style={{ width: "100%" }}
               >
                 <Card.Title
                   style={styles.title}
-                  title={<Title style={styles.title}>{props.item.title}</Title>}
+                  title={
+                    <Title style={globalStyle.text.cardTitle}>
+                      {props.item.title}
+                    </Title>
+                  }
                   right={() => (
-                    <Subheading style={styles.date}>
+                    <Subheading
+                      style={[ globalStyle.text.subText, { paddingRight: 10 }]}
+                    >
                       {parseDate(props.item.date)}
                     </Subheading>
                   )}
@@ -93,10 +97,11 @@ const styles = StyleSheet.create({
   },
   surface: {
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginVertical: 6,
     padding: 0,
-    fontFamily: "Poppins600SemiBold",
-    backgroundColor: "#FFFFFF"
+    ...globalStyle.boxShadow.defaultShadow,
+    backgroundColor: "#FFFFFF",
+    elevation: 3
   },
   title: {
     fontFamily: "Poppins600SemiBold",
@@ -105,27 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#031D29"
   },
-  date: {
-    fontFamily: "Poppins700Bold",
-    margin: 0,
-    padding: 0,
-    paddingRight: 10,
-    fontSize: 12,
-    color: "#031D29"
-  },
-  wave: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1
-  },
   moodtitle: {
-    fontFamily: "Poppins600SemiBold",
-    fontSize: 20,
     marginVertical: 8,
     color: "#031D29",
     paddingLeft: 20

@@ -4,7 +4,8 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  Image
+  Image,
+  View
 } from "react-native"
 import {
   Poppins_400Regular as Poppins400Regular,
@@ -25,6 +26,10 @@ import { AppContext } from "../../context/AppContext"
 import ButtonPrimary from "../../components/ButtonPrimary"
 import ButtonSecondary from "../../components/ButtonSecondary"
 import { useNavigation } from "@react-navigation/native"
+import BackgroundShape from "../../components/backgroundShape"
+import { globalStyle } from "../../globalStyle"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import ButtonCTA from "../../components/ButtonCTA"
 
 const PageFriends = () => {
   const { accessToken } = useContext(AppContext)
@@ -38,6 +43,8 @@ const PageFriends = () => {
   const queryClient = useQueryClient()
 
   const requestsQuery = useFriendRequestsQuery()
+  const insets = useSafeAreaInsets()
+  const safeAreaHeight = insets.top + insets.bottom
 
   const handleCancelRequest = async (id) => {
     try {
@@ -75,7 +82,7 @@ const PageFriends = () => {
   })
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
         overScrollMode={"never"}
         contentContainerStyle={styles.screen}
@@ -95,16 +102,18 @@ const PageFriends = () => {
       >
         {!friends.isSuccess ? (
           <>
-            <Bg style={styles.wave} />
+            <BackgroundShape />
             <Text style={styles.title}>Loading ...</Text>
           </>
         ) : (
           <>
-            <Bg style={styles.wave} />
-            <>
+            <BackgroundShape />
+            <View style={{ marginTop: 40 + safeAreaHeight }}>
               {requestsQuery.isSuccess && requestsQuery.data.length > 0 && (
                 <>
-                  <Text style={styles.title}>Have invited you</Text>
+                  <Text style={[ globalStyle.text.title, { marginLeft: 10 }]}>
+                    Have invited you
+                  </Text>
 
                   {requestsQuery.data.map((item) => (
                     <Card
@@ -116,7 +125,7 @@ const PageFriends = () => {
                       <Card.Content style={styles.cardcontent}>
                         <Image
                           style={styles.pfp}
-                          source={require("../../../assets/pfp.png")}
+                          source={require("../../../assets/hairyFriendAvatar.png")}
                         ></Image>
                         <Paragraph style={styles.title}>{item.name}</Paragraph>
                       </Card.Content>
@@ -134,7 +143,9 @@ const PageFriends = () => {
                   ))}
                 </>
               )}
-              <Text style={styles.title}>Friends</Text>
+              <Text style={[ globalStyle.text.title, { marginLeft: 10 }]}>
+                Friends
+              </Text>
               {friends.isSuccess && friends.data.length > 0 ? (
                 friends.data.map((item) => (
                   <Friend friend={item} key={item.userId} />
@@ -142,7 +153,7 @@ const PageFriends = () => {
               ) : (
                 <Text style={styles.description}>No friends yet!</Text>
               )}
-              <ButtonPrimary
+              <ButtonCTA
                 style={styles.addFriendsBtn}
                 text={"ADD FRIENDS"}
                 onPress={() => {
@@ -150,12 +161,12 @@ const PageFriends = () => {
                   // @ts-ignore
                   navigation.navigate("Add Friends")
                 }}
-              ></ButtonPrimary>
-            </>
+              ></ButtonCTA>
+            </View>
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -166,10 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white"
   },
-  screen: {
-    backgroundColor: "white",
-    minHeight: 400
-  },
+  screen: { backgroundColor: "white" },
   title: {
     fontFamily: "Poppins600SemiBold",
     fontSize: 16,
@@ -186,14 +194,9 @@ const styles = StyleSheet.create({
     color: "#052D40",
     paddingLeft: 12
   },
-  wave: {
-    width: "100%",
-    position: "absolute"
-  },
   surface: {
     borderRadius: 5,
     paddingRight: 10,
-    marginHorizontal: 10,
     marginVertical: 6,
     fontFamily: "Poppins600SemiBold"
   },
@@ -217,9 +220,10 @@ const styles = StyleSheet.create({
   addFriendsBtn: {
     display: "flex",
     alignItems: "center",
-    marginTop: 30,
-    width: 200,
+    marginTop: 40,
+    width: 250,
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    ...globalStyle.color.gacDarkblue
   }
 })

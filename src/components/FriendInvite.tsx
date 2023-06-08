@@ -7,6 +7,7 @@ import { AppContext } from "../context/AppContext"
 import ButtonSecondary from "./ButtonSecondary"
 import SendedFriendType from "../types/SendedFriendType"
 import { sleep } from "../utility/Sleep"
+import { globalStyle } from "../globalStyle"
 
 const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
   const { accessToken } = useContext(AppContext)
@@ -38,9 +39,11 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
           <View style={styles.joined}>
             <Image
               style={styles.pfp}
-              source={require("../../assets/pfp.png")}
+              source={require("../../assets/hairyFriendAvatar.png")}
             />
-            <Text style={styles.title}>{invite.name}</Text>
+            <Text style={[ globalStyle.text.cardTitle, styles.title ]}>
+              {invite.name}
+            </Text>
           </View>
 
           <ButtonSecondary
@@ -55,10 +58,9 @@ const FriendInvite = ({ invite }: { invite: SendedFriendType }) => {
 
 const styles = StyleSheet.create({
   pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    height: 56,
+    width: 56,
+    marginBottom: -6,
     borderRadius: 999,
     backgroundColor: "white"
   },
@@ -67,12 +69,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginVertical: 6,
     paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    ...globalStyle.boxShadow.defaultShadow,
     borderRadius: 8,
-    backgroundColor: "white"
+    backgroundColor: "white",
+    elevation: 3
   },
   joined: {
     flex: 1,
