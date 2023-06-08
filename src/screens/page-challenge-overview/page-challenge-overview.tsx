@@ -1,7 +1,12 @@
-import { SectionList, StyleSheet, Text, View } from "react-native"
+import {
+  RefreshControl,
+  SectionList,
+  StyleSheet,
+  Text,
+  View
+} from "react-native"
 import React, { useContext, useState } from "react"
 import BackgroundShape from "../../components/backgroundShape"
-import GradientRefreshControl from "../../components/gradientRefreshControl"
 import { useTeamsQuery } from "../../queries/TeamQueries"
 import ButtonPrimary from "../../components/ButtonPrimary"
 import { useTeamJoinMutation } from "../../mutations/TeamMutations"
@@ -50,8 +55,9 @@ const TeamComponent = ({ item }) => {
           <Text>{item.data.participants.length} members</Text>
         </View>
       </View>
-      {!item.data.participants
-        .some(participant => user.id.endsWith(participant.userId)) ? (
+      {!item.data.participants.some((participant) =>
+        user.id.endsWith(participant.userId)
+      ) ? (
           <ButtonPrimary
             text={"JOIN"}
             onPress={async () => {
@@ -132,12 +138,12 @@ const PageChallengeOverview = ({ route }) => {
         ]}
         keyExtractor={(item) => item.data.id}
         renderItem={TeamComponent}
+        ListHeaderComponent={<BackgroundShape />}
         renderSectionHeader={(props) => {
           if (props.section.key !== "teams") return <></>
 
           return (
             <View>
-              <BackgroundShape />
               <View
                 style={{
                   marginLeft: "auto",
@@ -163,7 +169,7 @@ const PageChallengeOverview = ({ route }) => {
           )
         }}
         refreshControl={
-          <GradientRefreshControl
+          <RefreshControl
             style={{ zIndex: 5 }}
             refreshing={refreshing}
             onRefresh={async () => {
@@ -181,18 +187,6 @@ const PageChallengeOverview = ({ route }) => {
 export default PageChallengeOverview
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white"
-  },
-  screen: {
-    backgroundColor: "white",
-    minHeight: 400
-  },
-  wave: {
-    width: "100%",
-    position: "absolute"
-  },
   title: {
     fontFamily: "Poppins600SemiBold",
     fontSize: 18,
@@ -206,32 +200,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#052D40",
     width: "70%"
-  },
-  description: {
-    fontFamily: "Poppins500Medium",
-    margin: 0,
-    padding: 0,
-    fontSize: 12,
-    color: "#052D40",
-    paddingVertical: 4,
-    paddingLeft: 12
-  },
-  searchSection: {
-    flex: 1,
-    marginHorizontal: 8,
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 70,
-    overflow: "hidden",
-    height: 50
-  },
-  searchIcon: { padding: 10 },
-  input: {
-    flex: 1,
-    backgroundColor: "#fff",
-    color: "#424242"
   }
 })

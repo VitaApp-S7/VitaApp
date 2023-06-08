@@ -27,13 +27,13 @@ const PageChallenges = () => {
         keyExtractor={(item) => item.id}
         renderItem={ChallengeCard}
         sections={sectionList}
+        ListHeaderComponent={<BackgroundShape />}
         renderSectionHeader={(props) => {
           if (props.section.key !== "active")
             return <Text style={styles.title}>{props.section.title}</Text>
           return (
             <>
               <View style={{ marginTop: 80 }}></View>
-              <BackgroundShape />
               <Text style={styles.title}>{props.section.title}</Text>
             </>
           )
@@ -57,8 +57,8 @@ const ChallengeCard = ({
   item,
   section
 }: {
-  item: ChallengeType;
-  section: any;
+  item: ChallengeType
+  section: any
 }) => {
   const [ isExiting, setIsExiting ] = useState(false)
   const navigator = useNavigation<ChallengeStackProps["navigation"]>()

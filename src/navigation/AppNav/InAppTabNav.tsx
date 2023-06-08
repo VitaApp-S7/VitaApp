@@ -25,7 +25,6 @@ type InAppTabNavTabParamList = {
 const Tab = createBottomTabNavigator<InAppTabNavTabParamList>()
 type TabProps = BottomTabScreenProps<InAppTabNavTabParamList>
 
-
 const TabBarIcon = ({ focused, color, size }) => {
   const route = useRoute<TabProps["route"]>()
   switch (route.name) {
@@ -71,8 +70,7 @@ const navigatorScreenOptions = {
   tabBarLabelStyle: {
     fontFamily: "Poppins600SemiBold",
     fontSize: 12
-  },
-  tabBarStyle: { height: 60 }
+  }
 }
 
 const screenOptions = { headerShown: false }
@@ -82,7 +80,6 @@ export const InAppTabNav = () => {
     Poppins600SemiBold,
     Poppins400Regular
   })
-
 
   return (
     <Tab.Navigator
