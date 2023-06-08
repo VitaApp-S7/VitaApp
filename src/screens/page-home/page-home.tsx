@@ -48,7 +48,8 @@ const PageHome = () => {
       return sectionList
     }
 
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    
+    if(Platform.OS !== "android") LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
 
     return sectionList.map((booster) => {
       const filteredData =
@@ -67,21 +68,17 @@ const PageHome = () => {
     })
   }, [ sectionList, categoryFilter ])
 
-  const Header = useMemo(() => {
-    return (
-      <View>
-        <BackgroundShape />
-        <View style={{ marginTop: 80 }}>
-          <ResponsiveHeader />
-        </View>
-        <View style={styles.moodboostertop}>
-          <Text style={globalStyle.text.title}>Moodboosters</Text>
-          <ChallengeFriends />
-        </View>
-        <MoodBoosterFilters setFilter={setCategoryFilter} />
-      </View>
-    )
-  }, [])
+  const Header = () => <View>
+    <BackgroundShape />
+    <View style={{ marginTop: 80 }}>
+      <ResponsiveHeader />
+    </View>
+    <View style={styles.moodboostertop}>
+      <Text style={globalStyle.text.title}>Moodboosters</Text>
+      <ChallengeFriends />
+    </View>
+    <MoodBoosterFilters setFilter={setCategoryFilter} />
+  </View>
 
   return (
     <View>

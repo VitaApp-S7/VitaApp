@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { StyleSheet } from "react-native"
+import { Platform, StyleSheet } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
 import ButtonPrimary from "./ButtonPrimary"
 import { MoodboosterType } from "../types/MoodboosterTypes"
@@ -50,7 +50,7 @@ const Moodbooster = (props: Moodbooster) => {
         style={styles.surface}
         key={props.mb.id}
         onPress={() => handleOnPress()}
-        elevation={0}
+        elevation={Platform.OS === "android" ? 3 : 0}
       >
         <Card.Content>
           <Paragraph style={globalStyle.text.cardTitle}>
