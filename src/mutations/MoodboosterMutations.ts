@@ -67,7 +67,11 @@ export const useMoodboosterCompleteMutation = (moodboosterId: string) => {
 
       if (!response.ok) {
         if (response.status === 401) await login()
-        return Promise.reject("useMoodboosterCompleteMutation failed")
+        const errorResponse = await response.json()
+        const errorMessage = errorResponse.error || "Unknown error"
+        return Promise.reject(
+          `useMoodboosterCompleteMutation failed: ${errorMessage}`
+        )
       }
 
       return response.json()

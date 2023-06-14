@@ -19,7 +19,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 1,
     marginRight: 4,
-    borderColor: "#FA9901"
+    borderColor: "#FA9901",
+    shadowOffset: {
+      width: 0,
+      height: 0
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    shadowColor: "#FA9901"
   },
   buttontext: {
     fontFamily: "Poppins600SemiBold",

@@ -22,6 +22,9 @@ import FriendInvite from "../../components/FriendInvite"
 import FriendOther from "../../components/FriendOther"
 import { TextInput } from "react-native-paper"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import BackgroundShape from "../../components/backgroundShape"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { globalStyle } from "../../globalStyle"
 
 const PageAddFriends = () => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -29,6 +32,9 @@ const PageAddFriends = () => {
 
   const invites = useFriendInvitesQuery()
   const friends = useFriendsQuery()
+
+  const insets = useSafeAreaInsets()
+  const safeAreaHeight = insets.top + insets.bottom
 
   const { users, otherPeople } = useOtherPeopleQuery(friends, invites)
 
@@ -54,7 +60,7 @@ const PageAddFriends = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.screen}
         refreshControl={
@@ -74,8 +80,8 @@ const PageAddFriends = () => {
           />
         }
       >
-        <Bg style={styles.wave} />
-        <View>
+        <BackgroundShape />
+        <View style={{ marginTop: 40 + safeAreaHeight }}>
           <>
             <View style={styles.searchSection}>
               <Ionicons
@@ -95,7 +101,9 @@ const PageAddFriends = () => {
             </View>
             {invites.isSuccess && filteredInvited.length > 0 && (
               <>
-                <Text style={styles.title}>Invited</Text>
+                <Text style={[ globalStyle.text.title, styles.title ]}>
+                  Invited
+                </Text>
                 {filteredInvited.map((item) => (
                   <FriendInvite invite={item} key={item.friendId} />
                 ))}
@@ -103,7 +111,9 @@ const PageAddFriends = () => {
             )}
           </>
           <>
-            <Text style={styles.title}>Other people</Text>
+            <Text style={[ globalStyle.text.title, styles.title ]}>
+              Other people
+            </Text>
             {otherPeople.length > 0 ? (
               filteredOtherPeople.map((item) => (
                 <FriendOther other={item} key={item.id} />
@@ -114,7 +124,7 @@ const PageAddFriends = () => {
           </>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -129,14 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     minHeight: 400
   },
-  wave: {
-    width: "100%",
-    position: "absolute"
-  },
   title: {
-    fontFamily: "Poppins600SemiBold",
-    fontSize: 16,
-    color: "#052D40",
     paddingLeft: 12,
     paddingTop: 16,
     width: "70%"

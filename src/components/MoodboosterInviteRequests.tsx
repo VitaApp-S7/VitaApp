@@ -142,7 +142,7 @@ const MoodboosterInviteRequests = () => {
         <Text style={styles.buttontext}>
           {requestsQuery?.data?.length ?? 0}
         </Text>
-        <Ionicons style={styles.icon} name="people" size={24} color="#052D40" />
+        <Ionicons style={styles.icon} name="mail" size={24} color="#052D40" />
       </TouchableOpacity>
       {isModalVisible ? (
         <Modal isVisible={isModalVisible} style={styles.modal}>

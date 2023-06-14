@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { StyleSheet } from "react-native"
+import { Platform, StyleSheet, View } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
 import {
   Poppins_400Regular as Poppins400Regular,
@@ -21,9 +21,12 @@ import {
 import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
 import { sleep } from "../utility/Sleep"
+import { globalStyle } from "../globalStyle"
+import ChallengeIcon from "../../assets/challengeIcon.svg"
 
 interface Moodbooster {
-  userMb: UserMoodboosterType;
+  userMb: UserMoodboosterType
+  challengeBoosterIds?: string[]
 }
 
 const UserMoodbooster = (props: Moodbooster) => {
@@ -69,6 +72,7 @@ const UserMoodbooster = (props: Moodbooster) => {
     setIsExiting(true)
     await queryClient.invalidateQueries([ "moodboostersActive" ])
     await queryClient.invalidateQueries([ "moodboosters" ])
+    await queryClient.invalidateQueries([ "moodboostersCompleted" ])
     completedToast()
     setMoodPoints(moodPoints + props.userMb.moodbooster.points)
     sleep(500)
@@ -94,19 +98,38 @@ const UserMoodbooster = (props: Moodbooster) => {
   }
 
   return (
-    <ListItemAnimation elementHeight={152} isExiting={isExiting}>
+    <ListItemAnimation isExiting={isExiting}>
       <Card
         style={styles.surface}
-        mode="outlined"
-        theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
         key={props.userMb.moodbooster.id}
         onPress={() => handleOnPress()}
+        elevation={Platform.OS === "android" ? 3 : 0}
       >
         <Card.Content>
-          <Paragraph style={styles.title}>
-            {props.userMb.moodbooster.title}
-          </Paragraph>
-          <Paragraph style={styles.catagory}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row"
+            }}
+          >
+            <Paragraph style={globalStyle.text.cardTitle}>
+              {props.userMb.moodbooster.title}
+            </Paragraph>
+            {props.challengeBoosterIds &&
+              props.challengeBoosterIds.includes(
+                props.userMb.moodbooster.id
+              ) && (
+              <View
+                style={{
+                  marginLeft: "auto",
+                  marginTop: -5
+                }}
+              >
+                <ChallengeIcon width={30} height={30} />
+              </View>
+            )}
+          </View>
+          <Paragraph style={globalStyle.text.description}>
             {props.userMb.moodbooster.category.name}
           </Paragraph>
         </Card.Content>
@@ -132,24 +155,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10
   },
-  catagory: {
-    fontFamily: "Poppins500Medium",
-    fontSize: 16,
-    color: "#031D29"
-  },
-  title: {
-    fontFamily: "Poppins600SemiBold",
-    margin: 0,
-    padding: 0,
-    fontSize: 20,
-    lineHeight: 24,
-    color: "#031D29"
-  },
   surface: {
     marginHorizontal: 8,
-    marginVertical: 4,
-    fontFamily: "Poppins600SemiBold",
-    backgroundColor: "#FFFFFF"
+    marginVertical: 5,
+    elevation: 3,
+    backgroundColor: "white",
+    ...globalStyle.boxShadow.defaultShadow
   }
 })
 

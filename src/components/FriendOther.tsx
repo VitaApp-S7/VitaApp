@@ -7,6 +7,7 @@ import PublicUserType from "../types/PublicUserType"
 import ButtonPrimary from "./ButtonPrimary"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { sleep } from "../utility/Sleep"
+import { globalStyle } from "../globalStyle"
 
 const FriendOther = ({ other }: { other: PublicUserType }) => {
   const { accessToken } = useContext(AppContext)
@@ -35,9 +36,11 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
           <View style={styles.joined}>
             <Image
               style={styles.pfp}
-              source={require("../../assets/pfp.png")}
+              source={require("../../assets/hairyFriendAvatar.png")}
             ></Image>
-            <Text style={styles.title}>{other.name}</Text>
+            <Text style={[ globalStyle.text.cardTitle, styles.title ]}>
+              {other.name}
+            </Text>
           </View>
 
           <ButtonPrimary
@@ -54,10 +57,9 @@ const FriendOther = ({ other }: { other: PublicUserType }) => {
 
 const styles = StyleSheet.create({
   pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    height: 56,
+    width: 56,
+    marginBottom: -6,
     borderRadius: 999,
     backgroundColor: "white"
   },
@@ -66,12 +68,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginVertical: 6,
     paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    ...globalStyle.boxShadow.defaultShadow,
     borderRadius: 8,
-    backgroundColor: "white"
+    backgroundColor: "white",
+    elevation: 3
   },
   joined: {
     flex: 1,

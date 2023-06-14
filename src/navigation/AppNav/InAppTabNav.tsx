@@ -13,9 +13,11 @@ import {
   Poppins_600SemiBold as Poppins600SemiBold,
   useFonts
 } from "@expo-google-fonts/poppins"
+import { ChallengesNav } from "../ChallengesNav"
 
 type InAppTabNavTabParamList = {
   Boosters: undefined
+  Challenges: undefined
   Feed: undefined
   Friends: undefined
 }
@@ -25,12 +27,11 @@ type TabProps = BottomTabScreenProps<InAppTabNavTabParamList>
 
 const TabBarIcon = ({ focused, color, size }) => {
   const route = useRoute<TabProps["route"]>()
-
   switch (route.name) {
   case "Boosters":
     return (
       <Ionicons
-        name={focused ? "trending-up" : "trending-up-outline"}
+        name={focused ? "rocket-sharp" : "rocket-outline"}
         size={size}
         color={color}
       />
@@ -51,6 +52,14 @@ const TabBarIcon = ({ focused, color, size }) => {
         color={color}
       />
     )
+  case "Challenges":
+    return (
+      <Ionicons
+        name={focused ? "trophy" : "trophy-outline"}
+        size={size}
+        color={color}
+      />
+    )
   }
 }
 
@@ -60,7 +69,7 @@ const navigatorScreenOptions = {
   tabBarInactiveTintColor: "gray",
   tabBarLabelStyle: {
     fontFamily: "Poppins600SemiBold",
-    fontSize: 11
+    fontSize: 12
   }
 }
 
@@ -78,6 +87,11 @@ export const InAppTabNav = () => {
       screenOptions={navigatorScreenOptions}
     >
       <Tab.Screen name="Feed" component={FeedNav} options={screenOptions} />
+      <Tab.Screen
+        name="Challenges"
+        component={ChallengesNav}
+        options={screenOptions}
+      />
       <Tab.Screen
         name="Boosters"
         component={BoostersNav}

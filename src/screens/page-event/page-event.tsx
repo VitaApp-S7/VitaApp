@@ -27,6 +27,8 @@ import { useNavigation } from "@react-navigation/native"
 import { useQueryClient } from "@tanstack/react-query"
 import { ListItemAnimation } from "../../animations/ListItemAnimation"
 import { sleep } from "../../utility/Sleep"
+import BackgroundShape from "../../components/backgroundShape"
+import { globalStyle } from "../../globalStyle"
 
 const EventCard = ({ item, section }) => {
   const navigation = useNavigation()
@@ -36,12 +38,7 @@ const EventCard = ({ item, section }) => {
 
   return (
     <ListItemAnimation elementHeight={156} isExiting={isExiting}>
-      <Card
-        style={styles.surface}
-        mode="outlined"
-        theme={{ colors: { outline: "rgba(0, 0, 0, 0.2)" }}}
-        key={item.id}
-      >
+      <Card style={styles.surface} key={item.id}>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Event Details", { item })
@@ -50,9 +47,11 @@ const EventCard = ({ item, section }) => {
         >
           <Card.Title
             style={styles.title}
-            title={<Title style={styles.title}>{item.title}</Title>}
+            title={
+              <Title style={globalStyle.text.cardTitle}>{item.title}</Title>
+            }
             right={() => (
-              <Subheading style={styles.date}>
+              <Subheading style={[ globalStyle.text.subText, styles.date ]}>
                 {parseDate(item.date)}
               </Subheading>
             )}
@@ -113,7 +112,7 @@ const PageEvent = () => {
 
   return (
     <View style={styles.screen}>
-      <Bg style={styles.wave} />
+      <BackgroundShape />
 
       <SectionList
         sections={listData}
@@ -125,13 +124,19 @@ const PageEvent = () => {
           if (props.section.data.length === 0)
             return (
               <>
-                <Text style={styles.moodtitle}>{props.section.title}</Text>
-                <Text style={styles.text}>{props.section.emptyText}</Text>
+                <Text style={[ globalStyle.text.title, styles.moodtitle ]}>
+                  {props.section.title}
+                </Text>
+                <Text style={[ globalStyle.text.description, styles.text ]}>
+                  {props.section.emptyText}
+                </Text>
               </>
             )
           return (
             <>
-              <Text style={styles.moodtitle}>{props.section.title}</Text>
+              <Text style={[ globalStyle.text.title, styles.moodtitle ]}>
+                {props.section.title}
+              </Text>
             </>
           )
         }}
@@ -162,7 +167,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     marginVertical: 4,
     fontFamily: "Poppins600SemiBold",
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#FFFFFF",
+    ...globalStyle.boxShadow.defaultShadow,
+    elevation: 3
   },
   screen: {
     flex: 1,
@@ -185,21 +192,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4
   },
   date: {
-    fontFamily: "Poppins700Bold",
     margin: 0,
     padding: 0,
-    paddingRight: 10,
-    fontSize: 12,
-    color: "#031D29"
+    paddingRight: 10
   },
   icon: { paddingHorizontal: 8 },
-  wave: {
-    position: "absolute",
-    backgroundColor: "white"
-  },
   moodtitle: {
-    fontFamily: "Poppins600SemiBold",
-    fontSize: 20,
     marginVertical: 8,
     color: "#031D29",
     paddingLeft: 20

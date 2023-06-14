@@ -13,6 +13,7 @@ const PageMoodboosterDetails = () => {
   const [ userMoodbooster, setUserMoodbooster ] =
     useState<UserMoodboosterType | null>(route.params?.userMb)
 
+  console.log(moodbooster, userMoodbooster)
   return (
     <View style={styles.screen}>
       <Image
