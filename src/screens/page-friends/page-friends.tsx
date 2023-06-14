@@ -153,15 +153,17 @@ const PageFriends = () => {
               ) : (
                 <Text style={styles.description}>No friends yet!</Text>
               )}
-              <ButtonCTA
-                style={styles.addFriendsBtn}
-                text={"ADD FRIENDS"}
-                onPress={() => {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  navigation.navigate("Add Friends")
-                }}
-              ></ButtonCTA>
+              {friends.data.length < 1 && (
+                <ButtonCTA
+                  style={styles.addFriendsBtn}
+                  text={"ADD FRIENDS"}
+                  onPress={() => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    navigation.navigate("Add Friends")
+                  }}
+                ></ButtonCTA>
+              )}
             </View>
           </>
         )}
