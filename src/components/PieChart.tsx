@@ -1,15 +1,42 @@
 import { StyleProp, ViewStyle } from "react-native"
-import { Svg, G, Path } from "react-native-svg"
+import { G, Path, Svg } from "react-native-svg"
 import * as d3 from "d3-shape"
 import React from "react"
 
 export type Props = {
-  widthAndHeight: number
-  series: number[]
-  sliceColor: string[]
-  coverFill?: string | null
-  coverRadius?: number
-  style?: StyleProp<ViewStyle>
+  widthAndHeight: number;
+  series: number[];
+  sliceColor: string[];
+  coverFill?: string | null;
+  coverRadius?: number;
+  style?: StyleProp<ViewStyle>;
+};
+
+function minimumPercentage(series: number[]) {
+  const minimumPercentage = 2
+  const tooLowPercentages = series.filter((x) => x < minimumPercentage)
+  let addedPercentage = 0
+  for (let i = 0; i < tooLowPercentages.length; i++) {
+    const toAdd = minimumPercentage - tooLowPercentages[i]
+    tooLowPercentages[i] += toAdd
+    addedPercentage += toAdd
+  }
+
+  const highPercentages = series.filter((x) => x >= minimumPercentage)
+  const highPercentagesTotal = highPercentages.reduce(
+    (x, y) => x + y - minimumPercentage
+  )
+
+  for (let i = 0; i < highPercentages.length; i++) {
+    highPercentages[i] +=
+      addedPercentage *
+      ((highPercentages[i] - minimumPercentage) / highPercentagesTotal)
+  }
+
+  const resultPercentages = tooLowPercentages
+    .concat(highPercentages)
+    .sort((x, y) => y - x)
+  return resultPercentages
 }
 
 const PieChart = ({
@@ -20,6 +47,8 @@ const PieChart = ({
   coverRadius,
   style = {}
 }: Props): JSX.Element => {
+  const resultPercentages = minimumPercentage(series)
+
   // Validating props
   series.forEach((s) => {
     if (s < 0) {
@@ -39,20 +68,32 @@ const PieChart = ({
   }
 
   if (coverRadius && (coverRadius < 0 || coverRadius > 1)) {
-    throw Error(`Invalid "coverRadius": It should be between zero and one. But it's ${coverRadius}`)
+    throw Error(
+      `Invalid "coverRadius": It should be between zero and one. But it's ${coverRadius}`
+    )
   }
 
   const radius = widthAndHeight / 2
 
   const pieGenerator = d3.pie().sort(null)
 
-  const arcs = pieGenerator(series)
+  const arcs = pieGenerator(resultPercentages)
 
   return (
-    <Svg style={style} width={widthAndHeight+10} height={widthAndHeight+10}>
-      <G transform={`translate(${widthAndHeight / 2+5}, ${widthAndHeight / 2+5})`}>
+    <Svg style={style} width={widthAndHeight + 10} height={widthAndHeight + 10}>
+      <G
+        transform={`translate(${widthAndHeight / 2 + 5}, ${
+          widthAndHeight / 2 + 5
+        })`}
+      >
         {arcs.map((arc, i) => {
-          let arcGenerator = d3.arc().cornerRadius(10).outerRadius(radius).startAngle(arc.startAngle).endAngle(arc.endAngle).padAngle(0.05)
+          let arcGenerator = d3
+            .arc()
+            .cornerRadius(10)
+            .outerRadius(radius)
+            .startAngle(arc.startAngle)
+            .endAngle(arc.endAngle)
+            .padAngle(0.05)
 
           // When 'coverFill' is also provided, instead of setting the
           // 'innerRadius', we draw a circle in the middle. See the 'Path'
@@ -65,12 +106,20 @@ const PieChart = ({
 
           // TODO: Pad: "stroke": "black, "stroke-width": "2px"
           //       OR: use padAngle
-          return <Path key={arc.index} stroke={"#fff"} strokeWidth={4} fill={sliceColor[i]} d={arcGenerator()} />
+          return (
+            <Path
+              key={arc.index}
+              stroke={"#fff"}
+              strokeWidth={4}
+              fill={sliceColor[i]}
+              d={arcGenerator()}
+            />
+          )
         })}
 
         {coverRadius && coverRadius > 0 && coverFill && (
           <Path
-            key='cover'
+            key="cover"
             fill={coverFill}
             d={d3
               .arc()
