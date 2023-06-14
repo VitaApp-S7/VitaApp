@@ -5,7 +5,7 @@ import {
   Text,
   View
 } from "react-native"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import BackgroundShape from "../../components/backgroundShape"
 import { useChallengesQuery } from "../../queries/ChallengeQueries"
 import { ChallengeType } from "../../types/ChallengeType"
@@ -14,6 +14,8 @@ import ButtonPrimary from "../../components/ButtonPrimary"
 import { ListItemAnimation } from "../../animations/ListItemAnimation"
 import { useNavigation } from "@react-navigation/native"
 import { ChallengeStackProps } from "../../navigation/ChallengesNav"
+import { useTeamsQuery } from "../../queries/TeamQueries"
+import { AppContext } from "../../context/AppContext"
 
 const PageChallenges = () => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -63,9 +65,18 @@ const ChallengeCard = ({
   const [ isExiting, setIsExiting ] = useState(false)
   const navigator = useNavigation<ChallengeStackProps["navigation"]>()
 
+  const { teamQuery } = useTeamsQuery(item.id)
+  const { user } = useContext(AppContext)
+
   const now = new Date()
   const endDate = new Date(item.endDate)
   const startDate = new Date(item.startDate)
+
+  let hasJoinedATeam = false
+
+  if(teamQuery.isSuccess && section.key !== "inactive") {
+    hasJoinedATeam = teamQuery.data.some(t => t.participants.some(p => p.userId === user.id))
+  }
 
   return (
     <ListItemAnimation isExiting={isExiting}>
@@ -104,7 +115,7 @@ const ChallengeCard = ({
         <Card.Actions>
           {section.key === "active" ? (
             <ButtonPrimary
-              text="JOIN"
+              text={hasJoinedATeam ? "VIEW" : "JOIN"}
               onPress={() =>
                 navigator.navigate("Challenge overview", { challenge: item })
               }
@@ -112,7 +123,7 @@ const ChallengeCard = ({
           ) : null}
           {section.key === "upcoming" ? (
             <ButtonPrimary
-              text="VIEW"
+              text={hasJoinedATeam ? "VIEW" : "JOIN"}
               onPress={() =>
                 navigator.navigate("Challenge overview", { challenge: item })
               }
