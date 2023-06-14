@@ -8,7 +8,7 @@ import PageChallengeOverview from "../screens/page-challenge-overview/page-chall
 type ChallengesNavStackParamList = {
   ChallengeScreen: undefined;
   "Challenge overview": { challenge: ChallengeType };
-  Leaderboard: undefined;
+  Leaderboard: { challenge: ChallengeType };
 };
 
 const Stack = createNativeStackNavigator<ChallengesNavStackParamList>()

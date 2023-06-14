@@ -7,24 +7,13 @@ import {
   View
 } from "react-native"
 import React, { useMemo, useState } from "react"
-import {
-  Poppins_400Regular as Poppins400Regular,
-  Poppins_600SemiBold as Poppins600SemiBold,
-  useFonts
-} from "@expo-google-fonts/poppins"
 import Bg from "../../../assets/wave.svg"
+import { useTeamsQuery } from "../../queries/TeamQueries"
 
-const PageLeaderboard = () => {
+const PageLeaderboard = ({ route }) => {
   const [ refreshing, setRefreshing ] = useState(false)
 
-  const [ fontsLoaded ] = useFonts({
-    Poppins600SemiBold,
-    Poppins400Regular
-  })
-
-  if (!fontsLoaded) {
-    return null
-  }
+  const { teamQuery } = useTeamsQuery(route.params.challenge.id)
 
   return (
     <SafeAreaView style={styles.container}>

@@ -59,8 +59,8 @@ const ChallengeCard = ({
   item,
   section
 }: {
-  item: ChallengeType
-  section: any
+  item: ChallengeType;
+  section: any;
 }) => {
   const [ isExiting, setIsExiting ] = useState(false)
   const navigator = useNavigation<ChallengeStackProps["navigation"]>()
@@ -74,8 +74,10 @@ const ChallengeCard = ({
 
   let hasJoinedATeam = false
 
-  if(teamQuery.isSuccess && section.key !== "inactive") {
-    hasJoinedATeam = teamQuery.data.some(t => t.participants.some(p => p.userId === user.id))
+  if (teamQuery.isSuccess && section.key !== "inactive") {
+    hasJoinedATeam = teamQuery.data.some((t) =>
+      t.participants.some((p) => p.userId === user.id)
+    )
   }
 
   return (
@@ -103,23 +105,36 @@ const ChallengeCard = ({
             // eslint-disable-next-line react-native/no-raw-text
             <Paragraph
               style={styles.date}
-            >{`${startDate.toDateString()} until ${endDate.toDateString()}`}</Paragraph>
+            >{`${startDate.toLocaleDateString()} until ${endDate.toLocaleDateString()}`}</Paragraph>
           ) : null}
           {section.key === "inactive" ? (
             // eslint-disable-next-line react-native/no-raw-text
-            <Paragraph
-              style={styles.date}
-            >{`${startDate.toLocaleDateString()} until ${endDate.toLocaleDateString()}`}</Paragraph>
+            <>
+              <Paragraph
+                style={styles.date}
+              >{`${startDate.toLocaleDateString()} until`}</Paragraph>
+              <Paragraph
+                style={styles.date}
+              >{`${endDate.toLocaleDateString()}`}</Paragraph>
+            </>
           ) : null}
         </Card.Content>
         <Card.Actions>
           {section.key === "active" ? (
-            <ButtonPrimary
-              text={hasJoinedATeam ? "VIEW" : "JOIN"}
-              onPress={() =>
-                navigator.navigate("Challenge overview", { challenge: item })
-              }
-            />
+            <>
+              <ButtonPrimary
+                text={"LEADERBOARD"}
+                onPress={() =>
+                  navigator.navigate("Leaderboard", { challenge: item })
+                }
+              />
+              <ButtonPrimary
+                text={hasJoinedATeam ? "VIEW" : "JOIN"}
+                onPress={() =>
+                  navigator.navigate("Challenge overview", { challenge: item })
+                }
+              />
+            </>
           ) : null}
           {section.key === "upcoming" ? (
             <ButtonPrimary
@@ -130,12 +145,20 @@ const ChallengeCard = ({
             />
           ) : null}
           {section.key === "inactive" ? (
-            <ButtonPrimary
-              text="VIEW"
-              onPress={() =>
-                navigator.navigate("Challenge overview", { challenge: item })
-              }
-            />
+            <>
+              <ButtonPrimary
+                text={"LEADERBOARD"}
+                onPress={() =>
+                  navigator.navigate("Leaderboard", { challenge: item })
+                }
+              />
+              <ButtonPrimary
+                text="VIEW"
+                onPress={() =>
+                  navigator.navigate("Challenge overview", { challenge: item })
+                }
+              />
+            </>
           ) : null}
         </Card.Actions>
       </Card>

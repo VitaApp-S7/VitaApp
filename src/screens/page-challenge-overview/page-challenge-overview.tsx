@@ -2,7 +2,7 @@ import {
   RefreshControl,
   SectionList,
   StyleSheet,
-  Text,
+  Text, TouchableOpacity,
   View
 } from "react-native"
 import React, { useContext, useState } from "react"
@@ -12,6 +12,8 @@ import ButtonPrimary from "../../components/ButtonPrimary"
 import { useTeamJoinMutation } from "../../mutations/TeamMutations"
 import PieChart from "../../components/PieChart"
 import { AppContext } from "../../context/AppContext"
+import { useNavigation } from "@react-navigation/native"
+import { ChallengeStackProps } from "../../navigation/ChallengesNav"
 
 const TeamComponent = ({ item }) => {
   const mutation = useTeamJoinMutation(item.data.id)
@@ -72,6 +74,8 @@ const TeamComponent = ({ item }) => {
 
 const PageChallengeOverview = ({ route }) => {
   const [ refreshing, setRefreshing ] = useState(false)
+
+  const navigator = useNavigation<ChallengeStackProps["navigation"]>()
 
   const { teamQuery } = useTeamsQuery(route.params.challenge.id)
 
@@ -157,12 +161,14 @@ const PageChallengeOverview = ({ route }) => {
                   alignContent: "center"
                 }}
               >
-                <PieChart
-                  coverRadius={0.6}
-                  widthAndHeight={300}
-                  series={series.map((s) => s.data.score)}
-                  sliceColor={series.map((s) => s.color)}
-                />
+                <TouchableOpacity onPress={() => navigator.navigate("Leaderboard", { challenge: route.params.challenge })} activeOpacity={1}>
+                  <PieChart
+                    coverRadius={0.6}
+                    widthAndHeight={300}
+                    series={series.map((s) => s.data.score)}
+                    sliceColor={series.map((s) => s.color)}
+                  />
+                </TouchableOpacity>
               </View>
               <Text style={styles.title}>{props.section.title}</Text>
             </View>
