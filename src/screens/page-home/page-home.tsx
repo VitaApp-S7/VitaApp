@@ -30,12 +30,6 @@ if (
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true)
 }
-const UserMbOrMb = ({ item, section }) => {
-  if (section.key === "active") {
-    return <UserMoodbooster userMb={item} key={`um${item.id}`} />
-  }
-  return <Moodbooster mb={item} key={`num${item.id}`} />
-}
 
 const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
@@ -45,24 +39,67 @@ const PageHome = () => {
 
   const queryClient = useQueryClient()
 
+  const UserMbOrMb = ({ item, section }) => {
+    if (section.key === "active") {
+      return (
+        <UserMoodbooster
+          userMb={item}
+          key={`um${item.id}`}
+          challengeBoosterIds={activeChallenge.data.moodboosterIds}
+        />
+      )
+    }
+    return (
+      <Moodbooster
+        mb={item}
+        key={`num${item.id}`}
+        challengeBoosterIds={activeChallenge.data.moodboosterIds}
+      />
+    )
+  }
   const filteredList = useMemo(() => {
     if (categoryFilter === null) {
       return sectionList
     }
-    if (Platform.OS !== "android")
+
+    if (Platform.OS !== "android") {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    }
 
     return sectionList.map((booster) => {
-      let filteredData = null
+      let filteredData
+
       if (booster.key === "active") {
-        const usermb = booster.data as UserMoodboosterType[]
-        filteredData = usermb.filter(
-          (mb) => mb.moodbooster.category.id === categoryFilter
-        )
+        // userMoodboosters
+        const userMoodboosters = booster.data as UserMoodboosterType[]
+
+        if (categoryFilter === "challenge") {
+          filteredData = userMoodboosters.filter((moodbooster) =>
+            activeChallenge.data.moodboosterIds.includes(
+              moodbooster.moodbooster.category.id
+            )
+          )
+        } else {
+          filteredData = userMoodboosters.filter(
+            (moodbooster) =>
+              moodbooster.moodbooster.category.id === categoryFilter
+          )
+        }
       } else {
-        const mb = booster.data as MoodboosterType[]
-        filteredData = mb.filter((mb) => mb.category.id === categoryFilter)
+        // normal moodboosters
+        const moodboosters = booster.data as MoodboosterType[]
+
+        if (categoryFilter === "challenge") {
+          filteredData = moodboosters.filter((moodbooster) =>
+            activeChallenge.data.moodboosterIds.includes(moodbooster.id)
+          )
+        } else {
+          filteredData = moodboosters.filter(
+            (moodbooster) => moodbooster.category.id === categoryFilter
+          )
+        }
       }
+
       return {
         ...booster,
         data: filteredData
@@ -79,7 +116,9 @@ const PageHome = () => {
         </View>
         <View style={styles.moodboostertop}>
           <Text style={globalStyle.text.title}>Moodboosters</Text>
-          <ChallengeFriends />
+          <View style={{ marginTop: -10 }}>
+            <ChallengeFriends />
+          </View>
         </View>
         <MoodBoosterFilters setFilter={setCategoryFilter} />
       </View>
@@ -120,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: 16,
     paddingRight: 16,
-    marginBottom: 4,
+    marginBottom: 15,
     marginTop: -70
   }
 })

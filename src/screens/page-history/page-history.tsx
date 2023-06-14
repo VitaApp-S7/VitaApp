@@ -10,7 +10,7 @@ const PageHistory = () => {
 
   return (
     <FlatList
-      data={completedActivities.data}
+      data={completedActivities.data.reverse()}
       renderItem={(props) => (
         <Card
           style={styles.surface}

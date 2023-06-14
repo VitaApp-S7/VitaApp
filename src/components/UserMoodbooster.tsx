@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Platform, StyleSheet } from "react-native"
+import { Platform, StyleSheet, View } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
 import {
   Poppins_400Regular as Poppins400Regular,
@@ -22,9 +22,11 @@ import { ListItemAnimation } from "../animations/ListItemAnimation"
 import { useQueryClient } from "@tanstack/react-query"
 import { sleep } from "../utility/Sleep"
 import { globalStyle } from "../globalStyle"
+import ChallengeIcon from "../../assets/challengeIcon.svg"
 
 interface Moodbooster {
   userMb: UserMoodboosterType
+  challengeBoosterIds?: string[]
 }
 
 const UserMoodbooster = (props: Moodbooster) => {
@@ -104,9 +106,29 @@ const UserMoodbooster = (props: Moodbooster) => {
         elevation={Platform.OS === "android" ? 3 : 0}
       >
         <Card.Content>
-          <Paragraph style={globalStyle.text.cardTitle}>
-            {props.userMb.moodbooster.title}
-          </Paragraph>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row"
+            }}
+          >
+            <Paragraph style={globalStyle.text.cardTitle}>
+              {props.userMb.moodbooster.title}
+            </Paragraph>
+            {props.challengeBoosterIds &&
+              props.challengeBoosterIds.includes(
+                props.userMb.moodbooster.id
+              ) && (
+              <View
+                style={{
+                  marginLeft: "auto",
+                  marginTop: -5
+                }}
+              >
+                <ChallengeIcon width={30} height={30} />
+              </View>
+            )}
+          </View>
           <Paragraph style={globalStyle.text.description}>
             {props.userMb.moodbooster.category.name}
           </Paragraph>

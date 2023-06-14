@@ -7,10 +7,6 @@ import MonsterFilled from "../../assets/monsterFilled.svg"
 import ChallengeIcon from "../../assets/challengeIcon.svg"
 import { LinearGradient } from "expo-linear-gradient"
 import { useActivitiesCompletedQuery } from "../queries/MoodboosterQueries"
-import {
-  useActiveChallengeQuery,
-  useChallengesQuery
-} from "../queries/ChallengeQueries"
 
 type categoryFilter = {
   category: string
@@ -52,7 +48,6 @@ interface MoodBoosterFiltersProps {
 
 const MoodBoosterFilters = ({ setFilter }: MoodBoosterFiltersProps) => {
   const completedActivities = useActivitiesCompletedQuery()
-  const activeChallenge = useActiveChallengeQuery()
 
   const dailyCompleted = useMemo(() => {
     const currentDate = new Date().toISOString().slice(0, 10)
@@ -61,11 +56,6 @@ const MoodBoosterFilters = ({ setFilter }: MoodBoosterFiltersProps) => {
       return activityDate == currentDate //"2023-04-05"
     })
   }, [ completedActivities ])
-
-  const UserInChallenge = useMemo(() => {
-    console.log("ACTIVE CHALLENGE:", activeChallenge)
-    // console.log("CHALLENGE MOODBOOSTERS:", activeChallenge.data.moodboosterIds)
-  }, [ activeChallenge ])
 
   const filterButton = (category: categoryFilter, points: number) => {
     return (
