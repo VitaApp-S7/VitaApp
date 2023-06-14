@@ -22,6 +22,7 @@ import {
   MoodboosterType,
   UserMoodboosterType
 } from "../../types/MoodboosterTypes"
+import { useActiveChallengeQuery } from "../../queries/ChallengeQueries"
 
 if (
   Platform.OS === "android" &&
@@ -40,6 +41,7 @@ const PageHome = () => {
   const [ refreshing, setRefreshing ] = useState(false)
   const { sectionList } = useAllActivitiesQuery()
   const [ categoryFilter, setCategoryFilter ] = useState<null | string>(null)
+  const activeChallenge = useActiveChallengeQuery()
 
   const queryClient = useQueryClient()
 
@@ -47,38 +49,43 @@ const PageHome = () => {
     if (categoryFilter === null) {
       return sectionList
     }
-
-    
-    if(Platform.OS !== "android") LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    if (Platform.OS !== "android")
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
 
     return sectionList.map((booster) => {
-      const filteredData =
-        booster.key === "active"
-          ? (booster.data as UserMoodboosterType[]).filter(
-            (mb) => mb.moodbooster.category.id === categoryFilter
-          )
-          : (booster.data as MoodboosterType[]).filter(
-            (mb) => mb.category.id === categoryFilter
-          )
-
+      let filteredData = null
+      if (booster.key === "active") {
+        const usermb = booster.data as UserMoodboosterType[]
+        filteredData = usermb.filter(
+          (mb) => mb.moodbooster.category.id === categoryFilter
+        )
+      } else {
+        const mb = booster.data as MoodboosterType[]
+        filteredData = mb.filter((mb) => mb.category.id === categoryFilter)
+      }
       return {
         ...booster,
         data: filteredData
       }
     })
-  }, [ sectionList, categoryFilter ])
+  }, [ sectionList, categoryFilter, activeChallenge ])
 
-  const Header = () => <View>
-    <BackgroundShape />
-    <View style={{ marginTop: 80 }}>
-      <ResponsiveHeader />
-    </View>
-    <View style={styles.moodboostertop}>
-      <Text style={globalStyle.text.title}>Moodboosters</Text>
-      <ChallengeFriends />
-    </View>
-    <MoodBoosterFilters setFilter={setCategoryFilter} />
-  </View>
+  const Header = useMemo(
+    () => (
+      <View>
+        <BackgroundShape />
+        <View style={{ marginTop: 80 }}>
+          <ResponsiveHeader />
+        </View>
+        <View style={styles.moodboostertop}>
+          <Text style={globalStyle.text.title}>Moodboosters</Text>
+          <ChallengeFriends />
+        </View>
+        <MoodBoosterFilters setFilter={setCategoryFilter} />
+      </View>
+    ),
+    []
+  )
 
   return (
     <View>

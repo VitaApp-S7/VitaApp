@@ -12,7 +12,6 @@ export function useChallengesQuery() {
 
   const createData = (challenges: ChallengeType[]) => {
     const now = new Date()
-
     return [
       {
         key: "active",
@@ -59,7 +58,7 @@ export function useChallengesQuery() {
     },
     {
       onSuccess: (responseActivities) => {
-        setSectionList(createData(responseActivities))
+        responseActivities && setSectionList(createData(responseActivities))
       }
     }
   )
@@ -72,4 +71,21 @@ export function useChallengesQuery() {
     sectionList,
     challengeQuery
   }
+}
+
+export function useActiveChallengeQuery() {
+  const { accessToken, login } = useContext(AppContext)
+
+  return useQuery<ChallengeType>([ "challengeActive" ], async () => {
+    const response = await fetchWithToken(
+      `${challengesBaseUrl}/active`,
+      accessToken
+    )
+
+    if (!response.ok) {
+      if (response.status === 401) await login()
+      return Promise.reject("useChallengesQuery failed")
+    }
+    return response.json()
+  })
 }

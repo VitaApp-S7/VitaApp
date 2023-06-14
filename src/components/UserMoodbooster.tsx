@@ -70,6 +70,7 @@ const UserMoodbooster = (props: Moodbooster) => {
     setIsExiting(true)
     await queryClient.invalidateQueries([ "moodboostersActive" ])
     await queryClient.invalidateQueries([ "moodboosters" ])
+    await queryClient.invalidateQueries([ "moodboostersCompleted" ])
     completedToast()
     setMoodPoints(moodPoints + props.userMb.moodbooster.points)
     sleep(500)
