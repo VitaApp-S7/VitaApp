@@ -1,66 +1,81 @@
-import React, { useMemo, useState } from "react"
-import { Linking, Platform, View } from "react-native"
-import AutoHeightWebView from "react-native-autoheight-webview"
+import React, { useMemo, useState } from "react";
+import { Linking, Platform, View } from "react-native";
+import AutoHeightWebView from "react-native-autoheight-webview";
 
-interface TrixHtmlViewProps {
+interface QuillHtmlViewProps {
   html: string;
   queryKey: string;
 }
 
-const RichTextViewer = (props: TrixHtmlViewProps) => {
+const RichTextViewer = (props: QuillHtmlViewProps) => {
   const html = useMemo(
     () => `
-<html lang="en">
-<head >
-<meta content="width=device-width, initial-scale=0.45, maximum-scale=0.45, user-scalable=0" name="viewport" />
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,400;1,600&display=swap');
-html{
-  font-size: 1em;
-  line-height: 1.75em;
-  font-family: 'Poppins', sans-serif;
-}
-body {
-  font-size: 1.5rem;
-  padding: 0;
-  margin: 0;
-}
-h1 {
-  font-size: 2.75rem;
-  line-height: 3.5rem;
-  margin: 0;
-  font-weight: 400;
-}
-strong {
-  font-weight: 700;
-}
-</style>
+    <html lang="en">
+<head>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+    .ql-richtext {
+      font-size: 1.2rem;
+      padding: 0;
+      margin: 0;
+      line-height: 1.75em;
+      font-family: 'Poppins', sans-serif;
+    }
+    .ql-syntax {
+      background-color: #f3f3f3;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+    }
+    .ql-richtext img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+  <script>
+    function handleLinkClick(event) {
+      event.preventDefault();
+      if (event.target.tagName === 'A') {
+        const url = event.target.getAttribute('href');
+        if (url.startsWith('http') || url.startsWith('https')) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'open_link', url: url }));
+        }
+      }
+    }
+    document.addEventListener('click', handleLinkClick);
+  </script>
 </head>
 <body>
-${props.html}
+  <div class="ql-richtext">${props.html}</div>
 </body>
 </html>
-  `,
-    [ props.html ]
-  )
+`,
+    [props.html]
+  );
+  const [height, setHeight] = useState(0);
 
-  const [ height, setHeight ] = useState(0)
+  const handleWebViewMessage = (event: any) => {
+    const data = JSON.parse(event.nativeEvent.data);
+    if (data.type === "open_link") {
+      Linking.openURL(data.url);
+    }
+  };
 
   return (
     <View style={{ height: height + 25 }}>
       <AutoHeightWebView
-        originWhitelist={[ "*" ]}
+        originWhitelist={["*"]}
         source={{ html: html }}
         style={{
           width: "100%",
-          marginTop: 5
+          marginTop: 5,
         }}
         containerStyle={{
           flex: 1,
-          width: "100%"
+          width: "100%",
         }}
         onSizeUpdated={(size) => {
-          if (size.height > height) setHeight(size.height)
+          if (size.height > height) setHeight(size.height);
         }}
         androidLayerType={"none"}
         automaticallyAdjustContentInsets={false}
@@ -73,14 +88,10 @@ ${props.html}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         overScrollMode={"never"}
-        onShouldStartLoadWithRequest={(event) => {
-          Linking.openURL(event.url)
-          return false
-        }}
+        onMessage={handleWebViewMessage}
       />
     </View>
-  )
-}
+  );
+};
 
-const richTextViewer = RichTextViewer
-export default richTextViewer
+export default RichTextViewer;

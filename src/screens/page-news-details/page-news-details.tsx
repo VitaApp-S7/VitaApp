@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native"
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
 import React from "react"
 import parseDate from "../../utility/DataParser"
 import OpenURLButton from "../../components/OpenURLButton"
@@ -8,7 +8,7 @@ const PageNewsDetails = ({ route }) => {
   const { item } = route.params
 
   return (
-    <View style={styles.screen}>
+    <ScrollView style={styles.screen}>
       <Image
         source={require("../../../assets/header.png")}
         style={styles.header}
@@ -26,7 +26,7 @@ const PageNewsDetails = ({ route }) => {
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
