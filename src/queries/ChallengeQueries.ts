@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { QueryKey, useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { AppContext } from "../context/AppContext"
 import { useContext, useState } from "react"
 import { baseUrl } from "../../authConfig"
@@ -73,7 +73,7 @@ export function useChallengesQuery() {
   }
 }
 
-export function useActiveChallengeQuery() {
+export function useActiveChallengeQuery(options?: Omit<UseQueryOptions<ChallengeType, unknown, ChallengeType, QueryKey>, "initialData" | "queryFn" | "queryKey"> & { initialData?: () => undefined }) {
   const { accessToken, login } = useContext(AppContext)
 
   return useQuery<ChallengeType>([ "challengeActive" ], async () => {
@@ -87,5 +87,5 @@ export function useActiveChallengeQuery() {
       return Promise.reject("useChallengesQuery failed")
     }
     return response.json()
-  })
+  }, options)
 }

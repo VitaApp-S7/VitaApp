@@ -11,23 +11,31 @@ import PageHistory from "../screens/page-history/page-history"
 import PageMoodboosterDetails from "../screens/page-moodbooster-details/page-moodbooster-details"
 import { useNavigation } from "@react-navigation/native"
 import { ButtonTopBarNavigation } from "../components/ButtonTopBarNavigation"
-import { MoodboosterType, UserMoodboosterType } from "../types/MoodboosterTypes"
+import {
+  MoodboosterType,
+  UserMoodboosterType
+} from "../types/MoodboosterTypes"
 import { AppContext } from "../context/AppContext"
 import { View } from "react-native-animatable"
 import { Text } from "react-native"
 import { globalStyle } from "../globalStyle"
 
 type BoostersNavStackParamList = {
-  Home: undefined
-  Account: undefined
-  History: undefined
-  "Moodbooster Details": { mb: MoodboosterType; userMb?: UserMoodboosterType }
-}
+  Home: undefined;
+  Account: undefined;
+  History: undefined;
+  "Moodbooster Details": {
+    mb: MoodboosterType;
+    userMb?: UserMoodboosterType;
+    currentTeamId: string;
+    challengeBoosterIds?: string[];
+  };
+};
 
 const Stack = createNativeStackNavigator<BoostersNavStackParamList>()
-type StackProps = NativeStackScreenProps<BoostersNavStackParamList>
+type StackProps = NativeStackScreenProps<BoostersNavStackParamList>;
 export type BoostersNavProps<T extends keyof BoostersNavStackParamList> =
-  NativeStackScreenProps<BoostersNavStackParamList, T>
+  NativeStackScreenProps<BoostersNavStackParamList, T>;
 
 const HeaderRight = () => {
   const navigation = useNavigation<StackProps["navigation"]>()

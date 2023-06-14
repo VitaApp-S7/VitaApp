@@ -12,8 +12,8 @@ import { globalStyle } from "../globalStyle"
 import ChallengeIcon from "../../assets/challengeIcon.svg"
 
 interface Moodbooster {
-  mb: MoodboosterType
-  challengeBoosterIds?: string[]
+  mb: MoodboosterType;
+  challengeBoosterIds?: string[];
 }
 
 const Moodbooster = (props: Moodbooster) => {

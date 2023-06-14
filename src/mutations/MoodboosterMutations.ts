@@ -78,3 +78,48 @@ export const useMoodboosterCompleteMutation = (moodboosterId: string) => {
     }
   )
 }
+
+export const useMoodboosterCompleteChallengeMutation = (
+  moodbooster: UserMoodboosterType,
+  teamId: string
+) => {
+  const { accessToken, login } = useContext(AppContext)
+
+  return useMutation<void>(
+    [ "completeMoodboosterChallenge", teamId ],
+    async () => {
+      const response = await fetchWithToken(
+        `${baseUrl}/challenge/team/addpoints`,
+        accessToken,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            teamId: teamId,
+            userIds: moodbooster.userIds,
+            points:
+              moodbooster.userIds.length > 1
+                ? moodbooster.moodbooster.points * 2
+                : moodbooster.moodbooster.points
+          })
+        }
+      )
+
+      if (!response.ok) {
+        console.log("Failed request")
+        if (response.status === 401) await login()
+        const errorResponse = await response.json()
+        const errorMessage = errorResponse.error || "Unknown error"
+        return Promise.reject(
+          `useMoodboosterCompleteChallengeMutation failed: ${errorMessage}`
+        )
+      }
+
+      console.log("Didn't fail request")
+      await Promise.resolve()
+    }
+  )
+}

@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native"
 import { AppContext } from "../context/AppContext"
 import {
   useMoodboosterCancelMutation,
+  useMoodboosterCompleteChallengeMutation,
   useMoodboosterCompleteMutation
 } from "../mutations/MoodboosterMutations"
 import { ListItemAnimation } from "../animations/ListItemAnimation"
@@ -25,8 +26,9 @@ import { globalStyle } from "../globalStyle"
 import ChallengeIcon from "../../assets/challengeIcon.svg"
 
 interface Moodbooster {
-  userMb: UserMoodboosterType
-  challengeBoosterIds?: string[]
+  userMb: UserMoodboosterType;
+  challengeBoosterIds?: string[];
+  currentTeamId?: string;
 }
 
 const UserMoodbooster = (props: Moodbooster) => {
@@ -37,11 +39,15 @@ const UserMoodbooster = (props: Moodbooster) => {
   const completeMoodboosterMutation = useMoodboosterCompleteMutation(
     props.userMb.id
   )
+  const completeMoodboosterChallengeMutation =
+    useMoodboosterCompleteChallengeMutation(props.userMb, props.currentTeamId)
   const cancelMoodboosterMutation = useMoodboosterCancelMutation(
     props.userMb.id
   )
 
   const queryClient = useQueryClient()
+
+  console.log(`${props.currentTeamId} CURRENT TEAM ID`)
 
   //TOAST AFTER COMPLETE
   const completedToast = () => {
@@ -69,6 +75,12 @@ const UserMoodbooster = (props: Moodbooster) => {
     if (!completeMoodboosterMutation.isIdle || isExiting) return
 
     await completeMoodboosterMutation.mutateAsync()
+    if (
+      props.challengeBoosterIds.some((id) => id === props.userMb.moodbooster.id)
+    ) {
+      await completeMoodboosterChallengeMutation.mutateAsync()
+      await queryClient.invalidateQueries({ queryKey: [ "teams" ]})
+    }
     setIsExiting(true)
     await queryClient.invalidateQueries([ "moodboostersActive" ])
     await queryClient.invalidateQueries([ "moodboosters" ])
@@ -93,7 +105,9 @@ const UserMoodbooster = (props: Moodbooster) => {
     // @ts-ignore
     navigation.navigate("Moodbooster Details", {
       mb: props.userMb.moodbooster,
-      userMb: props.userMb
+      userMb: props.userMb,
+      currentTeamId: props.currentTeamId,
+      challengeBoosterIds: props.challengeBoosterIds
     })
   }
 

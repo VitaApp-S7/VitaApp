@@ -1,26 +1,35 @@
 import React, { useContext } from "react"
-import { View, StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Toast from "react-native-toast-message"
 import { AppContext } from "../context/AppContext"
 import {
   useMoodboosterCancelMutation,
+  useMoodboosterCompleteChallengeMutation,
   useMoodboosterCompleteMutation
 } from "../mutations/MoodboosterMutations"
 import ButtonPrimary from "./ButtonPrimary"
 import ButtonSecondary from "./ButtonSecondary"
 import MoodboosterInvites from "./MoodboosterInvites"
+import { useQueryClient } from "@tanstack/react-query"
+
 export const UserMoodBoosterDetails = ({
   userMoodbooster,
-  setUserMoodbooster
+  setUserMoodbooster,
+  currentTeamId,
+  challengeBoosterIds
 }) => {
   const { moodPoints, setMoodPoints } = useContext(AppContext)
 
   const completeMoodboosterMutation = useMoodboosterCompleteMutation(
     userMoodbooster.id
   )
+  const completeMoodboosterChallengeMutation =
+    useMoodboosterCompleteChallengeMutation(userMoodbooster, currentTeamId)
   const cancelMoodboosterMutation = useMoodboosterCancelMutation(
     userMoodbooster.id
   )
+
+  const queryClient = useQueryClient()
 
   const completedToast = () => {
     Toast.show({
@@ -41,6 +50,12 @@ export const UserMoodBoosterDetails = ({
     if (!completeMoodboosterMutation.isIdle) return
 
     await completeMoodboosterMutation.mutateAsync()
+    if (
+      challengeBoosterIds.some((id) => id === userMoodbooster.moodbooster.id)
+    ) {
+      await completeMoodboosterChallengeMutation.mutateAsync()
+      await queryClient.invalidateQueries({ queryKey: [ "teams" ]})
+    }
     completedToast()
     setUserMoodbooster(null)
     setMoodPoints(moodPoints + userMoodbooster.moodbooster.points)

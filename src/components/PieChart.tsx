@@ -13,7 +13,7 @@ export type Props = {
 };
 
 function minimumPercentage(series: number[]) {
-  const minimumPercentage = 2
+  const minimumPercentage = 3.5
   const tooLowPercentages = series.filter((x) => x < minimumPercentage)
   let addedPercentage = 0
   for (let i = 0; i < tooLowPercentages.length; i++) {
@@ -24,11 +24,11 @@ function minimumPercentage(series: number[]) {
 
   const highPercentages = series.filter((x) => x >= minimumPercentage)
   const highPercentagesTotal = highPercentages.reduce(
-    (x, y) => x + y - minimumPercentage
+    (x, y) => x + y - minimumPercentage, 0
   )
 
   for (let i = 0; i < highPercentages.length; i++) {
-    highPercentages[i] +=
+    highPercentages[i] -=
       addedPercentage *
       ((highPercentages[i] - minimumPercentage) / highPercentagesTotal)
   }
@@ -36,6 +36,10 @@ function minimumPercentage(series: number[]) {
   const resultPercentages = tooLowPercentages
     .concat(highPercentages)
     .sort((x, y) => y - x)
+
+  console.log(series)
+  console.log(resultPercentages)
+
   return resultPercentages
 }
 
@@ -47,23 +51,23 @@ const PieChart = ({
   coverRadius,
   style = {}
 }: Props): JSX.Element => {
-  const resultPercentages = minimumPercentage(series)
+  const resultPercentages = minimumPercentage(series.map(s => s / series.reduce((x, y) => x + y) * 100))
 
   // Validating props
-  series.forEach((s) => {
-    if (s < 0) {
+  resultPercentages.forEach((s) => {
+    if (s <= 0) {
       throw Error(`Invalid series: all numbers should be positive. Found ${s}`)
     }
   })
 
-  const sum = series.reduce((previous, current) => previous + current, 0)
+  const sum = resultPercentages.reduce((previous, current) => previous + current, 0)
   if (sum <= 0) {
     throw Error("Invalid series: sum of series is zero")
   }
 
-  if (sliceColor.length != series.length) {
+  if (sliceColor.length != resultPercentages.length) {
     throw Error(
-      `Invalid "sliceColor": its length should be equal to the length of "series". sliceColor.length=${sliceColor.length} series.length=${series.length}`
+      `Invalid "sliceColor": its length should be equal to the length of "series". sliceColor.length=${sliceColor.length} series.length=${resultPercentages.length}`
     )
   }
 

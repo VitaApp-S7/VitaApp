@@ -33,6 +33,8 @@ const PageMoodboosterDetails = () => {
           <UserMoodBoosterDetails
             userMoodbooster={userMoodbooster}
             setUserMoodbooster={setUserMoodbooster}
+            currentTeamId={route.params.currentTeamId}
+            challengeBoosterIds={route.params.challengeBoosterIds}
           />
         ) : (
           <MoodBoosterDetails

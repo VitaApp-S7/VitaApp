@@ -7,7 +7,7 @@ import {
   UIManager,
   View
 } from "react-native"
-import React, { useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Text } from "react-native-paper"
 import ChallengeFriends from "../../components/MoodboosterInviteRequests"
 import ResponsiveHeader from "../../components/ResponsiveHeader"
@@ -23,6 +23,8 @@ import {
   UserMoodboosterType
 } from "../../types/MoodboosterTypes"
 import { useActiveChallengeQuery } from "../../queries/ChallengeQueries"
+import { useTeamsQuery } from "../../queries/TeamQueries"
+import { AppContext } from "../../context/AppContext"
 
 if (
   Platform.OS === "android" &&
@@ -32,10 +34,25 @@ if (
 }
 
 const PageHome = () => {
+  const { user } = useContext(AppContext)
   const [ refreshing, setRefreshing ] = useState(false)
   const { sectionList } = useAllActivitiesQuery()
   const [ categoryFilter, setCategoryFilter ] = useState<null | string>(null)
   const activeChallenge = useActiveChallengeQuery()
+  const [ currentTeamId, setCurrentTeamId ] = useState(null)
+  const { teamQuery } = useTeamsQuery(activeChallenge.data.id, { enabled: !!activeChallenge.data.id })
+
+  useEffect(() => {
+    if (teamQuery.isSuccess) {
+      console.log("useTeamsQuery")
+      const teams = teamQuery.data.filter((t) =>
+        t.participants.some((p) => p.userId === user.id)
+      )
+      if (teams.length > 0) {
+        setCurrentTeamId(teams[0].id)
+      }
+    }
+  }, [ teamQuery.data ])
 
   const queryClient = useQueryClient()
 
@@ -46,6 +63,7 @@ const PageHome = () => {
           userMb={item}
           key={`um${item.id}`}
           challengeBoosterIds={activeChallenge.data.moodboosterIds}
+          currentTeamId={currentTeamId}
         />
       )
     }
