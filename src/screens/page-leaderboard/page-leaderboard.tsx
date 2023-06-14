@@ -54,8 +54,8 @@ const TopThreeItem = (props: {
         ]}
         source={require("../../../assets/hairyTopThree.png")}
       />
-      <Text style={[ globalStyle.text.title, { marginTop: 0 }]}>30</Text>
-      <Text style={[ globalStyle.text.cardTitle, { opacity: 0.74 }]}>Dylan Nas</Text>
+      <Text style={[ globalStyle.text.title, { marginTop: 0 }]}>{props.participant.score ?? 0}</Text>
+      <Text style={[ globalStyle.text.cardTitle, { opacity: 0.74 }]}>{props.participant.name ?? ""}</Text>
     </View>
 
   )
