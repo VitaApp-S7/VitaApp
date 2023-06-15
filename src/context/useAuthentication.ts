@@ -28,6 +28,8 @@ const useAuthentication = (expoToken) => {
   Constants.manifest.originalFullName = "@vitaapp/stuff"
   const [ user, setUser ] = useState<UserType>(null)
   const [ accessToken, setAccessToken ] = useState<string>()
+  const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false)
+
   useEffect(() => {
     if (expoToken !== null && user !== null && expoToken !== user.expoToken) {
       SetExpo(accessToken, expoToken)
@@ -73,29 +75,35 @@ const useAuthentication = (expoToken) => {
     discovery
   )
 
-  if (!initialized) {
-    initialized = true
-    SecureStore.getItemAsync("token")
-      .then(async (token) => {
-        await checkUser(token)
-        setUser(JSON.parse(await SecureStore.getItemAsync("User")))
-        setAccessToken(token)
-        setUser(await getUser(token))
-        await SecureStore.setItemAsync("user", JSON.stringify(user))
-      })
-      .catch(async () => {
-        Toast.show({
-          type: "info",
-          text1: "Couldn't get previous login information",
-          text2: "Please try logging in yourself",
-          position: "bottom"
+  useEffect(() => {
+    if (!initialized) {
+      initialized = true
+      SecureStore.getItemAsync("token")
+        .then(async (token) => {
+          await checkUser(token)
+          const newUser = await getUser(token)
+          setUser(newUser)
+          setAccessToken(token)
+          await SecureStore.setItemAsync("user", JSON.stringify(newUser))
         })
-        setUser(null)
-        setAccessToken(null)
-      })
-  }
+        .catch(async () => {
+          Toast.show({
+            type: "info",
+            text1: "Couldn't get previous login information",
+            text2: "Please try logging in yourself",
+            position: "bottom"
+          })
+          setUser(null)
+          setAccessToken(null)
+        })
+    }
+  }, [])
+
   const login = async () => {
+    if (isLoggingIn === true) return
+    setIsLoggingIn(true)
     await promptAsync({ useProxy: isExpo })
+    setIsLoggingIn(false)
   }
 
   const logout = async () => {

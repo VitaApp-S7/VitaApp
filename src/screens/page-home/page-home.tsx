@@ -46,7 +46,7 @@ const PageHome = () => {
     if (teamQuery.isSuccess) {
       console.log("useTeamsQuery")
       const teams = teamQuery.data.filter((t) =>
-        t.participants.some((p) => p.userId === user.id)
+        t.participants.some((p) => p.userId === user?.id)
       )
       if (teams.length > 0) {
         setCurrentTeamId(teams[0].id)

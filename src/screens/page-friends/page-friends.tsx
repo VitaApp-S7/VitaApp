@@ -108,7 +108,12 @@ const PageFriends = () => {
         ) : (
           <>
             <BackgroundShape />
-            <View style={{ marginTop: 40 + safeAreaHeight }}>
+            <View
+              style={{
+                marginTop: 60 + safeAreaHeight,
+                minHeight: 500
+              }}
+            >
               {requestsQuery.isSuccess && requestsQuery.data.length > 0 && (
                 <>
                   <Text style={[ globalStyle.text.title, { marginLeft: 10 }]}>

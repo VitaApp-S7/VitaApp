@@ -4,16 +4,16 @@ import * as d3 from "d3-shape"
 import React from "react"
 
 export type Props = {
-  widthAndHeight: number;
-  series: number[];
-  sliceColor: string[];
-  coverFill?: string | null;
-  coverRadius?: number;
-  style?: StyleProp<ViewStyle>;
-};
+  widthAndHeight: number
+  series: number[]
+  sliceColor: string[]
+  coverFill?: string | null
+  coverRadius?: number
+  style?: StyleProp<ViewStyle>
+}
 
 function minimumPercentage(series: number[]) {
-  series = series.map(x => isNaN(x) ? 0 : x)
+  series = series.map((x) => (isNaN(x) ? 0 : x))
   const minimumPercentage = 3.5
   const tooLowPercentages = series.filter((x) => x < minimumPercentage)
   let addedPercentage = 0
@@ -25,7 +25,8 @@ function minimumPercentage(series: number[]) {
 
   const highPercentages = series.filter((x) => x >= minimumPercentage)
   const highPercentagesTotal = highPercentages.reduce(
-    (x, y) => x + y - minimumPercentage, 0
+    (x, y) => x + y - minimumPercentage,
+    0
   )
 
   for (let i = 0; i < highPercentages.length; i++) {
@@ -52,7 +53,9 @@ const PieChart = ({
   coverRadius,
   style = {}
 }: Props): JSX.Element => {
-  const resultPercentages = minimumPercentage(series.map(s => s / series.reduce((x, y) => x + y) * 100))
+  const resultPercentages = minimumPercentage(
+    series.map((s) => (s / series.reduce((x, y) => x + y)) * 100)
+  )
 
   // Validating props
   resultPercentages.forEach((s) => {
@@ -61,7 +64,10 @@ const PieChart = ({
     }
   })
 
-  const sum = resultPercentages.reduce((previous, current) => previous + current, 0)
+  const sum = resultPercentages.reduce(
+    (previous, current) => previous + current,
+    0
+  )
   if (sum <= 0) {
     throw Error("Invalid series: sum of series is zero")
   }
