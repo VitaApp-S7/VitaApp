@@ -13,6 +13,7 @@ export type Props = {
 };
 
 function minimumPercentage(series: number[]) {
+  series = series.map(x => isNaN(x) ? 0 : x)
   const minimumPercentage = 3.5
   const tooLowPercentages = series.filter((x) => x < minimumPercentage)
   let addedPercentage = 0
