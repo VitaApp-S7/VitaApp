@@ -40,7 +40,7 @@ const PageHome = () => {
   const [ categoryFilter, setCategoryFilter ] = useState<null | string>(null)
   const activeChallenge = useActiveChallengeQuery()
   const [ currentTeamId, setCurrentTeamId ] = useState(null)
-  const { teamQuery } = useTeamsQuery(activeChallenge.data.id, { enabled: !!activeChallenge.data.id })
+  const { teamQuery } = useTeamsQuery(activeChallenge.data?.id, { enabled: !!activeChallenge.data?.id })
 
   useEffect(() => {
     if (teamQuery.isSuccess) {
