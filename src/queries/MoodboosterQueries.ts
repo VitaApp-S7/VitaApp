@@ -149,9 +149,9 @@ export function useAllActivitiesQuery() {
     (
       | { key: string; title: string; data: UserMoodboosterType[] }
       | {
-          key: string;
-          title: string;
-          data: MoodboosterType[];
+          key: string
+          title: string
+          data: MoodboosterType[]
         }
     )[]
       >(

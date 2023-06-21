@@ -62,7 +62,7 @@ const PageHome = () => {
         <UserMoodbooster
           userMb={item}
           key={`um${item.id}`}
-          challengeBoosterIds={activeChallenge.data.moodboosterIds}
+          challengeBoosterIds={activeChallenge.data?.moodboosterIds}
           currentTeamId={currentTeamId}
         />
       )
@@ -71,7 +71,7 @@ const PageHome = () => {
       <Moodbooster
         mb={item}
         key={`num${item.id}`}
-        challengeBoosterIds={activeChallenge.data.moodboosterIds}
+        challengeBoosterIds={activeChallenge.data?.moodboosterIds}
       />
     )
   }
@@ -94,7 +94,7 @@ const PageHome = () => {
         if (categoryFilter === "challenge") {
           filteredData = userMoodboosters.filter((moodbooster) =>
             activeChallenge.data.moodboosterIds.includes(
-              moodbooster.moodbooster.category.id
+              moodbooster.moodbooster.id
             )
           )
         } else {

@@ -6,6 +6,11 @@ const url = protectedResources.apiUser.endpoint
 
 export async function getUser(token) {
   var response = await axios.get(`${url}me`, { headers: { Authorization: `Bearer ${token}` }})
+
+  if (response.status !== 200) {
+    throw new Error("")
+  }
+
   return response.data
 }
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Platform, StyleSheet, View } from "react-native"
+import { Platform, StyleSheet, View, Text } from "react-native"
 import { Card, Paragraph } from "react-native-paper"
 import {
   Poppins_400Regular as Poppins400Regular,
@@ -26,9 +26,9 @@ import { globalStyle } from "../globalStyle"
 import ChallengeIcon from "../../assets/challengeIcon.svg"
 
 interface Moodbooster {
-  userMb: UserMoodboosterType;
-  challengeBoosterIds?: string[];
-  currentTeamId?: string;
+  userMb: UserMoodboosterType
+  challengeBoosterIds?: string[]
+  currentTeamId?: string
 }
 
 const UserMoodbooster = (props: Moodbooster) => {
@@ -129,19 +129,27 @@ const UserMoodbooster = (props: Moodbooster) => {
             <Paragraph style={globalStyle.text.cardTitle}>
               {props.userMb.moodbooster.title}
             </Paragraph>
-            {props.challengeBoosterIds &&
-              props.challengeBoosterIds.includes(
-                props.userMb.moodbooster.id
-              ) && (
-              <View
-                style={{
-                  marginLeft: "auto",
-                  marginTop: -5
-                }}
-              >
-                <ChallengeIcon width={30} height={30} />
-              </View>
-            )}
+            <View
+              style={{
+                marginLeft: "auto",
+                marginTop: -5,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              {props.userMb.userIds.length > 1 && <Text>x2</Text>}
+              {props.challengeBoosterIds &&
+                props.challengeBoosterIds.includes(
+                  props.userMb.moodbooster.id
+                ) && (
+                <ChallengeIcon
+                  width={30}
+                  height={30}
+                  style={{ marginLeft: 7 }}
+                />
+              )}
+            </View>
           </View>
           <Paragraph style={globalStyle.text.description}>
             {props.userMb.moodbooster.category.name}

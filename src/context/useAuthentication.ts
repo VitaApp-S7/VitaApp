@@ -20,6 +20,7 @@ interface useAuthenticationType {
   login: () => Promise<void>
   logout: () => Promise<void>
 }
+let loggingIn = false
 
 const isExpo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient
@@ -28,7 +29,6 @@ const useAuthentication = (expoToken) => {
   Constants.manifest.originalFullName = "@vitaapp/stuff"
   const [ user, setUser ] = useState<UserType>(null)
   const [ accessToken, setAccessToken ] = useState<string>()
-  const [ isLoggingIn, setIsLoggingIn ] = useState<boolean>(false)
 
   useEffect(() => {
     if (expoToken !== null && user !== null && expoToken !== user.expoToken) {
@@ -100,10 +100,10 @@ const useAuthentication = (expoToken) => {
   }, [])
 
   const login = async () => {
-    if (isLoggingIn === true) return
-    setIsLoggingIn(true)
+    if (loggingIn === true) return
+    loggingIn = true
     await promptAsync({ useProxy: isExpo })
-    setIsLoggingIn(false)
+    loggingIn = false
   }
 
   const logout = async () => {

@@ -28,16 +28,16 @@ const AppNav = () => {
   return (
     <NavigationContainer theme={AppTheme}>
       <Stack.Navigator>
-        {accessToken !== null && user !== null ? (
+        {!accessToken || !user ? (
           <Stack.Screen
-            name="App"
-            component={InAppTabNav}
+            name="Login"
+            component={PageLogin}
             options={screenOptions}
           />
         ) : (
           <Stack.Screen
-            name="Login"
-            component={PageLogin}
+            name="App"
+            component={InAppTabNav}
             options={screenOptions}
           />
         )}

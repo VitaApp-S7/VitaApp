@@ -42,7 +42,7 @@ const MoodboosterInvitesModal = ({
                   <View style={styles.joined}>
                     <Image
                       style={styles.pfp}
-                      source={require("../../assets/pfp.png")}
+                      source={require("../../assets/hairyFriendAvatar.png")}
                     ></Image>
                     <Text style={styles.title}>{item.name}</Text>
                   </View>
@@ -151,12 +151,11 @@ const styles = StyleSheet.create({
     margin: 8
   },
   pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    height: 56,
+    width: 56,
+    marginBottom: -6,
     borderRadius: 999,
-    backgroundColor: "green"
+    backgroundColor: "white"
   },
   modalempty: {
     fontFamily: "Poppins500Medium",

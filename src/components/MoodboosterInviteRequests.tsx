@@ -93,7 +93,7 @@ const FriendsList = () => {
             <Card.Content style={styles.cardcontent}>
               <Image
                 style={styles.pfp}
-                source={require("../../assets/pfp.png")}
+                source={require("../../assets/hairyFriendAvatar.png")}
               ></Image>
               <View style={styles.textcontent}>
                 <Paragraph style={styles.title}>{item.inviterName}</Paragraph>
@@ -215,12 +215,11 @@ const styles = StyleSheet.create({
     width: "80%"
   },
   pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    height: 56,
+    width: 56,
+    marginBottom: -6,
     borderRadius: 999,
-    backgroundColor: "green"
+    backgroundColor: "white"
   },
   buttons: {
     flex: 1,
@@ -245,9 +244,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginHorizontal: 8,
     marginVertical: 4,
-    paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: "#CCCCCC",
+    borderColor: "#CCCCCC70",
     borderRadius: 8,
     backgroundColor: "white"
   },

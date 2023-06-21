@@ -5,14 +5,14 @@ import useAuthentication from "./useAuthentication"
 import useNotifications from "./useNotifications"
 
 interface AppContextType {
-  user: UserType;
-  accessToken: string;
-  moodPoints: number;
-  setMoodPoints: React.Dispatch<React.SetStateAction<number>>;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
-  expoToken: string;
-  notification: Notifications.Notification;
+  user: UserType
+  accessToken: string
+  moodPoints: number
+  setMoodPoints: React.Dispatch<React.SetStateAction<number>>
+  login: () => Promise<void>
+  logout: () => Promise<void>
+  expoToken: string
+  notification: Notifications.Notification
 }
 
 export const AppContext = React.createContext<AppContextType>({

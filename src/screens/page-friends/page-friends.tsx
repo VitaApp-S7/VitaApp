@@ -132,7 +132,15 @@ const PageFriends = () => {
                           style={styles.pfp}
                           source={require("../../../assets/hairyFriendAvatar.png")}
                         ></Image>
-                        <Paragraph style={styles.title}>{item.name}</Paragraph>
+                        <Paragraph
+                          style={[
+                            globalStyle.text.cardTitle,
+                            styles.title,
+                            { marginTop: -12 }
+                          ]}
+                        >
+                          {item.name}
+                        </Paragraph>
                       </Card.Content>
                       <Card.Actions style={styles.buttons}>
                         <ButtonSecondary
@@ -213,12 +221,11 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   pfp: {
-    height: 45,
-    width: 45,
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
+    height: 56,
+    width: 56,
+    marginBottom: -6,
     borderRadius: 999,
-    backgroundColor: "green"
+    backgroundColor: "white"
   },
   cardcontent: {
     flexDirection: "row",

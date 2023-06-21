@@ -103,10 +103,27 @@ const MoodBoosterFilters = ({ setFilter }: MoodBoosterFiltersProps) => {
         const points = dailyCompleted
           ?.filter((mb) => mb.moodbooster.category.id === category.categoryId)
           .reduce((total, mb) => total + mb.moodbooster.points, 0)
-        const pointsAll = dailyCompleted?.reduce(
-          (total, mb) => total + mb.moodbooster.points,
-          0
-        )
+
+        const pointsMental = dailyCompleted
+          ?.filter(
+            (x) => x.moodbooster.category.id === "6409a83055514771765d8bb8"
+          )
+          .reduce((total, mb) => total + mb.moodbooster.points, 0)
+        const pointsPhysical = dailyCompleted
+          ?.filter(
+            (x) => x.moodbooster.category.id === "6409a7ec55514771765d8bb6"
+          )
+          .reduce((total, mb) => total + mb.moodbooster.points, 0)
+        const pointsSocial = dailyCompleted
+          ?.filter(
+            (x) => x.moodbooster.category.id === "6409a81b55514771765d8bb7"
+          )
+          .reduce((total, mb) => total + mb.moodbooster.points, 0)
+        const pointsAll =
+          Math.min(...[ 10, pointsMental ]) +
+          Math.min(...[ 10, pointsPhysical ]) +
+          Math.min(...[ 10, pointsSocial ])
+
         return filterButton(
           category,
           category.categoryId == null ? pointsAll : points
